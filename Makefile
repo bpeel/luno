@@ -42,7 +42,7 @@ include $(SETTINGS)/stdtarget.mk
 ifeq "$(OS)" "WIN"
 LOCAL_CXX_FLAGS=/std:c++20 /utf-8
 else
-LOCAL_CXX_FLAGS=-std=c++20
+LOCAL_CXX_FLAGS=-std=c++20 $$(pkg-config lua --cflags)
 endif
 
 $(OUT_BIN)/%.rdb : $(IDLFILES)
@@ -74,7 +74,8 @@ $(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES)
 else
 $(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-	$(LINK) $(COMP_LINK_FLAGS) $(LINK_LIBS) -o $@ $(SLOFILES) \
+	$(LINK) $(COMP_LINK_FLAGS) $(LINK_LIBS) $$(pkg-config lua --libs) \
+	-o $@ $(SLOFILES) \
 	$(CPPUHELPERLIB) $(CPPULIB) $(SALLIB) $(STC++LIB)
 ifeq "$(OS)" "MACOSX"
 	$(INSTALL_NAME_URELIBS)  $@
