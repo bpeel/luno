@@ -18,17 +18,36 @@
 
 #include <rtl/string.h>
 #include <iostream>
+#include <com/sun/star/uno/XComponentContext.hpp>
+#include <com/sun/star/lang/XSingleServiceFactory.hpp>
+#include <com/sun/star/lang/XMultiComponentFactory.hpp>
+
+#include "object.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
 
-Luno::Luno()
+Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     : m_pLuaState(luaL_newstate())
+    , m_xContext(xContext)
+    , m_xServiceManager(xContext->getServiceManager())
+    , m_xInvocationFactory(m_xServiceManager->createInstanceWithContext(
+                               "com.sun.star.script.Invocation", xContext),
+                           css::uno::UNO_QUERY)
 {
+    if (!m_xInvocationFactory.is())
+        return;
+
+    // Set the component context as a global variable
+    Object::pushObject(m_pLuaState, xContext, m_xInvocationFactory);
+    lua_setglobal(m_pLuaState, "XSCRIPTCONTEXT");
 }
 
 void Luno::executeCode(const rtl::OUString& sCode)
 {
+    if (!m_xContext.is() || !m_xServiceManager.is() || !m_xInvocationFactory.is())
+        return;
+
     rtl::OString sCodeUtf8 = rtl::OUStringToOString(sCode, RTL_TEXTENCODING_UTF8);
 
     int nRet = luaL_loadbuffer(m_pLuaState, sCodeUtf8.getStr(), sCodeUtf8.getLength(),

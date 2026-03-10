@@ -155,7 +155,7 @@ void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
     if (!xFirstSelection.is())
         return;
 
-    Luno aLuno;
+    Luno aLuno(m_xContext);
     aLuno.executeCode(xFirstSelection->getString());
 }
 

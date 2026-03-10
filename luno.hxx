@@ -19,19 +19,34 @@
 
 #include <lua.hpp>
 #include <rtl/ustring.hxx>
+#include <com/sun/star/uno/Reference.hxx>
+
+namespace com::sun::star::uno
+{
+class XComponentContext;
+}
+
+namespace com::sun::star::lang
+{
+class XSingleServiceFactory;
+class XMultiComponentFactory;
+}
 
 namespace uk::co::busydoingnothing::luno
 {
 class Luno
 {
 public:
-    Luno();
+    Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext);
     ~Luno();
 
     void executeCode(const rtl::OUString& sCode);
 
 private:
     lua_State* m_pLuaState;
+    css::uno::Reference<css::uno::XComponentContext> m_xContext;
+    css::uno::Reference<css::lang::XMultiComponentFactory> m_xServiceManager;
+    css::uno::Reference<css::lang::XSingleServiceFactory> m_xInvocationFactory;
 };
 }
 
