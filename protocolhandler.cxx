@@ -19,6 +19,9 @@
 #include <com/sun/star/frame/XFrame.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
 #include <com/sun/star/text/XTextDocument.hpp>
+#include <com/sun/star/view/XSelectionSupplier.hpp>
+
+#include "luno.hxx"
 
 using namespace rtl;
 
@@ -126,6 +129,34 @@ void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
 {
     if (!canHandleUrl(aURL))
         return;
+
+    css::uno::Reference<css::view::XSelectionSupplier> xSelectionSupplier(m_xFrame->getController(),
+                                                                          css::uno::UNO_QUERY);
+
+    if (!xSelectionSupplier.is())
+        return;
+
+    css::uno::Any xSelection = xSelectionSupplier->getSelection();
+    css::uno::Reference<css::container::XIndexAccess> xIndexAccess;
+    xSelection >>= xIndexAccess;
+
+    if (!xIndexAccess.is())
+        return;
+
+    sal_Int32 nIndexCount = xIndexAccess->getCount();
+
+    if (nIndexCount <= 0)
+        return;
+
+    css::uno::Any xFirstSelectionAny = xIndexAccess->getByIndex(0);
+    css::uno::Reference<css::text::XTextRange> xFirstSelection;
+    xFirstSelectionAny >>= xFirstSelection;
+
+    if (!xFirstSelection.is())
+        return;
+
+    Luno aLuno;
+    aLuno.executeCode(xFirstSelection->getString());
 }
 
 OUString ProtocolHandler::getImplementationNameStatic()

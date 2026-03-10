@@ -61,7 +61,7 @@ $(OUT_COMP_SLO)/%.$(OBJ_EXT) : %.cxx $(COMP_TYPEFLAG)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
 	$(CC) $(LOCAL_CXX_FLAGS) $(CC_FLAGS) $(CC_INCLUDES) -I$(OUT_COMP_INC) $(CC_DEFINES) $(CC_OUTPUT_SWITCH)$(subst /,$(PS),$@) $<
 
-$(OUT_COMP_SLO)/protocolhandler.$(OBJ_EXT) : protocolhandler.hxx
+$(OUT_COMP_SLO)/protocolhandler.$(OBJ_EXT) : protocolhandler.hxx luno.hxx
 $(OUT_COMP_SLO)/luno.$(OBJ_EXT) : luno.hxx
 $(OUT_COMP_SLO)/exports.$(OBJ_EXT) : protocolhandler.hxx
 

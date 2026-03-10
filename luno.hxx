@@ -31,7 +31,7 @@ public:
     void executeCode(const rtl::OUString& sCode);
 
 private:
-    lua_State *m_pLuaState;
+    lua_State* m_pLuaState;
 };
 }
 
