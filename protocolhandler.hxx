@@ -73,6 +73,7 @@ private:
     ProtocolHandler(const css::uno::Reference<css::uno::XComponentContext>& xContext);
     bool canHandleUrl(const css::util::URL& url);
     void showErrorDialog(const rtl::OUString& sMessage);
+    rtl::OUString getSelection();
 
     css::uno::Reference<css::uno::XComponentContext> m_xContext;
     css::uno::Reference<css::frame::XFrame> m_xFrame;

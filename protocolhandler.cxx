@@ -165,46 +165,60 @@ void ProtocolHandler::showErrorDialog(const OUString& sMessage)
     }
 }
 
-void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
-                                        const css::uno::Sequence<css::beans::PropertyValue>& lArgs)
+rtl::OUString ProtocolHandler::getSelection()
 {
-    if (!canHandleUrl(aURL))
-        return;
-
     css::uno::Reference<css::view::XSelectionSupplier> xSelectionSupplier(m_xFrame->getController(),
                                                                           css::uno::UNO_QUERY);
 
     if (!xSelectionSupplier.is())
-        return;
+        return rtl::OUString();
 
     css::uno::Any xSelection = xSelectionSupplier->getSelection();
     css::uno::Reference<css::container::XIndexAccess> xIndexAccess;
     xSelection >>= xIndexAccess;
 
     if (!xIndexAccess.is())
-        return;
+        return rtl::OUString();
 
     sal_Int32 nIndexCount = xIndexAccess->getCount();
 
     if (nIndexCount <= 0)
-        return;
+        return rtl::OUString();
 
     css::uno::Any xFirstSelectionAny = xIndexAccess->getByIndex(0);
     css::uno::Reference<css::text::XTextRange> xFirstSelection;
     xFirstSelectionAny >>= xFirstSelection;
 
     if (!xFirstSelection.is())
+        return rtl::OUString();
+
+    return xFirstSelection->getString();
+}
+
+void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
+                                        const css::uno::Sequence<css::beans::PropertyValue>& lArgs)
+{
+    if (!canHandleUrl(aURL))
         return;
 
-    Luno aLuno(m_xContext);
+    rtl::OUString sSource = getSelection();
 
-    try
+    if (sSource.getLength() <= 0)
     {
-        aLuno.executeCode(xFirstSelection->getString());
+        showErrorDialog("Select some text to run as Lua code before using this function");
     }
-    catch (const LuaException& e)
+    else
     {
-        showErrorDialog(e.Message);
+        Luno aLuno(m_xContext);
+
+        try
+        {
+            aLuno.executeCode(sSource);
+        }
+        catch (const LuaException& e)
+        {
+            showErrorDialog(e.Message);
+        }
     }
 }
 
