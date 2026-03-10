@@ -43,6 +43,8 @@ public:
     void executeCode(const rtl::OUString& sCode);
 
 private:
+    void throwLuaError();
+
     lua_State* m_pLuaState;
     css::uno::Reference<css::uno::XComponentContext> m_xContext;
     css::uno::Reference<css::lang::XMultiComponentFactory> m_xServiceManager;

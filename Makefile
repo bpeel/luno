@@ -29,6 +29,8 @@ CXXFILES = \
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
 
+IDLFILES = LuaException.idl
+
 DATA_FILES = \
            Addons.xcu \
            ProtocolHandler.xcu \

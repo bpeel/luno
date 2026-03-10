@@ -18,9 +18,11 @@
 
 #include <rtl/string.h>
 #include <iostream>
+#include <com/sun/star/uno/RuntimeException.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
 #include <com/sun/star/lang/XSingleServiceFactory.hpp>
 #include <com/sun/star/lang/XMultiComponentFactory.hpp>
+#include <uk/co/busydoingnothing/luno/LuaException.hpp>
 
 #include "object.hxx"
 
@@ -43,10 +45,20 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     lua_setglobal(m_pLuaState, "XSCRIPTCONTEXT");
 }
 
+void Luno::throwLuaError()
+{
+    size_t nMessageLength;
+    const char *pMessage = luaL_tolstring(m_pLuaState, -1, &nMessageLength);
+    rtl::OUString sMessage(pMessage, nMessageLength, RTL_TEXTENCODING_UTF8);
+    // Pop the error object and the string
+    lua_pop(m_pLuaState, 2);
+    throw LuaException(sMessage);
+}
+
 void Luno::executeCode(const rtl::OUString& sCode)
 {
     if (!m_xContext.is() || !m_xServiceManager.is() || !m_xInvocationFactory.is())
-        return;
+        throw css::uno::RuntimeException("executeCode called while Luno object is invalid state");
 
     rtl::OString sCodeUtf8 = rtl::OUStringToOString(sCode, RTL_TEXTENCODING_UTF8);
 
@@ -54,16 +66,13 @@ void Luno::executeCode(const rtl::OUString& sCode)
                                "(uno text)");
 
     if (nRet != LUA_OK)
-    {
-        std::cout << "lua error: " << lua_tostring(m_pLuaState, -1) << std::endl;
-        lua_pop(m_pLuaState, 1);
-        return;
-    }
+        throwLuaError();
 
-    lua_pcall(m_pLuaState, 0, 1, 0);
+    if (lua_pcall(m_pLuaState, 0, 1, 0) != LUA_OK)
+        throwLuaError();
+
     std::cout << "lua result: " << lua_tostring(m_pLuaState, -1) << std::endl;
     lua_pop(m_pLuaState, 1);
-    return;
 }
 
 Luno::~Luno()
