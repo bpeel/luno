@@ -16,6 +16,9 @@
 
 #include "object.hxx"
 
+#include <com/sun/star/lang/XSingleServiceFactory.hpp>
+#include <com/sun/star/script/XInvocation.hpp>
+
 namespace uk::co::busydoingnothing::luno
 {
 void Object::pushObject(lua_State* pLuaState,
@@ -43,6 +46,10 @@ void Object::pushMetatable(lua_State* pLuaState)
     lua_pushliteral(pLuaState, "__gc");
     lua_pushcfunction(pLuaState, gc);
     lua_rawset(pLuaState, -3);
+
+    lua_pushliteral(pLuaState, "__index");
+    lua_pushcfunction(pLuaState, index);
+    lua_rawset(pLuaState, -3);
 }
 
 int Object::gc(lua_State* pLuaState)
@@ -55,5 +62,51 @@ int Object::gc(lua_State* pLuaState)
     pObject->~Object();
 
     return 0;
+}
+
+int Object::index(lua_State* pLuaState, const char* pKey, size_t nKeyLength)
+{
+    if (pKey == nullptr)
+        return 0;
+
+    if (!m_xInvocation.is())
+    {
+        if (!m_xInvocationFactory.is() || !m_xInterface.is())
+            return 0;
+
+        css::uno::Sequence<css::uno::Any> aArgs(1);
+        aArgs[0] <<= m_xInterface;
+        m_xInvocation.set(m_xInvocationFactory->createInstanceWithArguments(aArgs),
+                          css::uno::UNO_QUERY);
+
+        if (!m_xInvocation.is())
+            return 0;
+    }
+
+    rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
+
+    if (m_xInvocation->hasMethod(sKey))
+    {
+        // STUB, just push the key back as a string
+        lua_pushlstring(pLuaState, pKey, nKeyLength);
+    }
+    else
+    {
+        lua_pushnil(pLuaState);
+    }
+
+    return 1;
+}
+
+int Object::index(lua_State* pLuaState)
+{
+    if (lua_gettop(pLuaState) != 2)
+        return 0;
+
+    Object* pObject = reinterpret_cast<Object*>(lua_touserdata(pLuaState, 1));
+    size_t nKeyLength;
+    const char* pKey = lua_tolstring(pLuaState, 2, &nKeyLength);
+
+    return pObject->index(pLuaState, pKey, nKeyLength);
 }
 }
