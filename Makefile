@@ -24,6 +24,7 @@ COMP_TYPEFLAG = $(OUT_MISC)/cpp_$(COMP_NAME)_types.flag
 CXXFILES = \
            protocolhandler.cxx \
            luno.cxx \
+           object.cxx \
            exports.cxx
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
@@ -64,6 +65,7 @@ $(OUT_COMP_SLO)/%.$(OBJ_EXT) : %.cxx $(COMP_TYPEFLAG)
 $(OUT_COMP_SLO)/protocolhandler.$(OBJ_EXT) : protocolhandler.hxx luno.hxx
 $(OUT_COMP_SLO)/luno.$(OBJ_EXT) : luno.hxx
 $(OUT_COMP_SLO)/exports.$(OBJ_EXT) : protocolhandler.hxx
+$(OUT_COMP_SLO)/object.$(OBJ_EXT) : object.hxx
 
 ifeq "$(OS)" "WIN"
 $(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES)
