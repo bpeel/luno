@@ -20,6 +20,10 @@
 #include <com/sun/star/uno/XComponentContext.hpp>
 #include <com/sun/star/text/XTextDocument.hpp>
 #include <com/sun/star/view/XSelectionSupplier.hpp>
+#include <com/sun/star/awt/MessageBoxButtons.hpp>
+#include <com/sun/star/awt/XMessageBoxFactory.hpp>
+#include <com/sun/star/awt/XMessageBox.hpp>
+#include <uk/co/busydoingnothing/luno/LuaException.hpp>
 
 #include "luno.hxx"
 
@@ -124,6 +128,43 @@ void SAL_CALL ProtocolHandler::removeStatusListener(
 {
 }
 
+void ProtocolHandler::showErrorDialog(const OUString& sMessage)
+{
+    if (!m_xContext.is() || !m_xFrame.is())
+        return;
+
+    css::uno::Reference<css::awt::XWindowPeer> xWindowPeer(
+        m_xFrame->getComponentWindow(), css::uno::UNO_QUERY);
+
+    if (!xWindowPeer.is())
+        return;
+
+    css::uno::Reference<css::awt::XMessageBoxFactory> xMessageBoxFactory(
+        m_xContext->getServiceManager()->createInstanceWithContext(
+            "com.sun.star.awt.Toolkit", m_xContext), css::uno::UNO_QUERY);
+
+    if (!xMessageBoxFactory.is())
+        return;
+
+    css::uno::Reference<css::awt::XMessageBox> xMessageBox
+        = xMessageBoxFactory->createMessageBox(
+            xWindowPeer,
+            css::awt::MessageBoxType_ERRORBOX,
+            css::awt::MessageBoxButtons::BUTTONS_OK,
+            "Error",
+            sMessage);
+
+    if (xMessageBox.is())
+    {
+        xMessageBox->execute();
+
+        css::uno::Reference<css::lang::XComponent> xComponent(xMessageBox, css::uno::UNO_QUERY);
+
+        if (xComponent.is())
+            xComponent->dispose();
+    }
+}
+
 void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
                                         const css::uno::Sequence<css::beans::PropertyValue>& lArgs)
 {
@@ -156,7 +197,15 @@ void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
         return;
 
     Luno aLuno(m_xContext);
-    aLuno.executeCode(xFirstSelection->getString());
+
+    try
+    {
+        aLuno.executeCode(xFirstSelection->getString());
+    }
+    catch (const LuaException& e)
+    {
+        showErrorDialog(e.Message);
+    }
 }
 
 OUString ProtocolHandler::getImplementationNameStatic()
