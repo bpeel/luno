@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+// Luno – LibreOffice bindings for Lua
+// Copyright (C) 2026  Neil Roberts
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<description xmlns="http://openoffice.org/extensions/description/2006" xmlns:d="http://openoffice.org/extensions/description/2006" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <version value="1"/>
+    <identifier value="uk.co.busydoingnothing.luno"/>
+    <platform value="#EXTENSION_PLATFORM#"/>
+    <display-name>
+      <name lang="en-US">Luno</name>
+    </display-name>
+    <extension-description>
+      <src lang="en-US" xlink:href="pkg-description.txt" />
+    </extension-description>
+    <registration>
+      <simple-license accept-by="admin" suppress-on-update="true">
+        <license-text lang="en-US" xlink:href="COPYING" />
+      </simple-license>
+    </registration>
+</description>
