@@ -48,6 +48,7 @@ public:
                            xInvocationFactory);
 
     static Object* testObject(lua_State* pLuaState, int nArg);
+    css::uno::Reference<css::uno::XInterface> getInterface() { return m_xInterface; }
 
 private:
     Object(const css::uno::Reference<css::uno::XInterface>& xInterface,
