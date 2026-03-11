@@ -171,28 +171,36 @@ int Object::index(lua_State* pLuaState)
 int Object::call(lua_State* pLuaState, Method *pMethod)
 {
     int nArgs = lua_gettop(pLuaState) - 2;
-    css::uno::Sequence<css::uno::Any> aArgs(nArgs);
 
-    for (int i = 0; i < nArgs; ++i)
-        aArgs[i] = getAny(pLuaState, i + 3);
-
-    css::uno::Any xTarget(m_xInterface);
-
-    try
     {
-        pMethod->getIdlMethod()->invoke(xTarget, aArgs);
-    }
-    catch (const css::uno::Exception& e)
-    {
-        rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
-        lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
-        lua_error(pLuaState);
+        css::uno::Sequence<css::uno::Any> aArgs(nArgs);
+
+        for (int i = 0; i < nArgs; ++i)
+            aArgs[i] = getAny(pLuaState, i + 3);
+
+        css::uno::Any xTarget(m_xInterface);
+
+        try
+        {
+            pMethod->getIdlMethod()->invoke(xTarget, aArgs);
+        }
+        catch (const css::uno::Exception& e)
+        {
+            rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
+            lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+            goto set_lua_error;
+        }
+
+        // STUB: just return a string
+        lua_pushliteral(pLuaState, "STUB");
+
+        return 1;
     }
 
-    // STUB: just return a string
-    lua_pushliteral(pLuaState, "STUB");
-
-    return 1;
+    // The goto is to make sure the destructors are all called before letting Lua do a longjmp
+ set_lua_error:
+    lua_error(pLuaState);
+    return 0;
 }
 
 int Object::call(lua_State* pLuaState)
