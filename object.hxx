@@ -30,9 +30,9 @@ namespace com::sun::star::lang
 class XSingleServiceFactory;
 }
 
-namespace com::sun::star::script
+namespace com::sun::star::beans
 {
-class XInvocation;
+class XIntrospectionAccess;
 }
 
 namespace uk::co::busydoingnothing::luno
@@ -59,7 +59,7 @@ private:
 
     css::uno::Reference<css::uno::XInterface> m_xInterface;
     css::uno::Reference<css::lang::XSingleServiceFactory> m_xInvocationFactory;
-    css::uno::Reference<css::script::XInvocation> m_xInvocation;
+    css::uno::Reference<css::beans::XIntrospectionAccess> m_xIntrospectionAccess;
 
     static void pushMetatable(lua_State* pLuaState);
     static Object* checkObject(lua_State* pLuaState, int nArg);

@@ -16,6 +16,9 @@
 
 #include "object.hxx"
 
+#include <com/sun/star/beans/MethodConcept.hpp>
+#include <com/sun/star/beans/XIntrospectionAccess.hpp>
+#include <com/sun/star/lang/NoSuchMethodException.hpp>
 #include <com/sun/star/lang/XSingleServiceFactory.hpp>
 #include <com/sun/star/script/XInvocation.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
@@ -78,24 +81,41 @@ int Object::doIndexUncached(lua_State* pLuaState)
     const char* pKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
 
     {
-        if (!m_xInvocation.is())
+        if (!m_xIntrospectionAccess.is())
         {
             if (!m_xInvocationFactory.is() || !m_xInterface.is())
                 goto state_error;
 
             css::uno::Sequence<css::uno::Any> aArgs(1);
             aArgs[0] <<= m_xInterface;
-            m_xInvocation.set(m_xInvocationFactory->createInstanceWithArguments(aArgs),
-                              css::uno::UNO_QUERY);
+            css::uno::Reference<css::script::XInvocation> xInvocation(
+                m_xInvocationFactory->createInstanceWithArguments(aArgs),
+                css::uno::UNO_QUERY);
 
-            if (!m_xInvocation.is())
+            if (!xInvocation.is())
+                goto state_error;
+
+            m_xIntrospectionAccess = xInvocation->getIntrospection();
+
+            if (!m_xIntrospectionAccess.is())
                 goto state_error;
         }
 
         rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
 
-        if (m_xInvocation->hasMethod(sKey))
-            Method::pushMethod(pLuaState, 2, sKey, call);
+        css::uno::Reference<css::reflection::XIdlMethod> xMethod;
+
+        try
+        {
+            xMethod = m_xIntrospectionAccess->getMethod(
+                sKey, css::beans::MethodConcept::ALL & ~css::beans::MethodConcept::DANGEROUS);
+        }
+        catch (css::lang::NoSuchMethodException&)
+        {
+        }
+
+        if (xMethod.is())
+            Method::pushMethod(pLuaState, xMethod, call);
         else
             lua_pushnil(pLuaState);
     }
@@ -150,21 +170,17 @@ int Object::index(lua_State* pLuaState)
 
 int Object::call(lua_State* pLuaState, Method *pMethod)
 {
-    if (!m_xInvocation.is())
-        luaL_error(pLuaState, "method invoked on an object in an invalid state");
-
     int nArgs = lua_gettop(pLuaState) - 2;
     css::uno::Sequence<css::uno::Any> aArgs(nArgs);
 
     for (int i = 0; i < nArgs; ++i)
         aArgs[i] = getAny(pLuaState, i + 3);
 
-    css::uno::Sequence<short> aOutParamIndex;
-    css::uno::Sequence<css::uno::Any> aOutParams;
+    css::uno::Any xTarget(m_xInterface);
 
     try
     {
-        m_xInvocation->invoke(pMethod->getMethodName(), aArgs, aOutParamIndex, aOutParams);
+        pMethod->getIdlMethod()->invoke(xTarget, aArgs);
     }
     catch (const css::uno::Exception& e)
     {

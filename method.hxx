@@ -19,6 +19,12 @@
 
 #include <lua.hpp>
 #include <rtl/ustring.hxx>
+#include <com/sun/star/uno/Reference.hxx>
+
+namespace com::sun::star::reflection
+{
+class XIdlMethod;
+}
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -29,17 +35,19 @@ class Method
 {
 public:
     static void pushMethod(lua_State* pLuaState,
-                           int nMethodNamePos,
-                           const rtl::OUString& sMethodName,
+                           const css::uno::Reference<css::reflection::XIdlMethod>& xMethod,
                            lua_CFunction pFunc);
 
     static Method* checkMethod(lua_State* pLuaState, int nArg);
-    rtl::OUString getMethodName() const { return m_sMethodName; }
+    css::uno::Reference<css::reflection::XIdlMethod> getIdlMethod() const
+    {
+        return m_xMethod;
+    }
 
 private:
-    Method(const rtl::OUString& sMethodName,
+    Method(const css::uno::Reference<css::reflection::XIdlMethod>& xMethod,
            lua_CFunction pFunc)
-        : m_sMethodName(sMethodName)
+        : m_xMethod(xMethod)
         , m_pFunc(pFunc)
     {
     }
@@ -47,7 +55,7 @@ private:
     static constexpr const char* CLASS_NAME = "Luno_Method";
     static constexpr const char* METHOD_CACHE_NAME = "Luno_MethodCache";
 
-    rtl::OUString m_sMethodName;
+    css::uno::Reference<css::reflection::XIdlMethod> m_xMethod;
     lua_CFunction m_pFunc;
 
     static void pushMetatable(lua_State* pLuaState, lua_CFunction pFunc);
