@@ -40,6 +40,8 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     if (!m_xInvocationFactory.is())
         return;
 
+    luaL_openlibs(m_pLuaState);
+
     // Set the component context as a global variable
     Object::pushObject(m_pLuaState, xContext, m_xInvocationFactory);
     lua_setglobal(m_pLuaState, "XSCRIPTCONTEXT");
