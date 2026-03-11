@@ -28,7 +28,8 @@ void Object::pushObject(lua_State* pLuaState,
                         const css::uno::Reference<css::lang::XSingleServiceFactory>&
                         xInvocationFactory)
 {
-    void *pUserData = lua_newuserdatauv(pLuaState, sizeof(Object), 0);
+    // One user value to store a cache of methods
+    void *pUserData = lua_newuserdatauv(pLuaState, sizeof(Object), 1);
 
     // Use placement new to initialize the object in the memory that Lua allocated
     new(pUserData) Object(xInterface, xInvocationFactory);
@@ -69,7 +70,7 @@ int Object::gc(lua_State* pLuaState)
     return 0;
 }
 
-int Object::doIndex(lua_State* pLuaState)
+int Object::doIndexUncached(lua_State* pLuaState)
 {
     size_t nKeyLength;
     const char* pKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
@@ -103,6 +104,39 @@ int Object::doIndex(lua_State* pLuaState)
  state_error:
     luaL_error(pLuaState, "__index called an object in an invalid state");
     return 0;
+}
+
+int Object::doIndex(lua_State* pLuaState)
+{
+    if (lua_getiuservalue(pLuaState, 1, 1) == LUA_TNIL)
+    {
+        // Lazily create the cache table
+        lua_pop(pLuaState, 1);
+        lua_newtable(pLuaState);
+        lua_pushvalue(pLuaState, -1);
+        lua_setiuservalue(pLuaState, 1, 1);
+    }
+
+    lua_pushvalue(pLuaState, 2);
+    if (lua_rawget(pLuaState, -2) == LUA_TNIL)
+    {
+        // Lazily look up the method
+        lua_pop(pLuaState, 1);
+        doIndexUncached(pLuaState);
+
+        if (!lua_isnil(pLuaState, -1))
+        {
+            // Add the method to the cache
+            lua_pushvalue(pLuaState, 2);
+            lua_pushvalue(pLuaState, -2);
+            lua_rawset(pLuaState, -4);
+        }
+    }
+
+    // Remove the cache table from the stack
+    lua_remove(pLuaState, -2);
+
+    return 1;
 }
 
 int Object::index(lua_State* pLuaState)
