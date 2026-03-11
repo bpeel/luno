@@ -179,10 +179,11 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
             aArgs[i] = getAny(pLuaState, i + 3);
 
         css::uno::Any xTarget(m_xInterface);
+        css::uno::Any xResult;
 
         try
         {
-            pMethod->getIdlMethod()->invoke(xTarget, aArgs);
+            xResult = pMethod->getIdlMethod()->invoke(xTarget, aArgs);
         }
         catch (const css::uno::Exception& e)
         {
@@ -191,8 +192,7 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
             goto set_lua_error;
         }
 
-        // STUB: just return a string
-        lua_pushliteral(pLuaState, "STUB");
+        pushAny(pLuaState, xResult, m_xInvocationFactory);
 
         return 1;
     }
