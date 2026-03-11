@@ -106,7 +106,7 @@ int Object::index(lua_State* pLuaState)
     Object* pObject = checkObject(pLuaState, 1);
 
     size_t nKeyLength;
-    const char* pKey = lua_tolstring(pLuaState, 2, &nKeyLength);
+    const char* pKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
 
     return pObject->index(pLuaState, pKey, nKeyLength);
 }
