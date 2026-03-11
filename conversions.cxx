@@ -132,6 +132,17 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
             }
             break;
 
+        case LUA_TUSERDATA:
+            if (Object* pObject = Object::testObject(pLuaState, nIndex))
+            {
+                xAny <<= pObject->getInterface();
+            }
+            else
+            {
+                // FIXME
+            }
+            break;
+
         default:
             // FIXME
             break;
