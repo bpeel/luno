@@ -19,6 +19,8 @@
 #include <com/sun/star/lang/XSingleServiceFactory.hpp>
 #include <com/sun/star/script/XInvocation.hpp>
 
+#include "method.hxx"
+
 namespace uk::co::busydoingnothing::luno
 {
 void Object::pushObject(lua_State* pLuaState,
@@ -87,14 +89,9 @@ int Object::index(lua_State* pLuaState, const char* pKey, size_t nKeyLength)
         rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
 
         if (m_xInvocation->hasMethod(sKey))
-        {
-            // STUB, just push the key back as a string
-            lua_pushlstring(pLuaState, pKey, nKeyLength);
-        }
+            Method::pushMethod(pLuaState, sKey, call);
         else
-        {
             lua_pushnil(pLuaState);
-        }
     }
 
     return 1;
@@ -114,4 +111,21 @@ int Object::index(lua_State* pLuaState)
 
     return pObject->index(pLuaState, pKey, nKeyLength);
 }
+
+int Object::call(lua_State* pLuaState, Method *pMethod)
+{
+    // STUB: just return a string regardless of the parameters
+    lua_pushliteral(pLuaState, "STUB");
+
+    return 1;
+}
+
+int Object::call(lua_State* pLuaState)
+{
+    Method *pMethod = Method::checkMethod(pLuaState, 1);
+    Object *pObject = checkObject(pLuaState, 2);
+
+    return pObject->call(pLuaState, pMethod);
+}
+
 }

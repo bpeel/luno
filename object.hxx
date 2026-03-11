@@ -37,6 +37,8 @@ class XInvocation;
 
 namespace uk::co::busydoingnothing::luno
 {
+class Method;
+
 class Object
 {
 public:
@@ -64,6 +66,8 @@ private:
     static int gc(lua_State* pLuaState);
     int index(lua_State* pLuaState, const char *pKey, size_t nKeyLength);
     static int index(lua_State* pLuaState);
+    int call(lua_State* pLuaState, Method* pMethod);
+    static int call(lua_State* pLuaState);
 };
 }
 
