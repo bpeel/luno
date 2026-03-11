@@ -69,36 +69,40 @@ int Object::gc(lua_State* pLuaState)
 
 int Object::index(lua_State* pLuaState, const char* pKey, size_t nKeyLength)
 {
-    if (pKey == nullptr)
-        return 0;
-
-    if (!m_xInvocation.is())
     {
-        if (!m_xInvocationFactory.is() || !m_xInterface.is())
-            return 0;
-
-        css::uno::Sequence<css::uno::Any> aArgs(1);
-        aArgs[0] <<= m_xInterface;
-        m_xInvocation.set(m_xInvocationFactory->createInstanceWithArguments(aArgs),
-                          css::uno::UNO_QUERY);
-
         if (!m_xInvocation.is())
-            return 0;
-    }
+        {
+            if (!m_xInvocationFactory.is() || !m_xInterface.is())
+                goto state_error;
 
-    rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
+            css::uno::Sequence<css::uno::Any> aArgs(1);
+            aArgs[0] <<= m_xInterface;
+            m_xInvocation.set(m_xInvocationFactory->createInstanceWithArguments(aArgs),
+                              css::uno::UNO_QUERY);
 
-    if (m_xInvocation->hasMethod(sKey))
-    {
-        // STUB, just push the key back as a string
-        lua_pushlstring(pLuaState, pKey, nKeyLength);
-    }
-    else
-    {
-        lua_pushnil(pLuaState);
+            if (!m_xInvocation.is())
+                goto state_error;
+        }
+
+        rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
+
+        if (m_xInvocation->hasMethod(sKey))
+        {
+            // STUB, just push the key back as a string
+            lua_pushlstring(pLuaState, pKey, nKeyLength);
+        }
+        else
+        {
+            lua_pushnil(pLuaState);
+        }
     }
 
     return 1;
+
+    // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
+ state_error:
+    luaL_error(pLuaState, "__index called an object in an invalid state");
+    return 0;
 }
 
 int Object::index(lua_State* pLuaState)
