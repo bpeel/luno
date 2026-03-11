@@ -53,11 +53,14 @@ private:
     {
     }
 
+    static constexpr const char* CLASS_NAME = "Luno_Object";
+
     css::uno::Reference<css::uno::XInterface> m_xInterface;
     css::uno::Reference<css::lang::XSingleServiceFactory> m_xInvocationFactory;
     css::uno::Reference<css::script::XInvocation> m_xInvocation;
 
     static void pushMetatable(lua_State* pLuaState);
+    static Object* checkObject(lua_State* pLuaState, int nArg);
     static int gc(lua_State* pLuaState);
     int index(lua_State* pLuaState, const char *pKey, size_t nKeyLength);
     static int index(lua_State* pLuaState);

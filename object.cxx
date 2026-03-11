@@ -37,7 +37,7 @@ void Object::pushObject(lua_State* pLuaState,
 
 void Object::pushMetatable(lua_State* pLuaState)
 {
-    if (luaL_newmetatable(pLuaState, "Luno_Object") == 0)
+    if (luaL_newmetatable(pLuaState, CLASS_NAME) == 0)
     {
         // The table has already been created so there’s nothing else to do
         return;
@@ -52,12 +52,15 @@ void Object::pushMetatable(lua_State* pLuaState)
     lua_rawset(pLuaState, -3);
 }
 
+Object* Object::checkObject(lua_State* pLuaState, int nArg)
+{
+    return reinterpret_cast<Object*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
+}
+
 int Object::gc(lua_State* pLuaState)
 {
-    if (lua_gettop(pLuaState) != 1)
-        return 0;
+    Object* pObject = checkObject(pLuaState, 1);
 
-    Object* pObject = reinterpret_cast<Object*>(lua_touserdata(pLuaState, 1));
     // The memory was allocated by Lua so we only need to call the destructor
     pObject->~Object();
 
@@ -100,10 +103,8 @@ int Object::index(lua_State* pLuaState, const char* pKey, size_t nKeyLength)
 
 int Object::index(lua_State* pLuaState)
 {
-    if (lua_gettop(pLuaState) != 2)
-        return 0;
+    Object* pObject = checkObject(pLuaState, 1);
 
-    Object* pObject = reinterpret_cast<Object*>(lua_touserdata(pLuaState, 1));
     size_t nKeyLength;
     const char* pKey = lua_tolstring(pLuaState, 2, &nKeyLength);
 
