@@ -17,17 +17,72 @@
 #include "conversions.hxx"
 
 #include <com/sun/star/lang/XSingleServiceFactory.hpp>
-#include <com/sun/star/script/XInvocation.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 #include <sal/types.h>
 
-#include "method.hxx"
+#include "object.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
-void pushAny(lua_State* pLuaState, const css::uno::Any& xAny)
+void pushAny(lua_State* pLuaState,
+             const css::uno::Any& xAny,
+             const css::uno::Reference<css::lang::XSingleServiceFactory> xSingleServiceFactory)
 {
-    // FIXME
+    switch (xAny.getValueTypeClass())
+    {
+        case css::uno::TypeClass_VOID:
+            lua_pushnil(pLuaState);
+            break;
+
+        case css::uno::TypeClass_BOOLEAN:
+            {
+                bool b;
+                xAny >>= b;
+                lua_pushboolean(pLuaState, b);
+            }
+            break;
+
+        case css::uno::TypeClass_BYTE:
+        case css::uno::TypeClass_SHORT:
+        case css::uno::TypeClass_UNSIGNED_SHORT:
+        case css::uno::TypeClass_LONG:
+        case css::uno::TypeClass_UNSIGNED_LONG:
+        case css::uno::TypeClass_HYPER:
+        case css::uno::TypeClass_UNSIGNED_HYPER:
+            {
+                sal_Int64 nValue;
+                if (xAny >>= nValue)
+                    lua_pushinteger(pLuaState, nValue);
+                else
+                    lua_pushnil(pLuaState); // FIXME
+            }
+            break;
+
+        case css::uno::TypeClass_FLOAT:
+        case css::uno::TypeClass_DOUBLE:
+            {
+                lua_Number nValue;
+                if (xAny >>= nValue)
+                    lua_pushnumber(pLuaState, nValue);
+                else
+                    lua_pushnil(pLuaState); // FIXME
+            }
+            break;
+
+        case css::uno::TypeClass_INTERFACE:
+            {
+                css::uno::Reference<css::uno::XInterface> xInterface;
+                if ((xAny >>= xInterface) && xInterface.is())
+                    Object::pushObject(pLuaState, xInterface, xSingleServiceFactory);
+                else
+                    lua_pushnil(pLuaState);
+            }
+            break;
+
+        default:
+            // FIXME
+            lua_pushnil(pLuaState);
+    }
 }
 
 css::uno::Any getAny(lua_State* pLuaState, int nIndex)
