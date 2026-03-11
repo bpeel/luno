@@ -26,6 +26,7 @@ CXXFILES = \
            luno.cxx \
            object.cxx \
            method.cxx \
+           conversions.cxx \
            exports.cxx
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
@@ -69,6 +70,7 @@ $(OUT_COMP_SLO)/protocolhandler.$(OBJ_EXT) : protocolhandler.hxx luno.hxx
 $(OUT_COMP_SLO)/luno.$(OBJ_EXT) : luno.hxx object.hxx
 $(OUT_COMP_SLO)/exports.$(OBJ_EXT) : protocolhandler.hxx
 $(OUT_COMP_SLO)/object.$(OBJ_EXT) : object.hxx method.hxx
+$(OUT_COMP_SLO)/conversions.$(OBJ_EXT) : conversions.hxx
 $(OUT_COMP_SLO)/method.$(OBJ_EXT) : method.hxx
 
 ifeq "$(OS)" "WIN"
