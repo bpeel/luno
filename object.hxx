@@ -47,6 +47,8 @@ public:
                            const css::uno::Reference<css::lang::XSingleServiceFactory>&
                            xInvocationFactory);
 
+    static Object* testObject(lua_State* pLuaState, int nArg);
+
 private:
     Object(const css::uno::Reference<css::uno::XInterface>& xInterface,
            const css::uno::Reference<css::lang::XSingleServiceFactory>& xInvocationFactory)

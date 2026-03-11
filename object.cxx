@@ -65,6 +65,11 @@ Object* Object::checkObject(lua_State* pLuaState, int nArg)
     return reinterpret_cast<Object*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
 }
 
+Object* Object::testObject(lua_State* pLuaState, int nArg)
+{
+    return reinterpret_cast<Object*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
+}
+
 int Object::gc(lua_State* pLuaState)
 {
     Object* pObject = checkObject(pLuaState, 1);
