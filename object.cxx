@@ -18,8 +18,10 @@
 
 #include <com/sun/star/lang/XSingleServiceFactory.hpp>
 #include <com/sun/star/script/XInvocation.hpp>
+#include <com/sun/star/uno/Sequence.hxx>
 
 #include "method.hxx"
+#include "conversions.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -148,7 +150,30 @@ int Object::index(lua_State* pLuaState)
 
 int Object::call(lua_State* pLuaState, Method *pMethod)
 {
-    // STUB: just return a string regardless of the parameters
+    if (!m_xInvocation.is())
+        luaL_error(pLuaState, "method invoked on an object in an invalid state");
+
+    int nArgs = lua_gettop(pLuaState) - 2;
+    css::uno::Sequence<css::uno::Any> aArgs(nArgs);
+
+    for (int i = 0; i < nArgs; ++i)
+        aArgs[i] = getAny(pLuaState, i + 3);
+
+    css::uno::Sequence<short> aOutParamIndex;
+    css::uno::Sequence<css::uno::Any> aOutParams;
+
+    try
+    {
+        m_xInvocation->invoke(pMethod->getMethodName(), aArgs, aOutParamIndex, aOutParams);
+    }
+    catch (const css::uno::Exception& e)
+    {
+        rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
+        lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+        lua_error(pLuaState);
+    }
+
+    // STUB: just return a string
     lua_pushliteral(pLuaState, "STUB");
 
     return 1;
