@@ -64,7 +64,7 @@ private:
     static void pushMetatable(lua_State* pLuaState);
     static Object* checkObject(lua_State* pLuaState, int nArg);
     static int gc(lua_State* pLuaState);
-    int index(lua_State* pLuaState, const char *pKey, size_t nKeyLength);
+    int doIndex(lua_State* pLuaState);
     static int index(lua_State* pLuaState);
     int call(lua_State* pLuaState, Method* pMethod);
     static int call(lua_State* pLuaState);

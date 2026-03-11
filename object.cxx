@@ -69,8 +69,11 @@ int Object::gc(lua_State* pLuaState)
     return 0;
 }
 
-int Object::index(lua_State* pLuaState, const char* pKey, size_t nKeyLength)
+int Object::doIndex(lua_State* pLuaState)
 {
+    size_t nKeyLength;
+    const char* pKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
+
     {
         if (!m_xInvocation.is())
         {
@@ -89,7 +92,7 @@ int Object::index(lua_State* pLuaState, const char* pKey, size_t nKeyLength)
         rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
 
         if (m_xInvocation->hasMethod(sKey))
-            Method::pushMethod(pLuaState, sKey, call);
+            Method::pushMethod(pLuaState, 2, sKey, call);
         else
             lua_pushnil(pLuaState);
     }
@@ -106,10 +109,7 @@ int Object::index(lua_State* pLuaState)
 {
     Object* pObject = checkObject(pLuaState, 1);
 
-    size_t nKeyLength;
-    const char* pKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
-
-    return pObject->index(pLuaState, pKey, nKeyLength);
+    return pObject->doIndex(pLuaState);
 }
 
 int Object::call(lua_State* pLuaState, Method *pMethod)

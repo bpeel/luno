@@ -29,6 +29,7 @@ class Method
 {
 public:
     static void pushMethod(lua_State* pLuaState,
+                           int nMethodNamePos,
                            const rtl::OUString& sMethodName,
                            lua_CFunction pFunc);
 
@@ -44,6 +45,7 @@ private:
     }
 
     static constexpr const char* CLASS_NAME = "Luno_Method";
+    static constexpr const char* METHOD_CACHE_NAME = "Luno_MethodCache";
 
     rtl::OUString m_sMethodName;
     lua_CFunction m_pFunc;
