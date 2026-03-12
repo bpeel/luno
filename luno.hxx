@@ -28,8 +28,11 @@ class XComponentContext;
 
 namespace com::sun::star::lang
 {
-class XSingleServiceFactory;
 class XMultiComponentFactory;
+}
+namespace com::sun::star::beans
+{
+class XIntrospection;
 }
 
 namespace uk::co::busydoingnothing::luno
@@ -48,7 +51,7 @@ private:
     lua_State* m_pLuaState;
     css::uno::Reference<css::uno::XComponentContext> m_xContext;
     css::uno::Reference<css::lang::XMultiComponentFactory> m_xServiceManager;
-    css::uno::Reference<css::lang::XSingleServiceFactory> m_xInvocationFactory;
+    css::uno::Reference<css::beans::XIntrospection> m_xIntrospection;
 };
 }
 

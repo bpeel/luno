@@ -25,13 +25,9 @@ namespace com::sun::star::uno
 class XInterface;
 }
 
-namespace com::sun::star::lang
-{
-class XSingleServiceFactory;
-}
-
 namespace com::sun::star::beans
 {
+class XIntrospection;
 class XIntrospectionAccess;
 }
 
@@ -44,24 +40,23 @@ class Object
 public:
     static void pushObject(lua_State* pLuaState,
                            const css::uno::Reference<css::uno::XInterface>& xInterface,
-                           const css::uno::Reference<css::lang::XSingleServiceFactory>&
-                           xInvocationFactory);
+                           const css::uno::Reference<css::beans::XIntrospection>& xIntrospection);
 
     static Object* testObject(lua_State* pLuaState, int nArg);
     css::uno::Reference<css::uno::XInterface> getInterface() { return m_xInterface; }
 
 private:
     Object(const css::uno::Reference<css::uno::XInterface>& xInterface,
-           const css::uno::Reference<css::lang::XSingleServiceFactory>& xInvocationFactory)
+           const css::uno::Reference<css::beans::XIntrospection>& xIntrospection)
         : m_xInterface(xInterface)
-        , m_xInvocationFactory(xInvocationFactory)
+        , m_xIntrospection(xIntrospection)
     {
     }
 
     static constexpr const char* CLASS_NAME = "Luno_Object";
 
     css::uno::Reference<css::uno::XInterface> m_xInterface;
-    css::uno::Reference<css::lang::XSingleServiceFactory> m_xInvocationFactory;
+    css::uno::Reference<css::beans::XIntrospection> m_xIntrospection;
     css::uno::Reference<css::beans::XIntrospectionAccess> m_xIntrospectionAccess;
 
     static void pushMetatable(lua_State* pLuaState);

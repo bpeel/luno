@@ -17,7 +17,7 @@
 #include "conversions.hxx"
 
 #include <com/sun/star/beans/IllegalTypeException.hpp>
-#include <com/sun/star/lang/XSingleServiceFactory.hpp>
+#include <com/sun/star/beans/XIntrospection.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 #include <sal/types.h>
 
@@ -27,7 +27,7 @@ namespace uk::co::busydoingnothing::luno
 {
 void pushAny(lua_State* pLuaState,
              const css::uno::Any& xAny,
-             const css::uno::Reference<css::lang::XSingleServiceFactory> xInvocationFactory)
+             const css::uno::Reference<css::beans::XIntrospection>& xIntrospection)
 {
     switch (xAny.getValueTypeClass())
     {
@@ -76,7 +76,7 @@ void pushAny(lua_State* pLuaState,
             {
                 css::uno::Reference<css::uno::XInterface> xInterface;
                 if ((xAny >>= xInterface) && xInterface.is())
-                    Object::pushObject(pLuaState, xInterface, xInvocationFactory);
+                    Object::pushObject(pLuaState, xInterface, xIntrospection);
                 else
                     lua_pushnil(pLuaState);
             }

@@ -17,10 +17,9 @@
 #include "object.hxx"
 
 #include <com/sun/star/beans/MethodConcept.hpp>
+#include <com/sun/star/beans/XIntrospection.hpp>
 #include <com/sun/star/beans/XIntrospectionAccess.hpp>
 #include <com/sun/star/lang/NoSuchMethodException.hpp>
-#include <com/sun/star/lang/XSingleServiceFactory.hpp>
-#include <com/sun/star/script/XInvocation.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 
 #include "method.hxx"
@@ -30,14 +29,13 @@ namespace uk::co::busydoingnothing::luno
 {
 void Object::pushObject(lua_State* pLuaState,
                         const css::uno::Reference<css::uno::XInterface>& xInterface,
-                        const css::uno::Reference<css::lang::XSingleServiceFactory>&
-                        xInvocationFactory)
+                        const css::uno::Reference<css::beans::XIntrospection>& xIntrospection)
 {
     // One user value to store a cache of methods
     void *pUserData = lua_newuserdatauv(pLuaState, sizeof(Object), 1);
 
     // Use placement new to initialize the object in the memory that Lua allocated
-    new(pUserData) Object(xInterface, xInvocationFactory);
+    new(pUserData) Object(xInterface, xIntrospection);
 
     pushMetatable(pLuaState);
     lua_setmetatable(pLuaState, -2);
@@ -88,19 +86,13 @@ int Object::doIndexUncached(lua_State* pLuaState)
     {
         if (!m_xIntrospectionAccess.is())
         {
-            if (!m_xInvocationFactory.is() || !m_xInterface.is())
+            if (!m_xIntrospection.is() || !m_xInterface.is())
                 goto state_error;
 
-            css::uno::Sequence<css::uno::Any> aArgs(1);
-            aArgs[0] <<= m_xInterface;
-            css::uno::Reference<css::script::XInvocation> xInvocation(
-                m_xInvocationFactory->createInstanceWithArguments(aArgs),
-                css::uno::UNO_QUERY);
+            css::uno::Any xAny;
+            xAny <<= m_xInterface;
 
-            if (!xInvocation.is())
-                goto state_error;
-
-            m_xIntrospectionAccess = xInvocation->getIntrospection();
+            m_xIntrospectionAccess = m_xIntrospection->inspect(xAny);
 
             if (!m_xIntrospectionAccess.is())
                 goto state_error;
@@ -218,7 +210,7 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
 
             if (xReturnType.is() && xReturnType->getTypeClass() != css::uno::TypeClass_VOID)
             {
-                pushAny(pLuaState, xResult, m_xInvocationFactory);
+                pushAny(pLuaState, xResult, m_xIntrospection);
                 ++nReturnValues;
             }
 
@@ -227,7 +219,7 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
                 if (rParamInfos[i].aMode == css::reflection::ParamMode_OUT ||
                     rParamInfos[i].aMode == css::reflection::ParamMode_INOUT)
                 {
-                    pushAny(pLuaState, aArgs[i], m_xInvocationFactory);
+                    pushAny(pLuaState, aArgs[i], m_xIntrospection);
                     ++nReturnValues;
                 }
             }

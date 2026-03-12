@@ -18,9 +18,9 @@
 
 #include <rtl/string.h>
 #include <iostream>
+#include <com/sun/star/beans/theIntrospection.hpp>
 #include <com/sun/star/uno/RuntimeException.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
-#include <com/sun/star/lang/XSingleServiceFactory.hpp>
 #include <com/sun/star/lang/XMultiComponentFactory.hpp>
 #include <uk/co/busydoingnothing/luno/LuaException.hpp>
 
@@ -33,17 +33,12 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     : m_pLuaState(luaL_newstate())
     , m_xContext(xContext)
     , m_xServiceManager(xContext->getServiceManager())
-    , m_xInvocationFactory(m_xServiceManager->createInstanceWithContext(
-                               "com.sun.star.script.Invocation", xContext),
-                           css::uno::UNO_QUERY)
+    , m_xIntrospection(css::beans::theIntrospection::get(xContext))
 {
-    if (!m_xInvocationFactory.is())
-        return;
-
     luaL_openlibs(m_pLuaState);
 
     // Set the component context as a global variable
-    Object::pushObject(m_pLuaState, xContext, m_xInvocationFactory);
+    Object::pushObject(m_pLuaState, xContext, m_xIntrospection);
     lua_setglobal(m_pLuaState, "XSCRIPTCONTEXT");
 }
 
@@ -59,7 +54,7 @@ void Luno::throwLuaError()
 
 void Luno::executeCode(const rtl::OUString& sCode)
 {
-    if (!m_xContext.is() || !m_xServiceManager.is() || !m_xInvocationFactory.is())
+    if (!m_xContext.is() || !m_xServiceManager.is() || !m_xIntrospection.is())
         throw css::uno::RuntimeException("executeCode called while Luno object is invalid state");
 
     rtl::OString sCodeUtf8 = rtl::OUStringToOString(sCode, RTL_TEXTENCODING_UTF8);

@@ -20,16 +20,16 @@
 #include <lua.hpp>
 #include <com/sun/star/uno/Any.hxx>
 
-namespace com::sun::star::lang
+namespace com::sun::star::beans
 {
-class XSingleServiceFactory;
+class XIntrospection;
 }
 
 namespace uk::co::busydoingnothing::luno
 {
 void pushAny(lua_State* pLuaState,
              const css::uno::Any& xAny,
-             const css::uno::Reference<css::lang::XSingleServiceFactory> xInvocationFactory);
+             const css::uno::Reference<css::beans::XIntrospection>& xIntrospection);
 css::uno::Any getAny(lua_State* pLuaState, int nIndex);
 }
 
