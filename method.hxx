@@ -28,9 +28,9 @@ class XIdlMethod;
 
 namespace uk::co::busydoingnothing::luno
 {
-// The method class just caches the OUString for the method name. It doesn’t need to track the
-// interface that it will be called with because any time it is invoked the object will be passed in
-// as a parameter anyway.
+// A Method object caches the XdlMethod for a method. It doesn’t need to track the interface that it
+// will be called with because any time it is invoked the object will be passed in as a parameter
+// anyway.
 class Method
 {
 public:
