@@ -19,9 +19,11 @@
 #include <rtl/string.hxx>
 #include <rtl/ustring.hxx>
 #include <com/sun/star/container/XHierarchicalNameAccess.hpp>
+#include <com/sun/star/reflection/XIdlReflection.hpp>
 #include <com/sun/star/reflection/XTypeDescription.hpp>
 
 #include "runtime.hxx"
+#include "type.hxx"
 
 namespace com::sun::star::container
 {
@@ -90,6 +92,34 @@ void createModule(lua_State *pLuaState, const rtl::OUString& sFullNameUtf16, con
     // The last table is left on the stack
 }
 
+bool createType(lua_State *pLuaState, const rtl::OUString& sFullName, const Runtime& rRuntime)
+{
+    css::uno::Reference<css::reflection::XIdlClass> xIdlClass
+        = rRuntime.m_xIdlReflection->forName(sFullName);
+
+    if (!xIdlClass.is())
+        return false;
+
+    Type::pushType(pLuaState, xIdlClass, rRuntime);
+
+    // Add the type to the module dictionary
+    int nLastDot = sFullName.lastIndexOf('.');
+
+    if (nLastDot != -1)
+    {
+        createModule(pLuaState, rtl::OUString(sFullName.getStr(), nLastDot), rRuntime);
+        rtl::OString sLastPart(
+            sFullName.getStr() + nLastDot + 1, sFullName.getLength() - nLastDot - 1,
+            RTL_TEXTENCODING_UTF8);
+        lua_pushlstring(pLuaState, sLastPart.getStr(), sLastPart.getLength());
+        lua_pushvalue(pLuaState, -3);
+        lua_rawset(pLuaState, -3);
+        lua_pop(pLuaState, 1);
+    }
+
+    return true;
+}
+
 int lookup(lua_State* pLuaState)
 {
     size_t nKeyLength;
@@ -127,6 +157,10 @@ int lookup(lua_State* pLuaState)
         case css::uno::TypeClass_MODULE:
             createModule(pLuaState, sFullName, *pRuntime);
             return 1;
+
+        case css::uno::TypeClass_INTERFACE:
+        case css::uno::TypeClass_STRUCT:
+            return createType(pLuaState, sFullName, *pRuntime) ? 1 : 0;
 
         default:
             return 0;
