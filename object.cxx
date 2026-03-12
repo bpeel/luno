@@ -178,18 +178,59 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
     int nArgs = lua_gettop(pLuaState) - 2;
 
     {
-        css::uno::Sequence<css::uno::Any> aArgs(nArgs);
+        css::uno::Reference<css::reflection::XIdlMethod> xIdlMethod = pMethod->getIdlMethod();
+        const css::uno::Sequence<css::reflection::ParamInfo>& rParamInfos
+            = xIdlMethod->getParameterInfos();
+
+        int nInArgs = std::count_if(
+            rParamInfos.begin(), rParamInfos.end(),
+            [] (const css::reflection::ParamInfo& rParamInfo)
+            {
+                return rParamInfo.aMode == css::reflection::ParamMode_IN ||
+                    rParamInfo.aMode == css::reflection::ParamMode_INOUT;
+            });
+
+        if (nInArgs != nArgs)
+        {
+            rtl::OString sMethodName
+                = rtl::OUStringToOString(xIdlMethod->getName(), RTL_TEXTENCODING_UTF8);
+            lua_pushfstring(pLuaState,
+                            "Wrong number of arguments in call to %s. "
+                            "Expected: %I, actual: %I",
+                            sMethodName.getStr(), lua_Integer(nInArgs), lua_Integer(nArgs));
+            goto set_lua_error;
+        }
+
+        css::uno::Sequence<css::uno::Any> aArgs(rParamInfos.getLength());
         css::uno::Any xTarget(m_xInterface);
         css::uno::Any xResult;
+        int nReturnValues = 0;
 
         try
         {
             for (int i = 0; i < nArgs; ++i)
                 aArgs[i] = getAny(pLuaState, i + 3);
 
-            xResult = pMethod->getIdlMethod()->invoke(xTarget, aArgs);
+            xResult = xIdlMethod->invoke(xTarget, aArgs);
 
-            pushAny(pLuaState, xResult, m_xInvocationFactory);
+            css::uno::Reference<css::reflection::XIdlClass> xReturnType
+                = xIdlMethod->getReturnType();
+
+            if (xReturnType.is() && xReturnType->getTypeClass() != css::uno::TypeClass_VOID)
+            {
+                pushAny(pLuaState, xResult, m_xInvocationFactory);
+                ++nReturnValues;
+            }
+
+            for (int i = 0; i < rParamInfos.getLength(); ++i)
+            {
+                if (rParamInfos[i].aMode == css::reflection::ParamMode_OUT ||
+                    rParamInfos[i].aMode == css::reflection::ParamMode_INOUT)
+                {
+                    pushAny(pLuaState, aArgs[i], m_xInvocationFactory);
+                    ++nReturnValues;
+                }
+            }
         }
         catch (const css::uno::Exception& e)
         {
@@ -198,7 +239,7 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
             goto set_lua_error;
         }
 
-        return 1;
+        return nReturnValues;
     }
 
     // The goto is to make sure the destructors are all called before letting Lua do a longjmp
