@@ -16,6 +16,7 @@
 
 #include "conversions.hxx"
 
+#include <com/sun/star/beans/IllegalTypeException.hpp>
 #include <com/sun/star/lang/XSingleServiceFactory.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 #include <sal/types.h>
@@ -32,7 +33,7 @@ void pushAny(lua_State* pLuaState,
     {
         case css::uno::TypeClass_VOID:
             lua_pushnil(pLuaState);
-            break;
+            return;
 
         case css::uno::TypeClass_BOOLEAN:
             {
@@ -40,7 +41,7 @@ void pushAny(lua_State* pLuaState,
                 xAny >>= b;
                 lua_pushboolean(pLuaState, b);
             }
-            break;
+            return;
 
         case css::uno::TypeClass_BYTE:
         case css::uno::TypeClass_SHORT:
@@ -52,9 +53,10 @@ void pushAny(lua_State* pLuaState,
             {
                 sal_Int64 nValue;
                 if (xAny >>= nValue)
+                {
                     lua_pushinteger(pLuaState, nValue);
-                else
-                    lua_pushnil(pLuaState); // FIXME
+                    return;
+                }
             }
             break;
 
@@ -63,9 +65,10 @@ void pushAny(lua_State* pLuaState,
             {
                 lua_Number nValue;
                 if (xAny >>= nValue)
+                {
                     lua_pushnumber(pLuaState, nValue);
-                else
-                    lua_pushnil(pLuaState); // FIXME
+                    return;
+                }
             }
             break;
 
@@ -77,12 +80,12 @@ void pushAny(lua_State* pLuaState,
                 else
                     lua_pushnil(pLuaState);
             }
-            break;
-
-        default:
-            // FIXME
-            lua_pushnil(pLuaState);
+            return;
     }
+
+    rtl::OUString sMessage = "Unsupported conversion from type class "
+        + rtl::OUString::number(xAny.getValueTypeClass());
+    throw css::beans::IllegalTypeException(sMessage);
 }
 
 css::uno::Any getAny(lua_State* pLuaState, int nIndex)
@@ -96,18 +99,18 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
     {
         case LUA_TNIL:
             // Leave the any void
-            break;
+            return xAny;
 
         case LUA_TNUMBER:
             if (lua_isinteger(pLuaState, nIndex))
                 xAny <<= sal_uInt64(lua_tointeger(pLuaState, nIndex));
             else
                 xAny <<= double(lua_tonumber(pLuaState, nIndex));
-            break;
+            return xAny;
 
         case LUA_TBOOLEAN:
             xAny <<= bool(lua_toboolean(pLuaState, nIndex));
-            break;
+            return xAny;
 
         case LUA_TSTRING:
             {
@@ -115,7 +118,7 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
                 const char* pString = lua_tolstring(pLuaState, nIndex, &nLen);
                 xAny <<= rtl::OUString(pString, nLen, RTL_TEXTENCODING_UTF8);
             }
-            break;
+            return xAny;
 
         case LUA_TTABLE:
             {
@@ -130,24 +133,20 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
                 }
                 xAny <<= aValues;
             }
-            break;
+            return xAny;
 
         case LUA_TUSERDATA:
             if (Object* pObject = Object::testObject(pLuaState, nIndex))
             {
                 xAny <<= pObject->getInterface();
+                return xAny;
             }
-            else
-            {
-                // FIXME
-            }
-            break;
-
-        default:
-            // FIXME
             break;
     }
 
-    return xAny;
+    const char *sTypeName = luaL_typename(pLuaState, nIndex);
+    rtl::OUString sMessage = rtl::OUString("Unsupported conversion from Lua type ")
+        + rtl::OUString(sTypeName, strlen(sTypeName), RTL_TEXTENCODING_UTF8);
+    throw css::beans::IllegalTypeException(sMessage);
 }
 }

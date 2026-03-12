@@ -179,16 +179,17 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
 
     {
         css::uno::Sequence<css::uno::Any> aArgs(nArgs);
-
-        for (int i = 0; i < nArgs; ++i)
-            aArgs[i] = getAny(pLuaState, i + 3);
-
         css::uno::Any xTarget(m_xInterface);
         css::uno::Any xResult;
 
         try
         {
+            for (int i = 0; i < nArgs; ++i)
+                aArgs[i] = getAny(pLuaState, i + 3);
+
             xResult = pMethod->getIdlMethod()->invoke(xTarget, aArgs);
+
+            pushAny(pLuaState, xResult, m_xInvocationFactory);
         }
         catch (const css::uno::Exception& e)
         {
@@ -196,8 +197,6 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
             lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
             goto set_lua_error;
         }
-
-        pushAny(pLuaState, xResult, m_xInvocationFactory);
 
         return 1;
     }
