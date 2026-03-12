@@ -17,7 +17,9 @@
 #include "conversions.hxx"
 
 #include <com/sun/star/beans/IllegalTypeException.hpp>
-#include <com/sun/star/beans/XIntrospection.hpp>
+#include <com/sun/star/reflection/XIdlArray.hpp>
+#include <com/sun/star/reflection/XIdlClass.hpp>
+#include <com/sun/star/reflection/XIdlReflection.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 #include <sal/types.h>
 
@@ -25,6 +27,44 @@
 
 namespace uk::co::busydoingnothing::luno
 {
+namespace
+{
+bool pushSequence(lua_State* pLuaState,
+                  const css::uno::Any& xAny,
+                  const Runtime& rRuntime)
+{
+    css::uno::Reference<css::reflection::XIdlClass> xClass
+        = rRuntime.m_xIdlReflection->getType(xAny);
+
+    if (!xClass.is())
+        return false;
+
+    css::uno::Reference<css::reflection::XIdlArray> xIdlArray = xClass->getArray();
+
+    if (!xIdlArray.is())
+        return false;
+
+    lua_newtable(pLuaState);
+
+    for (int i = 0, nCount = xIdlArray->getLen(xAny); i < nCount; ++i)
+    {
+        try
+        {
+            pushAny(pLuaState, xIdlArray->get(xAny, i), rRuntime);
+        }
+        catch (css::uno::Exception&)
+        {
+            lua_pop(pLuaState, 1);
+            throw;
+        }
+
+        lua_rawseti(pLuaState, -2, i + 1);
+    }
+
+    return true;
+}
+}
+
 void pushAny(lua_State* pLuaState,
              const css::uno::Any& xAny,
              const Runtime& rRuntime)
@@ -81,6 +121,11 @@ void pushAny(lua_State* pLuaState,
                     lua_pushnil(pLuaState);
             }
             return;
+
+        case css::uno::TypeClass_SEQUENCE:
+            if (pushSequence(pLuaState, xAny, rRuntime))
+                return;
+            break;
     }
 
     rtl::OUString sMessage = "Unsupported conversion from type class "
