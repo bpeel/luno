@@ -27,6 +27,7 @@ CXXFILES = \
            object.cxx \
            method.cxx \
            conversions.cxx \
+           struct.cxx \
            exports.cxx
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
@@ -72,6 +73,7 @@ $(OUT_COMP_SLO)/exports.$(OBJ_EXT) : protocolhandler.hxx
 $(OUT_COMP_SLO)/object.$(OBJ_EXT) : object.hxx method.hxx runtime.hxx
 $(OUT_COMP_SLO)/conversions.$(OBJ_EXT) : conversions.hxx runtime.hxx
 $(OUT_COMP_SLO)/method.$(OBJ_EXT) : method.hxx
+$(OUT_COMP_SLO)/struct.$(OBJ_EXT) : struct.hxx runtime.hxx
 
 ifeq "$(OS)" "WIN"
 $(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES)
