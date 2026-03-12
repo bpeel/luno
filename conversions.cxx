@@ -27,7 +27,7 @@ namespace uk::co::busydoingnothing::luno
 {
 void pushAny(lua_State* pLuaState,
              const css::uno::Any& xAny,
-             const css::uno::Reference<css::lang::XSingleServiceFactory> xSingleServiceFactory)
+             const css::uno::Reference<css::lang::XSingleServiceFactory> xInvocationFactory)
 {
     switch (xAny.getValueTypeClass())
     {
@@ -76,7 +76,7 @@ void pushAny(lua_State* pLuaState,
             {
                 css::uno::Reference<css::uno::XInterface> xInterface;
                 if ((xAny >>= xInterface) && xInterface.is())
-                    Object::pushObject(pLuaState, xInterface, xSingleServiceFactory);
+                    Object::pushObject(pLuaState, xInterface, xInvocationFactory);
                 else
                     lua_pushnil(pLuaState);
             }

@@ -29,7 +29,7 @@ namespace uk::co::busydoingnothing::luno
 {
 void pushAny(lua_State* pLuaState,
              const css::uno::Any& xAny,
-             const css::uno::Reference<css::lang::XSingleServiceFactory> xSingleServiceFactory);
+             const css::uno::Reference<css::lang::XSingleServiceFactory> xInvocationFactory);
 css::uno::Any getAny(lua_State* pLuaState, int nIndex);
 }
 
