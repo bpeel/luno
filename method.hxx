@@ -19,6 +19,7 @@
 
 #include <lua.hpp>
 #include <rtl/ustring.hxx>
+#include <com/sun/star/reflection/ParamInfo.hpp>
 #include <com/sun/star/uno/Reference.hxx>
 
 namespace com::sun::star::reflection
@@ -43,11 +44,16 @@ public:
     {
         return m_xMethod;
     }
+    const css::uno::Sequence<css::reflection::ParamInfo>& getParameterInfos() const
+    {
+        return m_aParamInfos;
+    }
 
 private:
     Method(const css::uno::Reference<css::reflection::XIdlMethod>& xMethod,
            lua_CFunction pFunc)
         : m_xMethod(xMethod)
+        , m_aParamInfos(xMethod->getParameterInfos())
         , m_pFunc(pFunc)
     {
     }
@@ -56,6 +62,8 @@ private:
     static constexpr const char* METHOD_CACHE_NAME = "Luno_MethodCache";
 
     css::uno::Reference<css::reflection::XIdlMethod> m_xMethod;
+    // Cache the parameter infos so they can be accessed without having to do an allocation.
+    css::uno::Sequence<css::reflection::ParamInfo> m_aParamInfos;
     lua_CFunction m_pFunc;
 
     static void pushMetatable(lua_State* pLuaState, lua_CFunction pFunc);
