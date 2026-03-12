@@ -35,6 +35,11 @@ namespace com::sun::star::beans
 class XIntrospection;
 }
 
+namespace com::sun::star::reflection
+{
+class XIdlReflection;
+}
+
 namespace uk::co::busydoingnothing::luno
 {
 struct Runtime
@@ -42,10 +47,12 @@ struct Runtime
     css::uno::Reference<css::uno::XComponentContext> m_xContext;
     css::uno::Reference<css::lang::XMultiComponentFactory> m_xServiceManager;
     css::uno::Reference<css::beans::XIntrospection> m_xIntrospection;
+    css::uno::Reference<css::reflection::XIdlReflection> m_xIdlReflection;
 
     bool isValid() const
     {
-        return m_xContext.is() && m_xServiceManager.is() && m_xIntrospection.is();
+        return m_xContext.is() && m_xServiceManager.is() && m_xIntrospection.is() &&
+            m_xIdlReflection.is();
     }
 };
 }

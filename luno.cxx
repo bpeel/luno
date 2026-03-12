@@ -19,6 +19,7 @@
 #include <rtl/string.h>
 #include <iostream>
 #include <com/sun/star/beans/theIntrospection.hpp>
+#include <com/sun/star/reflection/theCoreReflection.hpp>
 #include <com/sun/star/uno/RuntimeException.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
 #include <com/sun/star/lang/XMultiComponentFactory.hpp>
@@ -35,6 +36,7 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     m_aRuntime.m_xContext = xContext;
     m_aRuntime.m_xServiceManager = xContext->getServiceManager();
     m_aRuntime.m_xIntrospection = css::beans::theIntrospection::get(xContext);
+    m_aRuntime.m_xIdlReflection = css::reflection::theCoreReflection::get(xContext);
 
     luaL_openlibs(m_pLuaState);
 
