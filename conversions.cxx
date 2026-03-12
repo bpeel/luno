@@ -24,6 +24,7 @@
 #include <sal/types.h>
 
 #include "object.hxx"
+#include "struct.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -135,6 +136,10 @@ void pushAny(lua_State* pLuaState,
             if (pushSequence(pLuaState, xAny, rRuntime))
                 return;
             break;
+
+        case css::uno::TypeClass_STRUCT:
+            Struct::pushStruct(pLuaState, xAny, rRuntime);
+            return;
     }
 
     rtl::OUString sMessage = "Unsupported conversion from type class "
@@ -195,6 +200,8 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
                 xAny <<= pObject->getInterface();
                 return xAny;
             }
+            if (Struct* pStruct = Struct::testStruct(pLuaState, nIndex))
+                return pStruct->getValue();
             break;
     }
 
