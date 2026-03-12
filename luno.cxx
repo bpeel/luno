@@ -27,6 +27,7 @@
 #include <uk/co/busydoingnothing/luno/LuaException.hpp>
 
 #include "object.hxx"
+#include "lookup.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -42,6 +43,16 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     >>= m_aRuntime.m_xTypeManager;
 
     luaL_openlibs(m_pLuaState);
+
+    // Set an __index on the global table to look up UNO modules
+    lua_pushglobaltable(m_pLuaState);
+    lua_newtable(m_pLuaState);
+    lua_pushliteral(m_pLuaState, "__index");
+    lua_pushliteral(m_pLuaState, "");
+    pushLookupFunc(m_pLuaState, m_aRuntime);
+    lua_rawset(m_pLuaState, -3);
+    lua_setmetatable(m_pLuaState, -2);
+    lua_pop(m_pLuaState, 1);
 
     // Set the component context as a global variable
     Object::pushObject(m_pLuaState, xContext, m_aRuntime);
