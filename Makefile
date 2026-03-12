@@ -77,6 +77,7 @@ $(OUT_COMP_SLO)/conversions.$(OBJ_EXT) : conversions.hxx runtime.hxx
 $(OUT_COMP_SLO)/method.$(OBJ_EXT) : method.hxx
 $(OUT_COMP_SLO)/struct.$(OBJ_EXT) : struct.hxx runtime.hxx
 $(OUT_COMP_SLO)/lookup.$(OBJ_EXT) : lookup.hxx runtime.hxx
+$(OUT_COMP_SLO)/type.$(OBJ_EXT) : type.hxx runtime.hxx
 
 ifeq "$(OS)" "WIN"
 $(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES)
