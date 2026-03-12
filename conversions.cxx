@@ -112,6 +112,15 @@ void pushAny(lua_State* pLuaState,
             }
             break;
 
+        case css::uno::TypeClass_STRING:
+            {
+                rtl::OUString sValue;
+                xAny >>= sValue;
+                rtl::OString sUtf8Value = OUStringToOString(sValue, RTL_TEXTENCODING_UTF8);
+                lua_pushlstring(pLuaState, sUtf8Value.getStr(), sUtf8Value.getLength());
+            }
+            return;
+
         case css::uno::TypeClass_INTERFACE:
             {
                 css::uno::Reference<css::uno::XInterface> xInterface;
