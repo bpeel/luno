@@ -33,3 +33,7 @@ local model = controller:getModel();
 local text = model:getText();
 text:getEnd():setString("This text came from Lua!");
 ```
+
+## Name
+
+Lua is the Portuguese word for moon and Luno is the Esperanto word for moon. It also looks like a combination of Lua+UNO, where UNO is the name of the object system used by the LibreOffice SDK.
