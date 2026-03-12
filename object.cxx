@@ -29,13 +29,13 @@ namespace uk::co::busydoingnothing::luno
 {
 void Object::pushObject(lua_State* pLuaState,
                         const css::uno::Reference<css::uno::XInterface>& xInterface,
-                        const css::uno::Reference<css::beans::XIntrospection>& xIntrospection)
+                        const Runtime& rRuntime)
 {
     // One user value to store a cache of methods
     void *pUserData = lua_newuserdatauv(pLuaState, sizeof(Object), 1);
 
     // Use placement new to initialize the object in the memory that Lua allocated
-    new(pUserData) Object(xInterface, xIntrospection);
+    new(pUserData) Object(xInterface, rRuntime);
 
     pushMetatable(pLuaState);
     lua_setmetatable(pLuaState, -2);
@@ -86,13 +86,13 @@ int Object::doIndexUncached(lua_State* pLuaState)
     {
         if (!m_xIntrospectionAccess.is())
         {
-            if (!m_xIntrospection.is() || !m_xInterface.is())
+            if (!m_rRuntime.isValid() || !m_xInterface.is())
                 goto state_error;
 
             css::uno::Any xAny;
             xAny <<= m_xInterface;
 
-            m_xIntrospectionAccess = m_xIntrospection->inspect(xAny);
+            m_xIntrospectionAccess = m_rRuntime.m_xIntrospection->inspect(xAny);
 
             if (!m_xIntrospectionAccess.is())
                 goto state_error;
@@ -210,7 +210,7 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
 
             if (xReturnType.is() && xReturnType->getTypeClass() != css::uno::TypeClass_VOID)
             {
-                pushAny(pLuaState, xResult, m_xIntrospection);
+                pushAny(pLuaState, xResult, m_rRuntime);
                 ++nReturnValues;
             }
 
@@ -219,7 +219,7 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
                 if (rParamInfos[i].aMode == css::reflection::ParamMode_OUT ||
                     rParamInfos[i].aMode == css::reflection::ParamMode_INOUT)
                 {
-                    pushAny(pLuaState, aArgs[i], m_xIntrospection);
+                    pushAny(pLuaState, aArgs[i], m_rRuntime);
                     ++nReturnValues;
                 }
             }

@@ -19,6 +19,7 @@
 
 #include <lua.hpp>
 #include <com/sun/star/uno/Reference.hxx>
+#include "runtime.hxx"
 
 namespace com::sun::star::uno
 {
@@ -27,7 +28,6 @@ class XInterface;
 
 namespace com::sun::star::beans
 {
-class XIntrospection;
 class XIntrospectionAccess;
 }
 
@@ -40,23 +40,23 @@ class Object
 public:
     static void pushObject(lua_State* pLuaState,
                            const css::uno::Reference<css::uno::XInterface>& xInterface,
-                           const css::uno::Reference<css::beans::XIntrospection>& xIntrospection);
+                           const Runtime& rRuntime);
 
     static Object* testObject(lua_State* pLuaState, int nArg);
     css::uno::Reference<css::uno::XInterface> getInterface() { return m_xInterface; }
 
 private:
     Object(const css::uno::Reference<css::uno::XInterface>& xInterface,
-           const css::uno::Reference<css::beans::XIntrospection>& xIntrospection)
-        : m_xInterface(xInterface)
-        , m_xIntrospection(xIntrospection)
+           const Runtime& rRuntime)
+        : m_rRuntime(rRuntime)
+        , m_xInterface(xInterface)
     {
     }
 
     static constexpr const char* CLASS_NAME = "Luno_Object";
 
+    const Runtime& m_rRuntime;
     css::uno::Reference<css::uno::XInterface> m_xInterface;
-    css::uno::Reference<css::beans::XIntrospection> m_xIntrospection;
     css::uno::Reference<css::beans::XIntrospectionAccess> m_xIntrospectionAccess;
 
     static void pushMetatable(lua_State* pLuaState);

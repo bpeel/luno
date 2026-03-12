@@ -27,7 +27,7 @@ namespace uk::co::busydoingnothing::luno
 {
 void pushAny(lua_State* pLuaState,
              const css::uno::Any& xAny,
-             const css::uno::Reference<css::beans::XIntrospection>& xIntrospection)
+             const Runtime& rRuntime)
 {
     switch (xAny.getValueTypeClass())
     {
@@ -76,7 +76,7 @@ void pushAny(lua_State* pLuaState,
             {
                 css::uno::Reference<css::uno::XInterface> xInterface;
                 if ((xAny >>= xInterface) && xInterface.is())
-                    Object::pushObject(pLuaState, xInterface, xIntrospection);
+                    Object::pushObject(pLuaState, xInterface, rRuntime);
                 else
                     lua_pushnil(pLuaState);
             }

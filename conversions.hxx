@@ -19,17 +19,13 @@
 
 #include <lua.hpp>
 #include <com/sun/star/uno/Any.hxx>
-
-namespace com::sun::star::beans
-{
-class XIntrospection;
-}
+#include "runtime.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
 void pushAny(lua_State* pLuaState,
              const css::uno::Any& xAny,
-             const css::uno::Reference<css::beans::XIntrospection>& xIntrospection);
+             const Runtime& rRuntime);
 css::uno::Any getAny(lua_State* pLuaState, int nIndex);
 }
 

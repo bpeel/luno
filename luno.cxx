@@ -31,14 +31,15 @@ namespace uk::co::busydoingnothing::luno
 
 Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     : m_pLuaState(luaL_newstate())
-    , m_xContext(xContext)
-    , m_xServiceManager(xContext->getServiceManager())
-    , m_xIntrospection(css::beans::theIntrospection::get(xContext))
 {
+    m_aRuntime.m_xContext = xContext;
+    m_aRuntime.m_xServiceManager = xContext->getServiceManager();
+    m_aRuntime.m_xIntrospection = css::beans::theIntrospection::get(xContext);
+
     luaL_openlibs(m_pLuaState);
 
     // Set the component context as a global variable
-    Object::pushObject(m_pLuaState, xContext, m_xIntrospection);
+    Object::pushObject(m_pLuaState, xContext, m_aRuntime);
     lua_setglobal(m_pLuaState, "XSCRIPTCONTEXT");
 }
 
@@ -54,7 +55,7 @@ void Luno::throwLuaError()
 
 void Luno::executeCode(const rtl::OUString& sCode)
 {
-    if (!m_xContext.is() || !m_xServiceManager.is() || !m_xIntrospection.is())
+    if (!m_aRuntime.isValid())
         throw css::uno::RuntimeException("executeCode called while Luno object is invalid state");
 
     rtl::OString sCodeUtf8 = rtl::OUStringToOString(sCode, RTL_TEXTENCODING_UTF8);

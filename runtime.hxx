@@ -14,29 +14,39 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_LUNO_H
-#define INCLUDED_LUNO_H
+#ifndef INCLUDED_LUNO_RUNTIME_H
+#define INCLUDED_LUNO_RUNTIME_H
 
 #include <lua.hpp>
-#include <rtl/ustring.hxx>
-#include <com/sun/star/uno/Reference.hxx>
-#include "runtime.hxx"
+#include <com/sun/star/uno/Any.hxx>
+
+namespace com::sun::star::uno
+{
+class XComponentContext;
+}
+
+namespace com::sun::star::lang
+{
+class XMultiComponentFactory;
+}
+
+namespace com::sun::star::beans
+{
+class XIntrospection;
+}
 
 namespace uk::co::busydoingnothing::luno
 {
-class Luno
+struct Runtime
 {
-public:
-    Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext);
-    ~Luno();
+    css::uno::Reference<css::uno::XComponentContext> m_xContext;
+    css::uno::Reference<css::lang::XMultiComponentFactory> m_xServiceManager;
+    css::uno::Reference<css::beans::XIntrospection> m_xIntrospection;
 
-    void executeCode(const rtl::OUString& sCode);
-
-private:
-    void throwLuaError();
-
-    lua_State* m_pLuaState;
-    Runtime m_aRuntime;
+    bool isValid() const
+    {
+        return m_xContext.is() && m_xServiceManager.is() && m_xIntrospection.is();
+    }
 };
 }
 
