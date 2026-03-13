@@ -87,6 +87,13 @@ int Type::doNewFunc(lua_State* pLuaState)
     {
         css::uno::Any xAny;
         m_xIdlClass->createObject(xAny);
+
+        if (!xAny.hasValue())
+        {
+            lua_pushliteral(pLuaState, "new called on a type which can not be constructed");
+            goto set_lua_error;
+        }
+
         pushAny(pLuaState, xAny, m_rRuntime);
     }
     catch (css::uno::Exception& e)
