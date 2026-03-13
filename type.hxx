@@ -56,6 +56,7 @@ private:
     static int gc(lua_State* pLuaState);
     int doNewFunc(lua_State* pLuaState);
     static int newFunc(lua_State* pLuaState);
+    void applyStructTable(lua_State* pLuaState);
 };
 }
 

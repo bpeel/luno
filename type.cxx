@@ -19,6 +19,7 @@
 #include <com/sun/star/reflection/XIdlClass.hpp>
 
 #include "conversions.hxx"
+#include "struct.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -78,10 +79,32 @@ int Type::gc(lua_State* pLuaState)
     return 0;
 }
 
+void Type::applyStructTable(lua_State* pLuaState)
+{
+    if (lua_isnil(pLuaState, 2))
+        return;
+
+    if (!lua_istable(pLuaState, 2))
+        luaL_typeerror(pLuaState, 2, "table");
+
+    // Try setting all of the key/value pairs from the table argument on the new struct instance
+    lua_pushnil(pLuaState);
+    while (lua_next(pLuaState, 2))
+    {
+        lua_pushvalue(pLuaState, -2);
+        lua_pushvalue(pLuaState, -2);
+        lua_settable(pLuaState, -5);
+        // Pop the value and leave the key for the next iteration
+        lua_pop(pLuaState, 1);
+    }
+}
+
 int Type::doNewFunc(lua_State* pLuaState)
 {
     if (!m_xIdlClass.is() || !m_rRuntime.isValid())
         luaL_error(pLuaState, "new called on a type in an invalid state");
+
+    bool hasArgument = lua_gettop(pLuaState) > 1;
 
     try
     {
@@ -102,6 +125,9 @@ int Type::doNewFunc(lua_State* pLuaState)
         lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
         goto set_lua_error;
     }
+
+    if (hasArgument && Struct::testStruct(pLuaState, -1))
+        applyStructTable(pLuaState);
 
     return 1;
 
