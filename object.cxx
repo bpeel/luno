@@ -20,6 +20,7 @@
 #include <com/sun/star/beans/XIntrospection.hpp>
 #include <com/sun/star/beans/XIntrospectionAccess.hpp>
 #include <com/sun/star/lang/NoSuchMethodException.hpp>
+#include <com/sun/star/reflection/XIdlReflection.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 
 #include "method.hxx"
@@ -182,6 +183,58 @@ bool copyStruct(lua_State* pLuaState, int nArg, const css::uno::Any& xAny)
 
     return true;
 }
+
+bool copySequence(lua_State* pLuaState, int nArg, const css::uno::Any& xAny,
+                  const Runtime& rRuntime)
+{
+    if (!lua_istable(pLuaState, nArg))
+    {
+        lua_pushliteral(pLuaState, "internal error: expected table for inout parameter");
+        return false;
+    }
+
+    {
+        css::uno::Reference<css::reflection::XIdlClass> xClass
+            = rRuntime.m_xIdlReflection->getType(xAny);
+
+        if (!xClass.is())
+            goto internal_error;
+
+        css::uno::Reference<css::reflection::XIdlArray> xIdlArray = xClass->getArray();
+
+        if (!xIdlArray.is())
+            goto internal_error;
+
+        int nCount = xIdlArray->getLen(xAny);
+
+        for (int i = 0; i < nCount; ++i)
+        {
+            try
+            {
+                pushAny(pLuaState, xIdlArray->get(xAny, i), rRuntime);
+            }
+            catch (css::uno::Exception&)
+            {
+                goto internal_error;
+            }
+
+            lua_rawseti(pLuaState, nArg, i + 1);
+        }
+
+        // Remove any remaining values in the table
+        for (int i = lua_rawlen(pLuaState, nArg); i > nCount; --i)
+        {
+            lua_pushnil(pLuaState);
+            lua_rawseti(pLuaState, nArg, i);
+        }
+    }
+
+    return true;
+
+ internal_error:
+    lua_pushliteral(pLuaState, "internal error while copying sequence inout parameter back");
+    return false;
+}
 }
 
 int Object::call(lua_State* pLuaState, Method *pMethod)
@@ -255,6 +308,14 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
                     // Instead of returning the struct, copy the values directly back into struct
                     // held by Lua
                     if (!copyStruct(pLuaState, nInArg, aArgs[i]))
+                        goto set_lua_error;
+                }
+                else if (eParamMode == css::reflection::ParamMode_INOUT &&
+                         rParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_SEQUENCE)
+                {
+                    // Instead of returning the sequence, copy the values directly back into the
+                    // table held by Lua
+                    if (!copySequence(pLuaState, nInArg, aArgs[i], m_rRuntime))
                         goto set_lua_error;
                 }
                 else if (eParamMode == css::reflection::ParamMode_OUT ||
