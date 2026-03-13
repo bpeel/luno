@@ -202,4 +202,18 @@ int Struct::newIndex(lua_State* pLuaState)
     return pStruct->doNewIndex(pLuaState);
 }
 
+void Struct::setValue(const css::uno::Any& xValue)
+{
+    assert(xValue.getValueTypeClass() == css::uno::TypeClass_STRUCT);
+
+    if (ensureIdlClass())
+    {
+        css::uno::Reference<css::reflection::XIdlClass> xIdlClass
+            = m_rRuntime.m_xIdlReflection->getType(xValue);
+        assert(m_xIdlClass->equals(xIdlClass));
+    }
+
+    m_xValue = xValue;
+}
+
 }

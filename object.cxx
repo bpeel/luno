@@ -24,6 +24,7 @@
 
 #include "method.hxx"
 #include "conversions.hxx"
+#include "struct.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -165,6 +166,24 @@ int Object::index(lua_State* pLuaState)
     return pObject->doIndex(pLuaState);
 }
 
+namespace
+{
+bool copyStruct(lua_State* pLuaState, int nArg, const css::uno::Any& xAny)
+{
+    Struct *pStruct = Struct::testStruct(pLuaState, nArg);
+
+    if (pStruct == nullptr)
+    {
+        lua_pushliteral(pLuaState, "internal error: expected struct for inout parameter");
+        return false;
+    }
+
+    pStruct->setValue(xAny);
+
+    return true;
+}
+}
+
 int Object::call(lua_State* pLuaState, Method *pMethod)
 {
     int nArgs = lua_gettop(pLuaState) - 2;
@@ -214,14 +233,30 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
                 ++nReturnValues;
             }
 
+            int nInArg = 3;
+
             for (int i = 0; i < rParamInfos.getLength(); ++i)
             {
-                if (rParamInfos[i].aMode == css::reflection::ParamMode_OUT ||
-                    rParamInfos[i].aMode == css::reflection::ParamMode_INOUT)
+                css::reflection::ParamMode eParamMode = rParamInfos[i].aMode;
+
+                if (eParamMode == css::reflection::ParamMode_INOUT &&
+                    rParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_STRUCT)
+                {
+                    // Instead of returning the struct, copy the values directly back into struct
+                    // held by Lua
+                    if (!copyStruct(pLuaState, nInArg, aArgs[i]))
+                        goto set_lua_error;
+                }
+                else if (eParamMode == css::reflection::ParamMode_OUT ||
+                         eParamMode == css::reflection::ParamMode_INOUT)
                 {
                     pushAny(pLuaState, aArgs[i], m_rRuntime);
                     ++nReturnValues;
                 }
+
+                if (eParamMode == css::reflection::ParamMode_IN ||
+                    eParamMode == css::reflection::ParamMode_INOUT)
+                    ++nInArg;
             }
         }
         catch (const css::uno::Exception& e)

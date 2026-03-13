@@ -38,6 +38,8 @@ public:
 
     static Struct* testStruct(lua_State* pLuaState, int nArg);
     css::uno::Any getValue() { return m_xValue; }
+    // This should only be called with an Any containing the same struct type as the previous value
+    void setValue(const css::uno::Any& xValue);
 
 private:
     Struct(const css::uno::Any& xValue, const Runtime& rRuntime)
