@@ -22,16 +22,43 @@ Luno is currently only an experiment. The only way to use it for now is it copy 
 
 ## Example
 
-Here is some example code to insert some text onto the end of the current Writer document:
+Here is some example code to insert text and shapes onto the end of the current Writer document:
 
-```
+```lua
 local desktop = XSCRIPTCONTEXT:getValueByName(
   "/singletons/com.sun.star.frame.theDesktop");
 local frame = desktop:getCurrentFrame();
 local controller = frame:getController();
 local model = controller:getModel();
-local text = model:getText();
-text:getEnd():setString("This text came from Lua!");
+local text = model:getText()
+local drawPage = model:getDrawPage();
+
+text:getEnd():setString("\n\n")
+
+-- Make an alias for the Size type so we can construct it more easily
+local Size = com.sun.star.awt.Size;
+
+function addSquares(reverse)
+    for i = 1, 10 do
+        local size = i;
+        if reverse then
+            size = 11 - i
+        end
+        local rect = model:createInstance("com.sun.star.drawing.RectangleShape");
+        rect:setSize(Size:new({Width = size * 110, Height = size * 110}));
+        rect:setPropertyValue("TextRange", text:getEnd())
+        drawPage:add(rect)
+    end
+end
+
+addSquares(false)
+
+local cursor = text:createTextCursorByRange(text:getEnd())
+cursor:setString("Luno")
+cursor:setPropertyValue("CharWeight", 150)
+cursor:setPropertyValue("CharHeight", 50)
+
+addSquares(true)
 ```
 
 ## Name
