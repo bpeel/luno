@@ -54,6 +54,8 @@ private:
     static void pushMetatable(lua_State* pLuaState);
     static Type* checkType(lua_State* pLuaState, int nArg);
     static int gc(lua_State* pLuaState);
+    int doNewFunc(lua_State* pLuaState);
+    static int newFunc(lua_State* pLuaState);
 };
 }
 

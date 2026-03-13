@@ -18,6 +18,8 @@
 
 #include <com/sun/star/reflection/XIdlClass.hpp>
 
+#include "conversions.hxx"
+
 namespace uk::co::busydoingnothing::luno
 {
 void Type::pushType(lua_State* pLuaState,
@@ -44,6 +46,16 @@ void Type::pushMetatable(lua_State* pLuaState)
     lua_pushliteral(pLuaState, "__gc");
     lua_pushcfunction(pLuaState, gc);
     lua_rawset(pLuaState, -3);
+
+    // Create the __index table
+    lua_pushliteral(pLuaState, "__index");
+    lua_newtable(pLuaState);
+
+    lua_pushliteral(pLuaState, "new");
+    lua_pushcfunction(pLuaState, newFunc);
+    lua_rawset(pLuaState, -3);
+
+    lua_rawset(pLuaState, -3);
 }
 
 Type* Type::checkType(lua_State* pLuaState, int nArg)
@@ -64,5 +76,37 @@ int Type::gc(lua_State* pLuaState)
     pType->~Type();
 
     return 0;
+}
+
+int Type::doNewFunc(lua_State* pLuaState)
+{
+    if (!m_xIdlClass.is() || !m_rRuntime.isValid())
+        luaL_error(pLuaState, "new called on a type in an invalid state");
+
+    try
+    {
+        css::uno::Any xAny;
+        m_xIdlClass->createObject(xAny);
+        pushAny(pLuaState, xAny, m_rRuntime);
+    }
+    catch (css::uno::Exception& e)
+    {
+        rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
+        lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+        goto set_lua_error;
+    }
+
+    return 1;
+
+    // The goto is to make sure the destructors are all called before letting Lua do a longjmp
+ set_lua_error:
+    lua_error(pLuaState);
+    return 0;
+}
+
+int Type::newFunc(lua_State* pLuaState)
+{
+    Type* pType = checkType(pLuaState, 1);
+    return pType->doNewFunc(pLuaState);
 }
 }
