@@ -64,6 +64,23 @@ bool pushSequence(lua_State* pLuaState,
 
     return true;
 }
+
+css::uno::Any convertInteger(lua_Integer nValue)
+{
+    css::uno::Any xAny;
+
+    // Use the smallest possible type that can represent the value
+    if (nValue >= SAL_MIN_INT8 && nValue <= SAL_MAX_INT8)
+        xAny <<= sal_Int8(nValue);
+    else if (nValue >= SAL_MIN_INT16 && nValue <= SAL_MAX_INT16)
+        xAny <<= sal_Int16(nValue);
+    else if (nValue >= SAL_MIN_INT32 && nValue <= SAL_MAX_INT32)
+        xAny <<= sal_Int32(nValue);
+    else
+        xAny <<= sal_Int64(nValue);
+
+    return xAny;
+}
 }
 
 void pushAny(lua_State* pLuaState,
@@ -162,7 +179,7 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
 
         case LUA_TNUMBER:
             if (lua_isinteger(pLuaState, nIndex))
-                xAny <<= sal_uInt64(lua_tointeger(pLuaState, nIndex));
+                return convertInteger(lua_tointeger(pLuaState, nIndex));
             else
                 xAny <<= double(lua_tonumber(pLuaState, nIndex));
             return xAny;
