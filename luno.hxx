@@ -19,20 +19,35 @@
 
 #include <lua.hpp>
 #include <rtl/ustring.hxx>
+#include <com/sun/star/lang/XServiceInfo.hpp>
 #include <com/sun/star/uno/Reference.hxx>
+#include <cppuhelper/implbase2.hxx>
+#include <uk/co/busydoingnothing/luno/XRunner.hpp>
+
 #include "runtime.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
 class Luno
+    : public cppu::WeakImplHelper2<XRunner, css::lang::XServiceInfo>
 {
 public:
+    // XServiceInfo
+    rtl::OUString SAL_CALL getImplementationName() override;
+    sal_Bool SAL_CALL supportsService(rtl::OUString const& serviceName) override;
+    css::uno::Sequence<rtl::OUString> SAL_CALL getSupportedServiceNames() override;
+    // XRunner
+    void SAL_CALL executeCode(const rtl::OUString& sCode);
+
+    static rtl::OUString getImplementationNameStatic();
+    static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();
+    static css::uno::Reference<css::uno::XInterface>
+    create(const css::uno::Reference<css::uno::XComponentContext>& xContext);
+
+private:
     Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext);
     ~Luno();
 
-    void executeCode(const rtl::OUString& sCode);
-
-private:
     void throwLuaError();
 
     lua_State* m_pLuaState;

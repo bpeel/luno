@@ -69,7 +69,7 @@ void Luno::throwLuaError()
     throw LuaException(sMessage);
 }
 
-void Luno::executeCode(const rtl::OUString& sCode)
+void SAL_CALL Luno::executeCode(const rtl::OUString& sCode)
 {
     if (!m_aRuntime.isValid())
         throw css::uno::RuntimeException("executeCode called while Luno object is invalid state");
@@ -94,4 +94,44 @@ Luno::~Luno()
     lua_close(m_pLuaState);
 }
 
+rtl::OUString SAL_CALL Luno::getImplementationName()
+{
+    return getImplementationNameStatic();
+}
+
+sal_Bool SAL_CALL Luno::supportsService(rtl::OUString const& serviceName)
+{
+    css::uno::Sequence<rtl::OUString> names = getSupportedServiceNames();
+
+    for (sal_Int32 i = 0, count = names.getLength(); i < count; i++)
+    {
+        if (names[i] == serviceName)
+            return true;
+    }
+
+    return false;
+}
+
+css::uno::Sequence<rtl::OUString> SAL_CALL Luno::getSupportedServiceNames()
+{
+    return getSupportedServiceNamesStatic();
+}
+
+rtl::OUString Luno::getImplementationNameStatic()
+{
+    return rtl::OUString("uk.co.busydoingnothing.luno.Luno");
+}
+
+css::uno::Sequence<rtl::OUString> Luno::getSupportedServiceNamesStatic()
+{
+    css::uno::Sequence<rtl::OUString> names(1);
+    names[0] = rtl::OUString("uk.co.busydoingnothing.luno.Runner");
+    return names;
+}
+
+css::uno::Reference<css::uno::XInterface>
+Luno::create(const css::uno::Reference<css::uno::XComponentContext>& xContext)
+{
+    return static_cast<css::lang::XTypeProvider*>(new Luno(xContext));
+}
 }

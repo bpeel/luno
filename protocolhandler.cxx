@@ -24,8 +24,7 @@
 #include <com/sun/star/awt/XMessageBoxFactory.hpp>
 #include <com/sun/star/awt/XMessageBox.hpp>
 #include <uk/co/busydoingnothing/luno/LuaException.hpp>
-
-#include "luno.hxx"
+#include <uk/co/busydoingnothing/luno/Runner.hpp>
 
 using namespace rtl;
 
@@ -209,11 +208,11 @@ void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
     }
     else
     {
-        Luno aLuno(m_xContext);
+        css::uno::Reference<XRunner> xRunner = Runner::create(m_xContext);
 
         try
         {
-            aLuno.executeCode(sSource);
+            xRunner->executeCode(sSource);
         }
         catch (const LuaException& e)
         {

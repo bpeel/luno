@@ -4,5 +4,8 @@
     <implementation name="uk.co.busydoingnothing.luno.ProtocolHandler">
       <service name="com.sun.star.frame.ProtocolHandler"/>
     </implementation>
+    <implementation name="uk.co.busydoingnothing.luno.Luno">
+      <service name="uk.co.busydoingnothing.luno.Runner"/>
+    </implementation>
   </component>
 </components>

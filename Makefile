@@ -34,7 +34,10 @@ CXXFILES = \
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
 
-IDLFILES = LuaException.idl
+IDLFILES = \
+           idl/uk/co/busydoingnothing/luno/LuaException.idl \
+           idl/uk/co/busydoingnothing/luno/Runner.idl \
+           idl/uk/co/busydoingnothing/luno/XRunner.idl
 
 DATA_FILES = \
            Addons.xcu \
@@ -57,7 +60,7 @@ endif
 $(OUT_BIN)/%.rdb : $(IDLFILES)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
 	-$(DEL) $(subst \\,\,$(subst /,$(PS),$@))
-	$(UNOIDLWRITE) $(URE_TYPES) $(OFFICE_TYPES) $< $@
+	$(UNOIDLWRITE) $(URE_TYPES) $(OFFICE_TYPES) idl $@
 
 $(COMP_TYPEFLAG) : $(COMP_RDB) $(SDKTYPEFLAG)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
