@@ -55,7 +55,7 @@ addSquares(false)
 
 local cursor = text:createTextCursorByRange(text:getEnd())
 cursor:setString("Luno")
-cursor:setPropertyValue("CharWeight", 150)
+cursor:setPropertyValue("CharWeight", com.sun.star.awt.FontWeight.BOLD)
 cursor:setPropertyValue("CharHeight", 50)
 
 addSquares(true)
