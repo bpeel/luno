@@ -20,10 +20,12 @@
 #include <rtl/ustring.hxx>
 #include <com/sun/star/container/XHierarchicalNameAccess.hpp>
 #include <com/sun/star/reflection/XIdlReflection.hpp>
+#include <com/sun/star/reflection/XConstantTypeDescription.hpp>
 #include <com/sun/star/reflection/XTypeDescription.hpp>
 
 #include "runtime.hxx"
 #include "type.hxx"
+#include "conversions.hxx"
 
 namespace com::sun::star::container
 {
@@ -92,6 +94,27 @@ void createModule(lua_State *pLuaState, const rtl::OUString& sFullNameUtf16, con
     // The last table is left on the stack
 }
 
+// Stores the item at the top of the stack in the table for the module of the item. Does not pop the
+// item
+void storeInParentModule(lua_State *pLuaState, const rtl::OUString& sFullName,
+                         const Runtime& rRuntime)
+{
+    // Add the type to the module dictionary
+    int nLastDot = sFullName.lastIndexOf('.');
+
+    if (nLastDot == -1)
+        return;
+
+    createModule(pLuaState, rtl::OUString(sFullName.getStr(), nLastDot), rRuntime);
+    rtl::OString sLastPart(
+        sFullName.getStr() + nLastDot + 1, sFullName.getLength() - nLastDot - 1,
+        RTL_TEXTENCODING_UTF8);
+    lua_pushlstring(pLuaState, sLastPart.getStr(), sLastPart.getLength());
+    lua_pushvalue(pLuaState, -3);
+    lua_rawset(pLuaState, -3);
+    lua_pop(pLuaState, 1);
+}
+
 bool createType(lua_State *pLuaState, const rtl::OUString& sFullName, const Runtime& rRuntime)
 {
     css::uno::Reference<css::reflection::XIdlClass> xIdlClass
@@ -102,20 +125,38 @@ bool createType(lua_State *pLuaState, const rtl::OUString& sFullName, const Runt
 
     Type::pushType(pLuaState, xIdlClass, rRuntime);
 
-    // Add the type to the module dictionary
-    int nLastDot = sFullName.lastIndexOf('.');
+    storeInParentModule(pLuaState, sFullName, rRuntime);
 
-    if (nLastDot != -1)
+    return true;
+}
+
+bool createConstant(lua_State *pLuaState, const rtl::OUString& sFullName,
+                    const css::uno::Reference<css::reflection::XTypeDescription>& xType,
+                    const Runtime& rRuntime)
+{
+    css::uno::Reference<css::reflection::XConstantTypeDescription> xConstantType(
+        xType, css::uno::UNO_QUERY);
+
+    if (!xConstantType.is())
     {
-        createModule(pLuaState, rtl::OUString(sFullName.getStr(), nLastDot), rRuntime);
-        rtl::OString sLastPart(
-            sFullName.getStr() + nLastDot + 1, sFullName.getLength() - nLastDot - 1,
-            RTL_TEXTENCODING_UTF8);
-        lua_pushlstring(pLuaState, sLastPart.getStr(), sLastPart.getLength());
-        lua_pushvalue(pLuaState, -3);
-        lua_rawset(pLuaState, -3);
-        lua_pop(pLuaState, 1);
+        lua_pushliteral(pLuaState,
+                        "internal error: contant type found without implementing "
+                        "XContantTypeDescription");
+        return false;
     }
+
+    try
+    {
+        pushAny(pLuaState, xConstantType->getConstantValue(), rRuntime);
+    }
+    catch (const css::uno::Exception& e)
+    {
+        rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
+        lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+        return false;
+    }
+
+    storeInParentModule(pLuaState, sFullName, rRuntime);
 
     return true;
 }
@@ -133,38 +174,51 @@ int lookup(lua_State* pLuaState)
     if (!pRuntime->isValid())
         luaL_error(pLuaState, "global called with Luno runtime in invalid state");
 
-    rtl::OUString sFullName = rtl::OUString(sPrefix, nPrefixLength, RTL_TEXTENCODING_UTF8) +
-        rtl::OUString(sKey, nKeyLength, RTL_TEXTENCODING_UTF8);
-
-    css::uno::Any xTypeAny;
-
-    try
     {
-        xTypeAny = pRuntime->m_xTypeManager->getByHierarchicalName(sFullName);
-    }
-    catch (css::container::NoSuchElementException&)
-    {
-        return 0;
-    }
+        rtl::OUString sFullName = rtl::OUString(sPrefix, nPrefixLength, RTL_TEXTENCODING_UTF8) +
+            rtl::OUString(sKey, nKeyLength, RTL_TEXTENCODING_UTF8);
 
-    css::uno::Reference<css::reflection::XTypeDescription> xType;
+        css::uno::Any xTypeAny;
 
-    if (!(xTypeAny >>= xType) || !xType.is())
-        return 0;
-
-    switch (xType->getTypeClass())
-    {
-        case css::uno::TypeClass_MODULE:
-            createModule(pLuaState, sFullName, *pRuntime);
-            return 1;
-
-        case css::uno::TypeClass_INTERFACE:
-        case css::uno::TypeClass_STRUCT:
-            return createType(pLuaState, sFullName, *pRuntime) ? 1 : 0;
-
-        default:
+        try
+        {
+            xTypeAny = pRuntime->m_xTypeManager->getByHierarchicalName(sFullName);
+        }
+        catch (css::container::NoSuchElementException&)
+        {
             return 0;
+        }
+
+        css::uno::Reference<css::reflection::XTypeDescription> xType;
+
+        if (!(xTypeAny >>= xType) || !xType.is())
+            return 0;
+
+        switch (xType->getTypeClass())
+        {
+            case css::uno::TypeClass_MODULE:
+            case css::uno::TypeClass_CONSTANTS:
+                createModule(pLuaState, sFullName, *pRuntime);
+                return 1;
+
+            case css::uno::TypeClass_INTERFACE:
+            case css::uno::TypeClass_STRUCT:
+                return createType(pLuaState, sFullName, *pRuntime) ? 1 : 0;
+
+            case css::uno::TypeClass_CONSTANT:
+                if (!createConstant(pLuaState, sFullName, xType, *pRuntime))
+                    goto set_lua_error;
+                return 1;
+
+            default:
+                return 0;
+        }
     }
+
+    // The goto is to make sure the destructors are all called before letting Lua do a longjmp
+ set_lua_error:
+    lua_error(pLuaState);
+    return 0;
 }
 }
 
