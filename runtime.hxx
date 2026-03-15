@@ -45,6 +45,11 @@ namespace com::sun::star::container
 class XHierarchicalNameAccess;
 }
 
+namespace com::sun::star::script
+{
+class XTypeConverter;
+}
+
 namespace uk::co::busydoingnothing::luno
 {
 struct Runtime
@@ -54,11 +59,12 @@ struct Runtime
     css::uno::Reference<css::beans::XIntrospection> m_xIntrospection;
     css::uno::Reference<css::reflection::XIdlReflection> m_xIdlReflection;
     css::uno::Reference<css::container::XHierarchicalNameAccess> m_xTypeManager;
+    css::uno::Reference<css::script::XTypeConverter> m_xTypeConverter;
 
     bool isValid() const
     {
         return m_xContext.is() && m_xServiceManager.is() && m_xIntrospection.is() &&
-            m_xIdlReflection.is() && m_xTypeManager.is();
+            m_xIdlReflection.is() && m_xTypeManager.is() && m_xTypeConverter.is();
     }
 };
 }
