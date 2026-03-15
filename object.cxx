@@ -280,7 +280,7 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
                 if (rParamInfos[i].aMode == css::reflection::ParamMode_OUT)
                     continue;
 
-                aArgs[i] = getAny(pLuaState, nInArg + 3);
+                aArgs[i] = getAnyAsType(pLuaState, nInArg + 3, rParamInfos[i].aType, m_rRuntime);
 
                 ++nInArg;
             }
