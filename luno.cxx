@@ -56,7 +56,7 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
 
     // Set the component context as a global variable
     Object::pushObject(m_pLuaState, xContext, m_aRuntime);
-    lua_setglobal(m_pLuaState, "XSCRIPTCONTEXT");
+    lua_setglobal(m_pLuaState, "XCONTEXT");
 }
 
 void Luno::throwLuaError()

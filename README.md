@@ -20,14 +20,14 @@ If you want to additionally run some unit tests you can type `make check`.
 
 ## Using
 
-Luno is currently only an experiment. The only way to use it for now is it copy some Lua source code into a Writer document, select it all and then click on “Run Lua Code” from the “Tools→AddOn” menu. The source code can use the builtin `XSCRIPTCONTEXT` global variable to start accessing UNO objects. Note that this is currently just the `XComponentContext` and not the `XScriptContext` like it is for Python and Basic.
+Luno is currently only an experiment. The only way to use it for now is it copy some Lua source code into a Writer document, select it all and then click on “Run Lua Code” from the “Tools→AddOn” menu. The source code can use the builtin `XCONTEXT` global variable to access `XComponentContext` and find UNO services.
 
 ## Example
 
 Here is some example code to insert text and shapes onto the end of the current Writer document:
 
 ```lua
-local desktop = XSCRIPTCONTEXT:getValueByName(
+local desktop = XCONTEXT:getValueByName(
   "/singletons/com.sun.star.frame.theDesktop");
 local frame = desktop:getCurrentFrame();
 local controller = frame:getController();
