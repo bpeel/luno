@@ -203,7 +203,7 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
                 css::uno::Sequence<css::uno::Any> aValues(nLen);
                 for (lua_Unsigned i = 0; i < nLen; ++i)
                 {
-                    lua_rawgeti(pLuaState, nIndex, i);
+                    lua_rawgeti(pLuaState, nIndex, i + 1);
                     aValues[i] = getAny(pLuaState, -1);
                     lua_pop(pLuaState, 1);
                 }
