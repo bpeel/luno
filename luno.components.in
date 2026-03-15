@@ -7,5 +7,8 @@
     <implementation name="uk.co.busydoingnothing.luno.Luno">
       <service name="uk.co.busydoingnothing.luno.Runner"/>
     </implementation>
+    <implementation name="uk.co.busydoingnothing.luno.qa.TestHelperImpl">
+      <service name="uk.co.busydoingnothing.luno.qa.TestHelper"/>
+    </implementation>
   </component>
 </components>

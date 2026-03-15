@@ -21,6 +21,7 @@
 
 #include "protocolhandler.hxx"
 #include "luno.hxx"
+#include "testhelper.hxx"
 
 using namespace uk::co::busydoingnothing::luno;
 
@@ -33,6 +34,9 @@ const struct ::cppu::ImplementationEntry s_component_entries [] =
       0, 0 },
     { Luno::create, Luno::getImplementationNameStatic,
       Luno::getSupportedServiceNamesStatic, cppu::createSingleComponentFactory,
+      0, 0 },
+    { qa::TestHelper::create, qa::TestHelper::getImplementationNameStatic,
+      qa::TestHelper::getSupportedServiceNamesStatic, cppu::createSingleComponentFactory,
       0, 0 },
     { 0, 0, 0, 0, 0, 0 }
 };

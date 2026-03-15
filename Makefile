@@ -30,6 +30,7 @@ CXXFILES = \
            struct.cxx \
            lookup.cxx \
            type.cxx \
+           testhelper.cxx \
            exports.cxx
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
@@ -45,7 +46,10 @@ UNIT_TESTER_SLOFILES = \
 IDLFILES = \
            idl/uk/co/busydoingnothing/luno/LuaException.idl \
            idl/uk/co/busydoingnothing/luno/Runner.idl \
-           idl/uk/co/busydoingnothing/luno/XRunner.idl
+           idl/uk/co/busydoingnothing/luno/XRunner.idl \
+           idl/uk/co/busydoingnothing/luno/qa/TestHelper.idl \
+           idl/uk/co/busydoingnothing/luno/qa/TestStruct.idl \
+           idl/uk/co/busydoingnothing/luno/qa/XTestHelper.idl
 
 DATA_FILES = \
            Addons.xcu \
@@ -89,6 +93,7 @@ $(OUT_COMP_SLO)/method.$(OBJ_EXT) : method.hxx
 $(OUT_COMP_SLO)/struct.$(OBJ_EXT) : struct.hxx runtime.hxx
 $(OUT_COMP_SLO)/lookup.$(OBJ_EXT) : lookup.hxx type.hxx runtime.hxx
 $(OUT_COMP_SLO)/type.$(OBJ_EXT) : type.hxx runtime.hxx
+$(OUT_COMP_SLO)/testhelper.$(OBJ_EXT) : testhelper.hxx
 
 ifeq "$(OS)" "WIN"
 $(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES)
