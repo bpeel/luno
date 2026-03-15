@@ -47,6 +47,7 @@ IDLFILES = \
            idl/uk/co/busydoingnothing/luno/LuaException.idl \
            idl/uk/co/busydoingnothing/luno/Runner.idl \
            idl/uk/co/busydoingnothing/luno/XRunner.idl \
+           idl/uk/co/busydoingnothing/luno/qa/TestConstants.idl \
            idl/uk/co/busydoingnothing/luno/qa/TestHelper.idl \
            idl/uk/co/busydoingnothing/luno/qa/TestStruct.idl \
            idl/uk/co/busydoingnothing/luno/qa/XTestHelper.idl

@@ -65,3 +65,15 @@ do
     -- There shouldn’t be a return value if the only out parameters are struct inouts
     assert(returnValue == nil);
 end
+
+-- constants
+do
+    -- Make an alias for the constants module
+    local TestConstants = uk.co.busydoingnothing.luno.qa.TestConstants;
+    assert(TestConstants.LONG_CONSTANT == 12345678);
+
+    -- The constants should be added to the global cache even if they are accessed through an alias
+    assert(isCachedGlobal("uk.co.busydoingnothing.luno.qa.TestConstants.LONG_CONSTANT"));
+
+    assert(math.abs(TestConstants.FLOAT_CONSTANT - 3.141592654) < 0.001);
+end
