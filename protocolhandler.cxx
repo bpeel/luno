@@ -212,7 +212,7 @@ void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
 
         try
         {
-            xRunner->executeCode(sSource);
+            xRunner->executeCode("(selected text)", sSource);
         }
         catch (const LuaException& e)
         {
