@@ -17,7 +17,6 @@
 #include "luno.hxx"
 
 #include <rtl/string.h>
-#include <iostream>
 #include <com/sun/star/beans/theIntrospection.hpp>
 #include <com/sun/star/container/XHierarchicalNameAccess.hpp>
 #include <com/sun/star/reflection/theCoreReflection.hpp>
@@ -85,7 +84,6 @@ void SAL_CALL Luno::executeCode(const rtl::OUString& sName, const rtl::OUString&
     if (lua_pcall(m_pLuaState, 0, 1, 0) != LUA_OK)
         throwLuaError();
 
-    std::cout << "lua result: " << lua_tostring(m_pLuaState, -1) << std::endl;
     lua_pop(m_pLuaState, 1);
 }
 
