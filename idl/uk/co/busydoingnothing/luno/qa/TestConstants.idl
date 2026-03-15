@@ -18,8 +18,8 @@ module uk { module co { module busydoingnothing { module luno { module qa {
 
 constants TestConstants
 {
-        const long LONG_CONSTANT = 12345678;
-        const float FLOAT_CONSTANT = 3.1421592654;
+    const long LONG_CONSTANT = 12345678;
+    const float FLOAT_CONSTANT = 3.1421592654;
 };
 
 }; }; }; }; };
