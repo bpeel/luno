@@ -27,6 +27,7 @@
 
 #include "object.hxx"
 #include "lookup.hxx"
+#include "conversions.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -68,7 +69,7 @@ void Luno::throwLuaError()
     throw LuaException(sMessage);
 }
 
-void SAL_CALL Luno::executeCode(const rtl::OUString& sName, const rtl::OUString& sCode)
+css::uno::Any SAL_CALL Luno::executeCode(const rtl::OUString& sName, const rtl::OUString& sCode)
 {
     if (!m_aRuntime.isValid())
         throw css::uno::RuntimeException("executeCode called while Luno object is invalid state");
@@ -84,7 +85,11 @@ void SAL_CALL Luno::executeCode(const rtl::OUString& sName, const rtl::OUString&
     if (lua_pcall(m_pLuaState, 0, 1, 0) != LUA_OK)
         throwLuaError();
 
+    css::uno::Any xResult = getAny(m_pLuaState, -1);
+
     lua_pop(m_pLuaState, 1);
+
+    return xResult;
 }
 
 Luno::~Luno()

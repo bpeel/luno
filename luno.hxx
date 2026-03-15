@@ -37,7 +37,8 @@ public:
     sal_Bool SAL_CALL supportsService(rtl::OUString const& serviceName) override;
     css::uno::Sequence<rtl::OUString> SAL_CALL getSupportedServiceNames() override;
     // XRunner
-    void SAL_CALL executeCode(const rtl::OUString& sName, const rtl::OUString& sCode) override;
+    css::uno::Any SAL_CALL executeCode(
+        const rtl::OUString& sName, const rtl::OUString& sCode) override;
 
     static rtl::OUString getImplementationNameStatic();
     static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();
