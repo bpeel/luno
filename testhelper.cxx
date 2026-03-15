@@ -27,6 +27,17 @@ void TestHelper::modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruc
     aSetStringStruct.StringValue = sSetStringValue;
 }
 
+sal_Int32 TestHelper::multipleReturn(sal_Int32 mainReturnValue, sal_Int32 secondReturnValue,
+                                     sal_Int32& secondReturn, sal_Int32& fourthInputThirdOutput,
+                                     sal_Int32 thirdReturnValue, sal_Int32& fourthReturn)
+{
+    secondReturn = secondReturnValue;
+    fourthReturn = fourthInputThirdOutput;
+    fourthInputThirdOutput = thirdReturnValue;
+
+    return mainReturnValue;
+}
+
 rtl::OUString SAL_CALL TestHelper::getImplementationName()
 {
     return getImplementationNameStatic();

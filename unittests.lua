@@ -77,3 +77,18 @@ do
 
     assert(math.abs(TestConstants.FLOAT_CONSTANT - 3.141592654) < 0.001);
 end
+
+-- multiple return values
+do
+    local r1, r2, r3, r4 = testHelper:multipleReturn(
+        1, -- mainReturnValue
+        2, -- secondReturnValue
+        4, -- fourthInputThirdOutput
+        3 -- thirdReturnValue
+    );
+
+    assert(r1 == 1);
+    assert(r2 == 2);
+    assert(r3 == 3);
+    assert(r4 == 4);
+end

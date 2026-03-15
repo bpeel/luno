@@ -21,6 +21,9 @@ interface XTestHelper
     void modifyStruct([in] long setLongValue, [inout] TestStruct setLongStruct,
                       [in] string setStringValue,
                       [inout] TestStruct setStringStruct);
+    long multipleReturn([in] long mainReturnValue, [in] long secondReturnValue,
+                        [out] long secondReturn, [inout] long fourthInputThirdOutput,
+                        [in] long thirdReturnValue, [out] long fourthReturn);
 };
 
 }; }; }; }; };
