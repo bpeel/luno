@@ -40,6 +40,8 @@ public:
     // XTestHelper
     void modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruct,
                       const rtl::OUString& sSetStringValue, TestStruct& aSetStringStruct) override;
+    void modifySequence(sal_Int32 nFirstValue, sal_Int32 nSecondValue, sal_Int32 nThirdValue,
+                        css::uno::Sequence<sal_Int32>& aValues) override;
     sal_Int32 multipleReturn(sal_Int32 mainReturnValue, sal_Int32 secondReturnValue,
                              sal_Int32& secondReturn, sal_Int32& fourthInputThirdOutput,
                              sal_Int32 thirdReturnValue, sal_Int32& fourthReturn) override;

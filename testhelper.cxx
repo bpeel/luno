@@ -27,6 +27,14 @@ void TestHelper::modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruc
     aSetStringStruct.StringValue = sSetStringValue;
 }
 
+void TestHelper::modifySequence(sal_Int32 nFirstValue, sal_Int32 nSecondValue,
+                                sal_Int32 nThirdValue, css::uno::Sequence<sal_Int32>& aValues)
+{
+    aValues[0] = nFirstValue;
+    aValues[1] = nSecondValue;
+    aValues[2] = nThirdValue;
+}
+
 sal_Int32 TestHelper::multipleReturn(sal_Int32 mainReturnValue, sal_Int32 secondReturnValue,
                                      sal_Int32& secondReturn, sal_Int32& fourthInputThirdOutput,
                                      sal_Int32 thirdReturnValue, sal_Int32& fourthReturn)

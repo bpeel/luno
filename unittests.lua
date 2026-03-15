@@ -78,6 +78,20 @@ do
     assert(math.abs(TestConstants.FLOAT_CONSTANT - 3.141592654) < 0.001);
 end
 
+-- Test that an inout sequence parameter modifies the argument
+do
+    local fourValues = { 1, 2, 3, 4 };
+    local returnValue = testHelper:modifySequence(7, 8, 9, fourValues);
+    assert(#fourValues == 4);
+    assert(fourValues[1] == 7);
+    assert(fourValues[2] == 8);
+    assert(fourValues[3] == 9);
+    assert(fourValues[4] == 4);
+
+    -- There shouldn’t be a return value if the only out parameters are sequence inouts
+    assert(returnValue == nil);
+end
+
 -- multiple return values
 do
     local r1, r2, r3, r4 = testHelper:multipleReturn(
