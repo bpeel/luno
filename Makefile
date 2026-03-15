@@ -34,6 +34,14 @@ CXXFILES = \
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
 
+UNIT_TESTER = $(OUT_BIN)/unittester
+
+UNIT_TESTER_CXXFILES = \
+           unittester.cxx
+
+UNIT_TESTER_SLOFILES = \
+    $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(UNIT_TESTER_CXXFILES))
+
 IDLFILES = \
            idl/uk/co/busydoingnothing/luno/LuaException.idl \
            idl/uk/co/busydoingnothing/luno/Runner.idl \
@@ -162,3 +170,13 @@ clean :
 	-$(DEL) $(subst \\,\,$(subst /,$(PS),$(COMP_TYPEFLAG)))
 	-$(DEL) $(subst \\,\,$(subst /,$(PS),$(SHAREDLIB_OUT)/$(COMP_NAME).*))
 	-$(DEL) $(subst \\,\,$(subst /,$(PS),$(COMP_RDB)))
+
+$(UNIT_TESTER) : $(UNIT_TESTER_SLOFILES)
+	$(LINK) $(EXE_LINK_FLAGS) $(LINK_LIBS) -o $@ $^ \
+	$(CPPUHELPERLIB) $(CPPULIB) $(SALHELPERLIB) $(SALLIB) $(STDC++LIB)
+
+.PHONY : check
+check : $(UNIT_TESTER) $(COMP_RDB) $(COMP_COMPONENTS) $(COMP_PACKAGE)
+	$(UNIT_TESTER) -env:URE_MORE_SERVICES=$(URLPREFIX)$(COMP_COMPONENTS) \
+	-env:URE_MORE_TYPES=$(URLPREFIX)$(COMP_RDB) \
+	unittests.lua
