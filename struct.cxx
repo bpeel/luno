@@ -164,7 +164,7 @@ int Struct::doNewIndex(lua_State* pLuaState)
         {
             try
             {
-                xField->set(m_xValue, getAny(pLuaState, 3));
+                xField->set(m_xValue, getAnyAsType(pLuaState, 3, xField->getType(), m_rRuntime));
             }
             catch (const css::uno::Exception& e)
             {
