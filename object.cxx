@@ -219,8 +219,18 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
 
         try
         {
-            for (int i = 0; i < nArgs; ++i)
-                aArgs[i] = getAny(pLuaState, i + 3);
+            int nInArg = 0;
+
+            for (int i = 0; i < rParamInfos.getLength(); ++i)
+            {
+                // Skip out-only params
+                if (rParamInfos[i].aMode == css::reflection::ParamMode_OUT)
+                    continue;
+
+                aArgs[i] = getAny(pLuaState, nInArg + 3);
+
+                ++nInArg;
+            }
 
             xResult = xIdlMethod->invoke(xTarget, aArgs);
 
@@ -233,7 +243,7 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
                 ++nReturnValues;
             }
 
-            int nInArg = 3;
+            nInArg = 3;
 
             for (int i = 0; i < rParamInfos.getLength(); ++i)
             {
