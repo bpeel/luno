@@ -20,6 +20,7 @@
 #include <com/sun/star/reflection/XIdlArray.hpp>
 #include <com/sun/star/reflection/XIdlClass.hpp>
 #include <com/sun/star/reflection/XIdlReflection.hpp>
+#include <com/sun/star/script/XTypeConverter.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 #include <sal/types.h>
 
@@ -226,5 +227,19 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
     rtl::OUString sMessage = rtl::OUString("Unsupported conversion from Lua type ")
         + rtl::OUString(sTypeName, strlen(sTypeName), RTL_TEXTENCODING_UTF8);
     throw css::beans::IllegalTypeException(sMessage);
+}
+
+css::uno::Any getAnyAsType(lua_State* pLuaState, int nIndex,
+                           const css::uno::Reference<css::reflection::XIdlClass>& xDestType,
+                           const Runtime& rRuntime)
+{
+    css::uno::Any xAny = getAny(pLuaState, nIndex);
+
+    css::uno::Type aDestType(xDestType->getTypeClass(), xDestType->getName());
+
+    if (xAny.getValueType() == aDestType)
+        return xAny;
+    else
+        return rRuntime.m_xTypeConverter->convertTo(xAny, aDestType);
 }
 }
