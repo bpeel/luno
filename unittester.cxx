@@ -40,10 +40,22 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
             uk::co::busydoingnothing::luno::Runner::create(xContext);
 
         rtl::OUString sFilename(argv[i], strlen(argv[i]), RTL_TEXTENCODING_UTF8);
+        std::string sSourceUtf8;
 
-        std::ifstream ifs(argv[i]);
-        std::string sSourceUtf8((std::istreambuf_iterator<char>(ifs)),
-                                (std::istreambuf_iterator<char>()));
+        try
+        {
+            std::ifstream ifs(argv[i]);
+            ifs.exceptions(std::ifstream::failbit);
+            sSourceUtf8.append((std::istreambuf_iterator<char>(ifs)),
+                               (std::istreambuf_iterator<char>()));
+        }
+        catch (const std::ios_base::failure& rFail)
+        {
+            std::cerr << sFilename << ": " << rFail.what() << std::endl;
+            ret = 1;
+            continue;
+        }
+
         rtl::OUString sSource(sSourceUtf8.c_str(), sSourceUtf8.size(), RTL_TEXTENCODING_UTF8);
 
         try
