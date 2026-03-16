@@ -15,6 +15,10 @@
     <implementation name="uk.co.busydoingnothing.luno.Luno">
       <service name="uk.co.busydoingnothing.luno.Runner"/>
     </implementation>
+    <implementation name="uk.co.busydoingnothing.luno.ScriptProvider">
+      <service name="com.sun.star.script.provider.ScriptProviderForLua"/>
+      <service name="com.sun.star.script.provider.LanguageScriptProvider"/>
+    </implementation>
     <implementation name="uk.co.busydoingnothing.luno.qa.TestHelperImpl">
       <service name="uk.co.busydoingnothing.luno.qa.TestHelper"/>
     </implementation>
