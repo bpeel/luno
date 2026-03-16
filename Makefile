@@ -21,6 +21,17 @@ COMP_COMPONENTS = $(OUT_COMP_GEN)/$(COMP_NAME).components
 COMP_REGISTERFLAG = $(OUT_MISC)/cpp_$(COMP_NAME)_register_component.flag
 COMP_TYPEFLAG = $(OUT_MISC)/cpp_$(COMP_NAME)_types.flag
 
+LUA_VERSION=5.5.0
+LUA_TAR_BASENAME=lua-$(LUA_VERSION).tar.gz
+LUA_DOWNLOAD_URL=https://www.lua.org/ftp/lua-$(LUA_VERSION).tar.gz
+LUA_TAR=$(OUT_MISC)/$(LUA_TAR_BASENAME)
+LUA_SHA256SUM=57ccc32bbbd005cab75bcc52444052535af691789dba2b9016d5c50640d68b3d
+LUA_SOURCE_PARENT=$(OUT_MISC)/luno
+LUA_SOURCE_DIR=$(LUA_SOURCE_PARENT)/lua-$(LUA_VERSION)
+LUA_MAKEFILE=$(LUA_SOURCE_DIR)/Makefile
+LUA_INSTALL_DIR=$(LUA_SOURCE_PARENT)/lua-install
+LUA_LIB=$(LUA_INSTALL_DIR)/lib/liblua.a
+
 CXXFILES = \
            protocolhandler.cxx \
            luno.cxx \
@@ -65,13 +76,31 @@ DATA_FILES = \
 .PHONY: ALL
 ALL : Luno
 
+.DELETE_ON_ERROR :
+
 include $(SETTINGS)/stdtarget.mk
 
 ifeq "$(OS)" "WIN"
 LOCAL_CXX_FLAGS=/std:c++20 /utf-8
 else
-LOCAL_CXX_FLAGS=-std=c++20 $$(pkg-config lua --cflags)
+LOCAL_CXX_FLAGS=-std=c++20
 endif
+
+$(LUA_TAR) :
+	@# The LD_LIBRARY_PATH from the SDK messes with curl’s certificate path
+	unset LD_LIBRARY_PATH && curl -L -o $(LUA_TAR) $(LUA_DOWNLOAD_URL)
+	echo "$(LUA_SHA256SUM)  $(LUA_TAR)" > $(OUT_MISC)/lua.sha256sum
+	sha256sum -c $(OUT_MISC)/lua.sha256sum
+
+$(LUA_MAKEFILE) : $(LUA_TAR)
+	mkdir -p $(LUA_SOURCE_PARENT)
+	tar -zxf $(LUA_TAR) -C $(LUA_SOURCE_PARENT)
+	sed -i -e 's|^INSTALL_TOP=.*|INSTALL_TOP=$(LUA_INSTALL_DIR)|' \
+	$(LUA_MAKEFILE)
+
+$(LUA_LIB) : $(LUA_MAKEFILE)
+	make -C $(LUA_SOURCE_DIR) MYCFLAGS=-fPIC
+	make -C $(LUA_SOURCE_DIR) install
 
 $(OUT_BIN)/%.rdb : $(IDLFILES)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
@@ -84,9 +113,9 @@ $(COMP_TYPEFLAG) : $(COMP_RDB) $(SDKTYPEFLAG)
 	$(CPPUMAKER) -Gc -O$(OUT_COMP_INC) $(TYPESLIST) $(COMP_RDB) -X $(URE_TYPES) -X $(OFFICE_TYPES)
 	echo flagged > $@
 
-$(OUT_COMP_SLO)/%.$(OBJ_EXT) : %.cxx $(COMP_TYPEFLAG)
+$(OUT_COMP_SLO)/%.$(OBJ_EXT) : %.cxx $(COMP_TYPEFLAG) $(LUA_LIB)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-	$(CC) $(LOCAL_CXX_FLAGS) $(CC_FLAGS) $(CC_INCLUDES) -I$(OUT_COMP_INC) $(CC_DEFINES) $(CC_OUTPUT_SWITCH)$(subst /,$(PS),$@) $<
+	$(CC) $(LOCAL_CXX_FLAGS) $(CC_FLAGS) $(CC_INCLUDES) -I$(OUT_COMP_INC) -I$(LUA_INSTALL_DIR)/include $(CC_DEFINES) $(CC_OUTPUT_SWITCH)$(subst /,$(PS),$@) $<
 
 $(OUT_COMP_SLO)/protocolhandler.$(OBJ_EXT) : protocolhandler.hxx luno.hxx
 $(OUT_COMP_SLO)/luno.$(OBJ_EXT) : luno.hxx object.hxx lookup.hxx runtime.hxx
@@ -110,11 +139,11 @@ $(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES)
 	$(CPPUHELPERLIB) $(CPPULIB) $(SALLIB) msvcprt.lib $(LIBO_SDK_LDFLAGS_STDLIBS)
 	$(LINK_MANIFEST)
 else
-$(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES)
+$(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES) $(LUA_LIB)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
-	$(LINK) $(COMP_LINK_FLAGS) $(LINK_LIBS) $$(pkg-config lua --libs) \
+	$(LINK) $(COMP_LINK_FLAGS) $(LINK_LIBS) -L$(LUA_INSTALL_DIR)/lib \
 	-o $@ $(SLOFILES) \
-	$(CPPUHELPERLIB) $(CPPULIB) $(SALLIB) $(STC++LIB)
+	$(CPPUHELPERLIB) $(CPPULIB) $(SALLIB) $(STC++LIB) -llua
 ifeq "$(OS)" "MACOSX"
 	$(INSTALL_NAME_URELIBS)  $@
 endif

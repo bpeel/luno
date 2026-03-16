@@ -4,9 +4,7 @@ Luno is a work-in-progress LibreOffice extension to allow scripting in the [Lua]
 
 ## Building
 
-First install the Lua development package for your distro. On Fedora this is in the `lua-devel` package. The make files for Luno assume there is a working pkg-config file for Lua, which isn’t the case if you install it from the official source code.
-
-Next, make sure you have the LibreOffice SDK installed. On Fedora this is in the `libreoffice-sdk` package. If you’re building LibreOffice from source make sure you have the `--enable-odk` in your `autogen.input`.
+Make sure you have the LibreOffice SDK installed. On Fedora this is in the `libreoffice-sdk` package. If you’re building LibreOffice from source make sure you have the `--enable-odk` in your `autogen.input`.
 
 There should be a script called `setsdkenv_unix`. On Fedora this is installed in `/usr/lib64/libreoffice/sdk`. If you haven’t already, run the script and answer all of the configuration questions. This will create another script in your home directory which should be something like `~/libreoffice26.2_sdk/yourhostname/setsdkenv_unix.sh`. Source the script into your current shell environment like this:
 
