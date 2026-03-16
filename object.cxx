@@ -58,6 +58,10 @@ void Object::pushMetatable(lua_State* pLuaState)
     lua_pushliteral(pLuaState, "__index");
     lua_pushcfunction(pLuaState, index);
     lua_rawset(pLuaState, -3);
+
+    lua_pushliteral(pLuaState, "__eq");
+    lua_pushcfunction(pLuaState, eq);
+    lua_rawset(pLuaState, -3);
 }
 
 Object* Object::checkObject(lua_State* pLuaState, int nArg)
@@ -165,6 +169,22 @@ int Object::index(lua_State* pLuaState)
     Object* pObject = checkObject(pLuaState, 1);
 
     return pObject->doIndex(pLuaState);
+}
+
+int Object::doEq(lua_State* pLuaState)
+{
+    Object* pOther = testObject(pLuaState, 2);
+
+    lua_pushboolean(pLuaState, pOther != nullptr && m_xInterface == pOther->m_xInterface);
+
+    return 1;
+}
+
+int Object::eq(lua_State* pLuaState)
+{
+    Object* pObject = checkObject(pLuaState, 1);
+
+    return pObject->doEq(pLuaState);
 }
 
 namespace

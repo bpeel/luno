@@ -130,3 +130,9 @@ do
     -- test passing values into UNO
     assert(testHelper:getEnumValue(two) == 2);
 end
+
+-- Objects returned multiple times from the SDK should be equal to each other
+assert(XCONTEXT:getServiceManager() == serviceManager);
+-- different objects shouldn’t be equal
+assert(serviceManager ~= testHelper);
+assert(serviceManager ~= 3);

@@ -65,6 +65,8 @@ private:
     int doIndexUncached(lua_State* pLuaState);
     int doIndex(lua_State* pLuaState);
     static int index(lua_State* pLuaState);
+    int doEq(lua_State* pLuaState);
+    static int eq(lua_State* pLuaState);
     int call(lua_State* pLuaState, Method* pMethod);
     static int call(lua_State* pLuaState);
 };
