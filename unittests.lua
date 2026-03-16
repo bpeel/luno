@@ -106,3 +106,27 @@ do
     assert(r3 == 3);
     assert(r4 == 4);
 end
+
+-- enums
+do
+    local zero = uk.co.busydoingnothing.luno.qa.TestEnum.ZERO
+    local one = uk.co.busydoingnothing.luno.qa.TestEnum.ONE
+    local two = uk.co.busydoingnothing.luno.qa.TestEnum.TWO
+    local four = uk.co.busydoingnothing.luno.qa.TestEnum.FOUR
+
+    assert(zero.value == 0)
+    assert(one.value == 1)
+    assert(two.value == 2)
+    assert(four.value == 4)
+
+    -- the same object should be returned the second time the enum is accessed
+    assert(zero == uk.co.busydoingnothing.luno.qa.TestEnum["ZERO"])
+
+    assert(zero ~= one)
+
+    -- a new object returned from the API should still be equal
+    assert(testHelper:getFourEnum() == four)
+
+    -- test passing values into UNO
+    assert(testHelper:getEnumValue(two) == 2);
+end

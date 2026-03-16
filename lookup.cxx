@@ -21,10 +21,12 @@
 #include <com/sun/star/container/XHierarchicalNameAccess.hpp>
 #include <com/sun/star/reflection/XIdlReflection.hpp>
 #include <com/sun/star/reflection/XConstantTypeDescription.hpp>
+#include <com/sun/star/reflection/XEnumTypeDescription.hpp>
 #include <com/sun/star/reflection/XTypeDescription.hpp>
 
 #include "runtime.hxx"
 #include "type.hxx"
+#include "enumtype.hxx"
 #include "conversions.hxx"
 
 namespace com::sun::star::container
@@ -161,6 +163,28 @@ bool createConstant(lua_State *pLuaState, const rtl::OUString& sFullName,
     return true;
 }
 
+bool createEnum(lua_State *pLuaState, const rtl::OUString& sFullName,
+                const css::uno::Reference<css::reflection::XTypeDescription>& xType,
+                const Runtime& rRuntime)
+{
+    css::uno::Reference<css::reflection::XEnumTypeDescription> xEnumType(
+        xType, css::uno::UNO_QUERY);
+
+    if (!xEnumType.is())
+    {
+        lua_pushliteral(pLuaState,
+                        "internal error: enum type found without implementing "
+                        "XEnumTypeDescription");
+        return false;
+    }
+
+    EnumType::pushEnumType(pLuaState, xEnumType, rRuntime);
+
+    storeInParentModule(pLuaState, sFullName, rRuntime);
+
+    return true;
+}
+
 int lookup(lua_State* pLuaState)
 {
     size_t nKeyLength;
@@ -204,6 +228,11 @@ int lookup(lua_State* pLuaState)
             case css::uno::TypeClass_INTERFACE:
             case css::uno::TypeClass_STRUCT:
                 return createType(pLuaState, sFullName, *pRuntime) ? 1 : 0;
+
+            case css::uno::TypeClass_ENUM:
+                if (!createEnum(pLuaState, sFullName, xType, *pRuntime))
+                    goto set_lua_error;
+                return 1;
 
             case css::uno::TypeClass_CONSTANT:
                 if (!createConstant(pLuaState, sFullName, xType, *pRuntime))

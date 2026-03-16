@@ -45,6 +45,8 @@ public:
     sal_Int32 multipleReturn(sal_Int32 mainReturnValue, sal_Int32 secondReturnValue,
                              sal_Int32& secondReturn, sal_Int32& fourthInputThirdOutput,
                              sal_Int32 thirdReturnValue, sal_Int32& fourthReturn) override;
+    TestEnum getFourEnum() override;
+    sal_Int32 getEnumValue(TestEnum nEnum) override;
 
     static rtl::OUString getImplementationNameStatic();
     static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();

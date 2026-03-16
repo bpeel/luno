@@ -46,6 +46,16 @@ sal_Int32 TestHelper::multipleReturn(sal_Int32 mainReturnValue, sal_Int32 second
     return mainReturnValue;
 }
 
+TestEnum TestHelper::getFourEnum()
+{
+    return TestEnum::TestEnum_FOUR;
+}
+
+sal_Int32 TestHelper::getEnumValue(TestEnum nEnum)
+{
+    return nEnum;
+}
+
 rtl::OUString SAL_CALL TestHelper::getImplementationName()
 {
     return getImplementationNameStatic();

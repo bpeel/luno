@@ -31,6 +31,8 @@ CXXFILES = \
            lookup.cxx \
            type.cxx \
            testhelper.cxx \
+           enumtype.cxx \
+           enumvalue.cxx \
            exports.cxx
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
@@ -48,6 +50,7 @@ IDLFILES = \
            idl/uk/co/busydoingnothing/luno/Runner.idl \
            idl/uk/co/busydoingnothing/luno/XRunner.idl \
            idl/uk/co/busydoingnothing/luno/qa/TestConstants.idl \
+           idl/uk/co/busydoingnothing/luno/qa/TestEnum.idl \
            idl/uk/co/busydoingnothing/luno/qa/TestHelper.idl \
            idl/uk/co/busydoingnothing/luno/qa/TestStruct.idl \
            idl/uk/co/busydoingnothing/luno/qa/XTestHelper.idl
@@ -89,11 +92,13 @@ $(OUT_COMP_SLO)/protocolhandler.$(OBJ_EXT) : protocolhandler.hxx luno.hxx
 $(OUT_COMP_SLO)/luno.$(OBJ_EXT) : luno.hxx object.hxx lookup.hxx runtime.hxx
 $(OUT_COMP_SLO)/exports.$(OBJ_EXT) : protocolhandler.hxx
 $(OUT_COMP_SLO)/object.$(OBJ_EXT) : object.hxx method.hxx runtime.hxx
-$(OUT_COMP_SLO)/conversions.$(OBJ_EXT) : conversions.hxx runtime.hxx
+$(OUT_COMP_SLO)/conversions.$(OBJ_EXT) : conversions.hxx enumvalue.hxx runtime.hxx
 $(OUT_COMP_SLO)/method.$(OBJ_EXT) : method.hxx
 $(OUT_COMP_SLO)/struct.$(OBJ_EXT) : struct.hxx runtime.hxx
-$(OUT_COMP_SLO)/lookup.$(OBJ_EXT) : lookup.hxx type.hxx runtime.hxx
+$(OUT_COMP_SLO)/lookup.$(OBJ_EXT) : lookup.hxx type.hxx enumtype.hxx runtime.hxx
 $(OUT_COMP_SLO)/type.$(OBJ_EXT) : type.hxx runtime.hxx
+$(OUT_COMP_SLO)/enumtype.$(OBJ_EXT) : enumtype.hxx enumvalue.hxx runtime.hxx
+$(OUT_COMP_SLO)/enumvalue.$(OBJ_EXT) : enumvalue.hxx runtime.hxx
 $(OUT_COMP_SLO)/testhelper.$(OBJ_EXT) : testhelper.hxx
 
 ifeq "$(OS)" "WIN"

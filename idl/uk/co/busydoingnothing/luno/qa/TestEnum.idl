@@ -16,18 +16,12 @@
 
 module uk { module co { module busydoingnothing { module luno { module qa {
 
-interface XTestHelper
+enum TestEnum
 {
-    void modifyStruct([in] long setLongValue, [inout] TestStruct setLongStruct,
-                      [in] string setStringValue,
-                      [inout] TestStruct setStringStruct);
-    void modifySequence([in] long firstValue, [in] long secondValue,
-                        [in] long thirdValue, [inout] sequence<long> values);
-    long multipleReturn([in] long mainReturnValue, [in] long secondReturnValue,
-                        [out] long secondReturn, [inout] long fourthInputThirdOutput,
-                        [in] long thirdReturnValue, [out] long fourthReturn);
-    TestEnum getFourEnum();
-    long getEnumValue([in] TestEnum theEnum);
+    ZERO,
+    ONE,
+    TWO,
+    FOUR = 4
 };
 
 }; }; }; }; };

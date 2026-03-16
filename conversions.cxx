@@ -26,6 +26,7 @@
 
 #include "object.hxx"
 #include "struct.hxx"
+#include "enumvalue.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -158,6 +159,14 @@ void pushAny(lua_State* pLuaState,
         case css::uno::TypeClass_STRUCT:
             Struct::pushStruct(pLuaState, xAny, rRuntime);
             return;
+
+        case css::uno::TypeClass_ENUM:
+            {
+                sal_Int32 nValue = *static_cast<sal_Int32 const*>(xAny.getValue());
+
+                EnumValue::pushEnumValue(pLuaState, xAny.getValueType(), nValue, rRuntime);
+            }
+            return;
     }
 
     rtl::OUString sMessage = "Unsupported conversion from type class "
@@ -220,6 +229,12 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
             }
             if (Struct* pStruct = Struct::testStruct(pLuaState, nIndex))
                 return pStruct->getValue();
+            if (EnumValue* pEnumValue = EnumValue::testEnumValue(pLuaState, nIndex))
+            {
+                sal_Int32 nValue = pEnumValue->getValue();
+                xAny.setValue(&nValue, pEnumValue->getType());
+                return xAny;
+            }
             break;
     }
 
