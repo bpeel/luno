@@ -42,6 +42,10 @@ void Type::pushMetatable(lua_State* pLuaState)
     lua_pushcfunction(pLuaState, gc);
     lua_rawset(pLuaState, -3);
 
+    lua_pushliteral(pLuaState, "__eq");
+    lua_pushcfunction(pLuaState, eq);
+    lua_rawset(pLuaState, -3);
+
     // Create the __index table
     lua_pushliteral(pLuaState, "__index");
     lua_newtable(pLuaState);
@@ -134,6 +138,22 @@ int Type::newFunc(lua_State* pLuaState)
 {
     Type* pType = checkType(pLuaState, 1);
     return pType->doNewFunc(pLuaState);
+}
+
+int Type::doEq(lua_State* pLuaState)
+{
+    Type* pOther = testType(pLuaState, 2);
+
+    lua_pushboolean(pLuaState, pOther != nullptr && pOther->m_xIdlClass.is()
+                    && m_xIdlClass.is() && m_xIdlClass->equals(pOther->m_xIdlClass));
+
+    return 1;
+}
+
+int Type::eq(lua_State* pLuaState)
+{
+    Type* pType = checkType(pLuaState, 1);
+    return pType->doEq(pLuaState);
 }
 }
 
