@@ -22,6 +22,7 @@
 #include "object.hxx"
 #include "lookup.hxx"
 #include "conversions.hxx"
+#include "lunotype.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -52,6 +53,9 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     // Set the component context as a global variable
     Object::pushObject(m_pLuaState, xContext, m_aRuntime);
     lua_setglobal(m_pLuaState, "XCONTEXT");
+
+    // Set up the global “lunotype” function
+    setUpLunoTypeFunction(m_pLuaState, m_aRuntime);
 }
 
 void Luno::throwLuaError()

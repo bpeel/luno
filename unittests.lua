@@ -148,3 +148,9 @@ assert(com.sun.star.lang.IllegalArgumentException:issubclassof(
        com.sun.star.uno.Exception))
 assert(not com.sun.star.lang.IllegalArgumentException:issubclassof(
        com.sun.star.lang.NoSuchFieldException))
+
+-- lunotype
+assert(lunotype(uk.co.busydoingnothing.luno.qa.TestStruct:new()) ==
+       uk.co.busydoingnothing.luno.qa.TestStruct)
+-- Non struct/exception objects shouldn’t have a type
+assert(lunotype(serviceManager) == nil)

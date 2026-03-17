@@ -45,6 +45,7 @@ CXXFILES = \
            enumtype.cxx \
            enumvalue.cxx \
            pushexception.cxx \
+           lunotype.cxx \
            exports.cxx
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
