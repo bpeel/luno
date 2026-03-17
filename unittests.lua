@@ -142,3 +142,9 @@ assert(XCONTEXT:getServiceManager() == serviceManager);
 -- different objects shouldn’t be equal
 assert(serviceManager ~= testHelper);
 assert(serviceManager ~= 3);
+
+--- issubclassof
+assert(com.sun.star.lang.IllegalArgumentException:issubclassof(
+       com.sun.star.uno.Exception))
+assert(not com.sun.star.lang.IllegalArgumentException:issubclassof(
+       com.sun.star.lang.NoSuchFieldException))

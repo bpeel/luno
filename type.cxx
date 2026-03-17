@@ -10,6 +10,7 @@
 #include "type.hxx"
 
 #include <com/sun/star/reflection/XIdlClass.hpp>
+#include <vector>
 
 #include "conversions.hxx"
 #include "struct.hxx"
@@ -52,6 +53,10 @@ void Type::pushMetatable(lua_State* pLuaState)
 
     lua_pushliteral(pLuaState, "new");
     lua_pushcfunction(pLuaState, newFunc);
+    lua_rawset(pLuaState, -3);
+
+    lua_pushliteral(pLuaState, "issubclassof");
+    lua_pushcfunction(pLuaState, isSubclassOf);
     lua_rawset(pLuaState, -3);
 
     lua_rawset(pLuaState, -3);
@@ -154,6 +159,52 @@ int Type::eq(lua_State* pLuaState)
 {
     Type* pType = checkType(pLuaState, 1);
     return pType->doEq(pLuaState);
+}
+
+int Type::doIsSubclassOf(lua_State* pLuaState)
+{
+    Type* pOther = checkType(pLuaState, 2);
+
+    if (!m_xIdlClass.is() || !pOther->m_xIdlClass.is())
+    {
+        lua_pushboolean(pLuaState, false);
+        return 1;
+    }
+
+    // Shortcut the case where the types are the same
+    if (m_xIdlClass->equals(pOther->m_xIdlClass))
+    {
+        lua_pushboolean(pLuaState, true);
+        return 1;
+    }
+
+    // Recursively check all of the parents subclasses
+    std::vector<css::uno::Reference<css::reflection::XIdlClass>> aStack{m_xIdlClass};
+
+    while (!aStack.empty())
+    {
+        css::uno::Reference<css::reflection::XIdlClass> xParent = std::move(aStack.end()[-1]);
+        aStack.pop_back();
+
+        if (xParent->equals(pOther->m_xIdlClass))
+        {
+            lua_pushboolean(pLuaState, true);
+            return 1;
+        }
+
+        const css::uno::Sequence<css::uno::Reference<css::reflection::XIdlClass>> aParents
+            = xParent->getSuperclasses();
+        aStack.insert(aStack.end(), aParents.begin(), aParents.end());
+    }
+
+    lua_pushboolean(pLuaState, false);
+    return 1;
+}
+
+int Type::isSubclassOf(lua_State* pLuaState)
+{
+    Type* pType = checkType(pLuaState, 1);
+    return pType->doIsSubclassOf(pLuaState);
 }
 }
 
