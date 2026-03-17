@@ -13,12 +13,14 @@
 #include <com/sun/star/beans/XIntrospection.hpp>
 #include <com/sun/star/beans/XIntrospectionAccess.hpp>
 #include <com/sun/star/lang/NoSuchMethodException.hpp>
+#include <com/sun/star/reflection/InvocationTargetException.hpp>
 #include <com/sun/star/reflection/XIdlReflection.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 
 #include "method.hxx"
 #include "conversions.hxx"
 #include "struct.hxx"
+#include "pushexception.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -343,10 +345,14 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
                     ++nInArg;
             }
         }
+        catch (const css::reflection::InvocationTargetException& e)
+        {
+            pushExceptionFromAny(pLuaState, e.TargetException, m_rRuntime);
+            goto set_lua_error;
+        }
         catch (const css::uno::Exception& e)
         {
-            rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
-            lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+            pushExceptionFromAny(pLuaState, css::uno::Any(e), m_rRuntime);
             goto set_lua_error;
         }
 

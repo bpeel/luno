@@ -14,6 +14,7 @@
 #include <com/sun/star/reflection/XIdlReflection.hpp>
 
 #include "conversions.hxx"
+#include "pushexception.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -111,8 +112,7 @@ int Struct::doIndex(lua_State* pLuaState)
             }
             catch (const css::uno::Exception& e)
             {
-                rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
-                lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+                pushExceptionFromAny(pLuaState, css::uno::Any(e), m_rRuntime);
                 goto set_lua_error;
             }
         }
@@ -162,8 +162,7 @@ int Struct::doNewIndex(lua_State* pLuaState)
             }
             catch (const css::uno::Exception& e)
             {
-                rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
-                lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+                pushExceptionFromAny(pLuaState, css::uno::Any(e), m_rRuntime);
                 goto set_lua_error;
             }
         }

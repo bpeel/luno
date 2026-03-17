@@ -21,6 +21,7 @@
 #include "type.hxx"
 #include "enumtype.hxx"
 #include "conversions.hxx"
+#include "pushexception.hxx"
 
 namespace com::sun::star::container
 {
@@ -146,8 +147,7 @@ bool createConstant(lua_State *pLuaState, const rtl::OUString& sFullName,
     }
     catch (const css::uno::Exception& e)
     {
-        rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
-        lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+        pushExceptionFromAny(pLuaState, css::uno::Any(e), rRuntime);
         return false;
     }
 

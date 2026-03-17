@@ -13,6 +13,7 @@
 
 #include "conversions.hxx"
 #include "struct.hxx"
+#include "pushexception.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -114,8 +115,7 @@ int Type::doNewFunc(lua_State* pLuaState)
     }
     catch (css::uno::Exception& e)
     {
-        rtl::OString sMessage = rtl::OUStringToOString(e.Message, RTL_TEXTENCODING_UTF8);
-        lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+        pushExceptionFromAny(pLuaState, css::uno::Any(e), m_rRuntime);
         goto set_lua_error;
     }
 
