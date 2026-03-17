@@ -209,6 +209,13 @@ void Struct::setValue(const css::uno::Any& xValue)
     m_xValue = xValue;
 }
 
+css::uno::Reference<css::reflection::XIdlClass> Struct::getType()
+{
+    if (ensureIdlClass())
+        return m_xIdlClass;
+    else
+        return css::uno::Reference<css::reflection::XIdlClass>();
+}
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
