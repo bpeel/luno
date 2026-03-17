@@ -119,19 +119,20 @@ $(OUT_COMP_SLO)/%.$(OBJ_EXT) : %.cxx $(COMP_TYPEFLAG) $(LUA_LIB)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
 	$(CC) $(LOCAL_CXX_FLAGS) $(CC_FLAGS) $(CC_INCLUDES) -I$(OUT_COMP_INC) -I$(LUA_INSTALL_DIR)/include $(CC_DEFINES) $(CC_OUTPUT_SWITCH)$(subst /,$(PS),$@) $<
 
-$(OUT_COMP_SLO)/protocolhandler.$(OBJ_EXT) : protocolhandler.hxx luno.hxx
-$(OUT_COMP_SLO)/luno.$(OBJ_EXT) : luno.hxx object.hxx lookup.hxx runtime.hxx
-$(OUT_COMP_SLO)/exports.$(OBJ_EXT) : protocolhandler.hxx
-$(OUT_COMP_SLO)/object.$(OBJ_EXT) : object.hxx method.hxx runtime.hxx pushexception.hxx
-$(OUT_COMP_SLO)/conversions.$(OBJ_EXT) : conversions.hxx enumvalue.hxx runtime.hxx
-$(OUT_COMP_SLO)/method.$(OBJ_EXT) : method.hxx
-$(OUT_COMP_SLO)/struct.$(OBJ_EXT) : struct.hxx runtime.hxx pushexception.hxx
-$(OUT_COMP_SLO)/lookup.$(OBJ_EXT) : lookup.hxx type.hxx enumtype.hxx runtime.hxx pushexception.hxx
-$(OUT_COMP_SLO)/type.$(OBJ_EXT) : type.hxx runtime.hxx pushexception.hxx
+$(OUT_COMP_SLO)/conversions.$(OBJ_EXT) : conversions.hxx enumvalue.hxx object.hxx runtime.hxx struct.hxx
 $(OUT_COMP_SLO)/enumtype.$(OBJ_EXT) : enumtype.hxx enumvalue.hxx runtime.hxx
 $(OUT_COMP_SLO)/enumvalue.$(OBJ_EXT) : enumvalue.hxx runtime.hxx
-$(OUT_COMP_SLO)/pushexception.$(OBJ_EXT) : pushexception.hxx conversions.hxx
+$(OUT_COMP_SLO)/exports.$(OBJ_EXT) : luno.hxx protocolhandler.hxx runtime.hxx testhelper.hxx
+$(OUT_COMP_SLO)/lookup.$(OBJ_EXT) : conversions.hxx enumtype.hxx enumvalue.hxx lookup.hxx pushexception.hxx runtime.hxx type.hxx
+$(OUT_COMP_SLO)/luno.$(OBJ_EXT) : conversions.hxx lookup.hxx luno.hxx lunotype.hxx object.hxx runtime.hxx
+$(OUT_COMP_SLO)/lunotype.$(OBJ_EXT) : lunotype.hxx runtime.hxx struct.hxx type.hxx
+$(OUT_COMP_SLO)/method.$(OBJ_EXT) : method.hxx
+$(OUT_COMP_SLO)/object.$(OBJ_EXT) : conversions.hxx method.hxx object.hxx pushexception.hxx runtime.hxx struct.hxx
+$(OUT_COMP_SLO)/protocolhandler.$(OBJ_EXT) : protocolhandler.hxx
+$(OUT_COMP_SLO)/pushexception.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx
+$(OUT_COMP_SLO)/struct.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx struct.hxx
 $(OUT_COMP_SLO)/testhelper.$(OBJ_EXT) : testhelper.hxx
+$(OUT_COMP_SLO)/type.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx struct.hxx type.hxx
 
 ifeq "$(OS)" "WIN"
 $(SHAREDLIB_OUT)/%.$(SHAREDLIB_EXT) : $(SLOFILES)
