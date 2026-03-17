@@ -220,6 +220,7 @@ int lookup(lua_State* pLuaState)
 
             case css::uno::TypeClass_INTERFACE:
             case css::uno::TypeClass_STRUCT:
+            case css::uno::TypeClass_EXCEPTION:
                 return createType(pLuaState, sFullName, *pRuntime) ? 1 : 0;
 
             case css::uno::TypeClass_ENUM:

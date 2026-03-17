@@ -21,7 +21,8 @@ void Struct::pushStruct(lua_State* pLuaState,
                         const css::uno::Any& xValue,
                         const Runtime& rRuntime)
 {
-    assert(xValue.getValueTypeClass() == css::uno::TypeClass_STRUCT);
+    assert(xValue.getValueTypeClass() == css::uno::TypeClass_STRUCT ||
+           xValue.getValueTypeClass() == css::uno::TypeClass_EXCEPTION);
 
     void *pUserData = lua_newuserdatauv(pLuaState, sizeof(Struct), 0);
 

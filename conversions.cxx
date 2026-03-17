@@ -150,6 +150,7 @@ void pushAny(lua_State* pLuaState,
             break;
 
         case css::uno::TypeClass_STRUCT:
+        case css::uno::TypeClass_EXCEPTION:
             Struct::pushStruct(pLuaState, xAny, rRuntime);
             return;
 
