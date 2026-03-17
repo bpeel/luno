@@ -70,7 +70,7 @@ DATA_FILES = \
            Addons.xcu \
            ProtocolHandler.xcu \
            pkg-description.txt \
-           COPYING
+           COPYING.MPL
 
 # Targets
 .PHONY: ALL
