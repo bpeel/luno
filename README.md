@@ -121,6 +121,23 @@ Constants are accessible directly and have whatever Lua type most closely resemb
 assert(com.sun.star.awt.FontWeight.BOLD == 150)
 ```
 
+### Exceptions
+
+Exceptions thrown when calling a method on an UNO object are wrapped into a userdata value and then set as a Lua error. You can catch the errors with the builtin `pcall` function. This calls the given function and adds a boolean return value. If the boolean is false than an error occurred and you can get access to the error object as the second return value. You can then use the `lunotype` function to get access to the type of the error and use the `issubclassof` method to check if the error object is a subclass of the type you’re looking for. For example:
+
+```lua
+local ret, exception = pcall(
+    function()
+        model:getPropertyValue("notARealProperty")
+    end
+)
+
+if not ret and lunotype(exception):issubclassof(
+    com.sun.star.beans.UnknownPropertyException) then
+    print("Caught UnknownPropertyException: " .. exception.Message)
+end
+```
+
 ## Example
 
 Here is some example code to insert text and shapes onto the end of the current Writer document:
