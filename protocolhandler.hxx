@@ -7,8 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_LUNO_PROTOCOL_HANDLER_H
-#define INCLUDED_LUNO_PROTOCOL_HANDLER_H
+#pragma once
 
 #include <cppuhelper/implbase4.hxx>
 #include <com/sun/star/lang/XInitialization.hpp>
@@ -72,7 +71,5 @@ private:
     css::uno::Reference<css::frame::XFrame> m_xFrame;
 };
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

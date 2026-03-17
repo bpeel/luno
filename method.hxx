@@ -7,8 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_LUNO_METHOD_H
-#define INCLUDED_LUNO_METHOD_H
+#pragma once
 
 #include <lua.hpp>
 #include <rtl/ustring.hxx>
@@ -63,7 +62,5 @@ private:
     static int gc(lua_State* pLuaState);
 };
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

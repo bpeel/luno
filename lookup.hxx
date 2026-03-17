@@ -7,8 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#ifndef INCLUDED_LUNO_LOOKUP_H
-#define INCLUDED_LUNO_LOOKUP_H
+#pragma once
 
 #include <lua.hpp>
 #include "runtime.hxx"
@@ -21,7 +20,5 @@ namespace uk::co::busydoingnothing::luno
 // lookups
 void pushLookupFunc(lua_State* pLuaState, const Runtime& rRuntime);
 }
-
-#endif
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
