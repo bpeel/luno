@@ -21,6 +21,7 @@ interface XTestHelper
                         [in] long thirdReturnValue, [out] long fourthReturn);
     TestEnum getFourEnum();
     long getEnumValue([in] TestEnum theEnum);
+    void throwException();
 };
 
 }; }; }; }; };

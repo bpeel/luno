@@ -40,6 +40,7 @@ public:
                              sal_Int32 thirdReturnValue, sal_Int32& fourthReturn) override;
     TestEnum getFourEnum() override;
     sal_Int32 getEnumValue(TestEnum nEnum) override;
+    void throwException() override;
 
     static rtl::OUString getImplementationNameStatic();
     static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();

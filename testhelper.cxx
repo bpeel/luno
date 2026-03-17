@@ -10,6 +10,7 @@
 #include "testhelper.hxx"
 
 #include <uk/co/busydoingnothing/luno/qa/XTestHelper.hpp>
+#include <com/sun/star/lang/IllegalArgumentException.hpp>
 
 namespace uk::co::busydoingnothing::luno::qa
 {
@@ -47,6 +48,12 @@ TestEnum TestHelper::getFourEnum()
 sal_Int32 TestHelper::getEnumValue(TestEnum nEnum)
 {
     return nEnum;
+}
+
+void TestHelper::throwException()
+{
+    throw css::lang::IllegalArgumentException(rtl::OUString("Your argument is illegal"),
+                                              static_cast<XTestHelper*>(this), 0);
 }
 
 rtl::OUString SAL_CALL TestHelper::getImplementationName()

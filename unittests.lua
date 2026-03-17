@@ -154,3 +154,14 @@ assert(lunotype(uk.co.busydoingnothing.luno.qa.TestStruct:new()) ==
        uk.co.busydoingnothing.luno.qa.TestStruct)
 -- Non struct/exception objects shouldn’t have a type
 assert(lunotype(serviceManager) == nil)
+
+-- Test catching an exception
+do
+    local ret, exception = pcall(function() testHelper:throwException() end)
+
+    -- ret should be false indicating that an error occurred
+    assert(ret == false)
+    -- the exception should be wrapped into a userdata with the right type
+    assert(lunotype(exception) == com.sun.star.lang.IllegalArgumentException)
+    assert(exception.Message == "Your argument is illegal")
+end
