@@ -12,8 +12,9 @@
 #include <lua.hpp>
 #include <rtl/ustring.hxx>
 #include <com/sun/star/lang/XServiceInfo.hpp>
+#include <com/sun/star/script/provider/XScript.hpp>
 #include <com/sun/star/uno/Reference.hxx>
-#include <cppuhelper/implbase2.hxx>
+#include <cppuhelper/implbase3.hxx>
 #include <uk/co/busydoingnothing/luno/XRunner.hpp>
 
 #include "runtime.hxx"
@@ -21,7 +22,8 @@
 namespace uk::co::busydoingnothing::luno
 {
 class Luno
-    : public cppu::WeakImplHelper2<XRunner, css::lang::XServiceInfo>
+    : public cppu::WeakImplHelper3<XRunner, css::lang::XServiceInfo,
+                                   css::script::provider::XScript>
 {
 public:
     // XServiceInfo
@@ -31,6 +33,10 @@ public:
     // XRunner
     void SAL_CALL setCode(const rtl::OUString& sName, const rtl::OUString& sCode) override;
     css::uno::Any SAL_CALL execute() override;
+    // XScript
+    css::uno::Any invoke(const css::uno::Sequence<css::uno::Any>& aParams,
+                         css::uno::Sequence<sal_Int16>& aOutParamIndex,
+                         css::uno::Sequence<css::uno::Any>& aOutParam) override;
 
     static rtl::OUString getImplementationNameStatic();
     static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();

@@ -12,6 +12,7 @@
 #include <rtl/string.h>
 #include <com/sun/star/beans/theIntrospection.hpp>
 #include <com/sun/star/container/XHierarchicalNameAccess.hpp>
+#include <com/sun/star/reflection/InvocationTargetException.hpp>
 #include <com/sun/star/reflection/theCoreReflection.hpp>
 #include <com/sun/star/script/Converter.hpp>
 #include <com/sun/star/uno/RuntimeException.hpp>
@@ -105,6 +106,21 @@ css::uno::Any SAL_CALL Luno::execute()
     lua_pop(m_pLuaState, 1);
 
     return xResult;
+}
+
+css::uno::Any Luno::invoke(const css::uno::Sequence<css::uno::Any>& aParams,
+                           css::uno::Sequence<sal_Int16>& aOutParamIndex,
+                           css::uno::Sequence<css::uno::Any>& aOutParam)
+{
+    try
+    {
+        return execute();
+    }
+    catch (const LuaException& e)
+    {
+        throw css::reflection::InvocationTargetException(
+            e.Message, static_cast<css::uno::XWeak*>(this), css::uno::Any(e));
+    }
 }
 
 Luno::~Luno()
