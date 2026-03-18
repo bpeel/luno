@@ -11,7 +11,8 @@ module uk { module co { module busydoingnothing { module luno {
 
 interface XRunner: com::sun::star::uno::XInterface
 {
-    any executeCode([in] string name, [in] string code);
+    void setCode([in] string name, [in] string code);
+    any execute();
 };
 
 }; }; }; };

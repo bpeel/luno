@@ -53,7 +53,8 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
 
         try
         {
-            xRunner->executeCode(sFilename, sSource);
+            xRunner->setCode(sFilename, sSource);
+            xRunner->execute();
         }
         catch (const uk::co::busydoingnothing::luno::LuaException& e)
         {

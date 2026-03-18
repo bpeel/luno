@@ -68,10 +68,10 @@ void Luno::throwLuaError()
     throw LuaException(sMessage);
 }
 
-css::uno::Any SAL_CALL Luno::executeCode(const rtl::OUString& sName, const rtl::OUString& sCode)
+void SAL_CALL Luno::setCode(const rtl::OUString& sName, const rtl::OUString& sCode)
 {
     if (!m_aRuntime.isValid())
-        throw css::uno::RuntimeException("executeCode called while Luno object is invalid state");
+        throw css::uno::RuntimeException("setCode called while Luno object is invalid state");
 
     rtl::OString sCodeUtf8 = rtl::OUStringToOString(sCode, RTL_TEXTENCODING_UTF8);
 
@@ -80,6 +80,22 @@ css::uno::Any SAL_CALL Luno::executeCode(const rtl::OUString& sName, const rtl::
 
     if (nRet != LUA_OK)
         throwLuaError();
+
+    // Store the code in the registry for later execution
+    lua_pushstring(m_pLuaState, CODE_NAME);
+    lua_pushvalue(m_pLuaState, -2);
+    lua_rawset(m_pLuaState, LUA_REGISTRYINDEX);
+    lua_pop(m_pLuaState, 1);
+}
+
+css::uno::Any SAL_CALL Luno::execute()
+{
+    if (!m_aRuntime.isValid())
+        throw css::uno::RuntimeException("execute called while Luno object is invalid state");
+
+    // Get the compiled code that was previously stored in the registry
+    lua_pushstring(m_pLuaState, CODE_NAME);
+    lua_rawget(m_pLuaState, LUA_REGISTRYINDEX);
 
     if (lua_pcall(m_pLuaState, 0, 1, 0) != LUA_OK)
         throwLuaError();

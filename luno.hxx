@@ -29,8 +29,8 @@ public:
     sal_Bool SAL_CALL supportsService(rtl::OUString const& serviceName) override;
     css::uno::Sequence<rtl::OUString> SAL_CALL getSupportedServiceNames() override;
     // XRunner
-    css::uno::Any SAL_CALL executeCode(
-        const rtl::OUString& sName, const rtl::OUString& sCode) override;
+    void SAL_CALL setCode(const rtl::OUString& sName, const rtl::OUString& sCode) override;
+    css::uno::Any SAL_CALL execute() override;
 
     static rtl::OUString getImplementationNameStatic();
     static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();
@@ -40,6 +40,8 @@ public:
 private:
     Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext);
     ~Luno();
+
+    static constexpr const char* CODE_NAME = "Luno_Code";
 
     void throwLuaError();
 

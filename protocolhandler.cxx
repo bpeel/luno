@@ -205,7 +205,8 @@ void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
 
         try
         {
-            xRunner->executeCode("(selected text)", sSource);
+            xRunner->setCode("(selected text)", sSource);
+            xRunner->execute();
         }
         catch (const LuaException& e)
         {
