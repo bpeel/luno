@@ -12,7 +12,6 @@
 #include <uno/lbnames.h>
 #include <com/sun/star/lang/XMultiServiceFactory.hpp>
 
-#include "protocolhandler.hxx"
 #include "scriptprovider.hxx"
 #include "luno.hxx"
 #include "testhelper.hxx"
@@ -23,9 +22,6 @@ namespace
 {
 const struct ::cppu::ImplementationEntry s_component_entries [] =
 {
-    { ProtocolHandler::create, ProtocolHandler::getImplementationNameStatic,
-      ProtocolHandler::getSupportedServiceNamesStatic, cppu::createSingleComponentFactory,
-      0, 0 },
     { Luno::create, Luno::getImplementationNameStatic,
       Luno::getSupportedServiceNamesStatic, cppu::createSingleComponentFactory,
       0, 0 },

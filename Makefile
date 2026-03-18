@@ -33,7 +33,6 @@ LUA_INSTALL_DIR=$(LUA_SOURCE_PARENT)/lua-install
 LUA_LIB=$(LUA_INSTALL_DIR)/lib/liblua.a
 
 CXXFILES = \
-           protocolhandler.cxx \
            luno.cxx \
            object.cxx \
            method.cxx \
@@ -72,8 +71,6 @@ IDLFILES = \
            idl/uk/co/busydoingnothing/luno/qa/XTestHelper.idl
 
 DATA_FILES = \
-           Addons.xcu \
-           ProtocolHandler.xcu \
            pkg-description.txt \
            COPYING.MPL
 
@@ -125,13 +122,12 @@ $(OUT_COMP_SLO)/%.$(OBJ_EXT) : %.cxx $(COMP_TYPEFLAG) $(LUA_LIB)
 $(OUT_COMP_SLO)/conversions.$(OBJ_EXT) : conversions.hxx enumvalue.hxx object.hxx runtime.hxx struct.hxx
 $(OUT_COMP_SLO)/enumtype.$(OBJ_EXT) : enumtype.hxx enumvalue.hxx runtime.hxx
 $(OUT_COMP_SLO)/enumvalue.$(OBJ_EXT) : enumvalue.hxx runtime.hxx
-$(OUT_COMP_SLO)/exports.$(OBJ_EXT) : luno.hxx protocolhandler.hxx runtime.hxx scriptprovider.hxx testhelper.hxx
+$(OUT_COMP_SLO)/exports.$(OBJ_EXT) : luno.hxx runtime.hxx scriptprovider.hxx testhelper.hxx
 $(OUT_COMP_SLO)/lookup.$(OBJ_EXT) : conversions.hxx enumtype.hxx enumvalue.hxx lookup.hxx pushexception.hxx runtime.hxx type.hxx
 $(OUT_COMP_SLO)/luno.$(OBJ_EXT) : conversions.hxx lookup.hxx luno.hxx lunotype.hxx object.hxx runtime.hxx
 $(OUT_COMP_SLO)/lunotype.$(OBJ_EXT) : lunotype.hxx runtime.hxx struct.hxx type.hxx
 $(OUT_COMP_SLO)/method.$(OBJ_EXT) : method.hxx
 $(OUT_COMP_SLO)/object.$(OBJ_EXT) : conversions.hxx method.hxx object.hxx pushexception.hxx runtime.hxx struct.hxx
-$(OUT_COMP_SLO)/protocolhandler.$(OBJ_EXT) : protocolhandler.hxx
 $(OUT_COMP_SLO)/pushexception.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx
 $(OUT_COMP_SLO)/scriptbrowser.$(OBJ_EXT) : scriptbrowser.hxx scriptfile.hxx
 $(OUT_COMP_SLO)/scriptfile.$(OBJ_EXT) : scriptfile.hxx
