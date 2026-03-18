@@ -69,15 +69,14 @@ void Luno::throwLuaError()
     throw LuaException(sMessage);
 }
 
-void SAL_CALL Luno::setCode(const rtl::OUString& sName, const rtl::OUString& sCode)
+void SAL_CALL Luno::setCode(const rtl::OUString& sName, const css::uno::Sequence<sal_Int8>& aCode)
 {
     if (!m_aRuntime.isValid())
         throw css::uno::RuntimeException("setCode called while Luno object is invalid state");
 
-    rtl::OString sCodeUtf8 = rtl::OUStringToOString(sCode, RTL_TEXTENCODING_UTF8);
-
-    int nRet = luaL_loadbuffer(m_pLuaState, sCodeUtf8.getStr(), sCodeUtf8.getLength(),
-                               rtl::OUStringToOString(sName, RTL_TEXTENCODING_UTF8).getStr());
+    int nRet = luaL_loadbuffer(
+        m_pLuaState, reinterpret_cast<const char*>(aCode.getConstArray()), aCode.getLength(),
+        rtl::OUStringToOString(sName, RTL_TEXTENCODING_UTF8).getStr());
 
     if (nRet != LUA_OK)
         throwLuaError();

@@ -202,10 +202,13 @@ void SAL_CALL ProtocolHandler::dispatch(const css::util::URL& aURL,
     else
     {
         css::uno::Reference<XRunner> xRunner = Runner::create(m_xContext);
+        rtl::OString sSourceUtf8 = rtl::OUStringToOString(sSource, RTL_TEXTENCODING_UTF8);
+        css::uno::Sequence<sal_Int8> sSourceSequence(
+            reinterpret_cast<const sal_Int8*>(sSourceUtf8.getStr()), sSourceUtf8.getLength());
 
         try
         {
-            xRunner->setCode("(selected text)", sSource);
+            xRunner->setCode("(selected text)", sSourceSequence);
             xRunner->execute();
         }
         catch (const LuaException& e)

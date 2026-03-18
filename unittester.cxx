@@ -49,11 +49,12 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
             continue;
         }
 
-        rtl::OUString sSource(sSourceUtf8.c_str(), sSourceUtf8.size(), RTL_TEXTENCODING_UTF8);
+        css::uno::Sequence<sal_Int8> sSourceSequence(
+            reinterpret_cast<const sal_Int8*>(sSourceUtf8.data()), sSourceUtf8.size());
 
         try
         {
-            xRunner->setCode(sFilename, sSource);
+            xRunner->setCode(sFilename, sSourceSequence);
             xRunner->execute();
         }
         catch (const uk::co::busydoingnothing::luno::LuaException& e)
