@@ -55,7 +55,15 @@ rtl::OUString SAL_CALL ScriptBrowser::getName()
 css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> SAL_CALL
 ScriptBrowser::getChildNodes()
 {
-    css::uno::Sequence<rtl::OUString> aChildren;
+    if (!m_xFileAccess->isFolder(m_sBaseUri) && m_xFileAccess->exists(m_sBaseUri))
+    {
+        // Each file is treated as a container with a single macro inside it
+        css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> aChild(1);
+
+        aChild[0].set(new ScriptFile(m_xContext, m_xUriHelper, m_sBaseUri));
+
+        return aChild;
+    }
 
     try
     {
@@ -67,7 +75,7 @@ ScriptBrowser::getChildNodes()
 
         for (int i = 0, nCount = aChildren.getLength(); i < nCount; ++i)
         {
-            if (m_xFileAccess->isFolder(aChildren[i]))
+            if (m_xFileAccess->isFolder(aChildren[i]) || aChildren[i].endsWith(".lua"))
             {
                 rtl::OUString sName;
 
@@ -77,10 +85,6 @@ ScriptBrowser::getChildNodes()
                 aNodes.emplace_back(
                     new ScriptBrowser(m_xContext, m_xUriHelper, m_xFileAccess, sName,
                                       aChildren[i]));
-            }
-            else if (aChildren[i].endsWith(".lua"))
-            {
-                aNodes.emplace_back(new ScriptFile(m_xContext, m_xUriHelper, aChildren[i]));
             }
         }
 
