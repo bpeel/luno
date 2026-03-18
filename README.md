@@ -18,7 +18,9 @@ If you want to additionally run some unit tests you can type `make check`.
 
 ## Using
 
-Luno is currently only an experiment. The only way to use it for now is it copy some Lua source code into a Writer document, select it all and then click on “Run Lua Code” from the “Tools→AddOn” menu. The source code can use the builtin `XCONTEXT` global variable to access `XComponentContext` and find UNO services.
+Once the extension is installed you can create Lua macros by adding files in the right directory. On Linux this will probably be `~/.config/libreoffice/4/user/Scripts/lua`. Add your script file to that directory with the extension `.lua`. Note that unlike pyuno, each script file can only have a single macro and the code for it is the entire file. Don’t put the macro code into a function, although you can of course define functions that the macro will use. Once the script file is created you can find the macro in Tools→Macros→Organize Macros→Lua. Once you find the macro in the tree you can select it and press “Run” to run it. You should also be able to find the macro in the keyboard customization dialog where you can assign a shortcut for it.
+
+The macro source code can use the builtin `XCONTEXT` global variable to access `XComponentContext` and find UNO services.
 
 ### Types
 
