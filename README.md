@@ -162,8 +162,7 @@ desktop = com.sun.star.frame.theDesktop:get(XCONTEXT)
 Here is some example code to insert text and shapes onto the end of the current Writer document:
 
 ```lua
-local desktop = XCONTEXT:getValueByName(
-  "/singletons/com.sun.star.frame.theDesktop");
+local desktop = com.sun.star.frame.theDesktop:get(XCONTEXT);
 local frame = desktop:getCurrentFrame();
 local controller = frame:getController();
 local model = controller:getModel();
