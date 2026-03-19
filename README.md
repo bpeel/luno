@@ -140,6 +140,15 @@ if not ret and lunotype(exception):issubclassof(
 end
 ```
 
+### Services
+
+New-style services can be constructed using their constructors like so:
+
+```lua
+urlTransformer = com.sun.star.util.URLTransformer:create(XCONTEXT)
+dialogProvider = com.sun.star.awt.DialogProvider:createWithModel(XCONTEXT, model)
+```
+
 ## Example
 
 Here is some example code to insert text and shapes onto the end of the current Writer document:
