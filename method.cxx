@@ -14,8 +14,7 @@
 namespace uk::co::busydoingnothing::luno
 {
 void Method::pushMethod(lua_State* pLuaState,
-                        const css::uno::Reference<css::reflection::XIdlMethod>& xMethod,
-                        lua_CFunction pFunc)
+                        const css::uno::Reference<css::reflection::XIdlMethod>& xMethod)
 {
     // Check if we already have a cached method with this name in the registry
     lua_pushstring(pLuaState, METHOD_CACHE_NAME);
@@ -47,9 +46,9 @@ void Method::pushMethod(lua_State* pLuaState,
         void* pUserData = lua_newuserdatauv(pLuaState, sizeof(Method), 0);
 
         // Use placement new to initialize the method in the memory that Lua allocated
-        new (pUserData) Method(xMethod, pFunc);
+        new (pUserData) Method(xMethod);
 
-        pushMetatable(pLuaState, pFunc);
+        pushMetatable(pLuaState);
         lua_setmetatable(pLuaState, -2);
 
         lua_pushvalue(pLuaState, -2);
@@ -63,7 +62,7 @@ void Method::pushMethod(lua_State* pLuaState,
     lua_remove(pLuaState, -2);
 }
 
-void Method::pushMetatable(lua_State* pLuaState, lua_CFunction pFunc)
+void Method::pushMetatable(lua_State* pLuaState)
 {
     if (luaL_newmetatable(pLuaState, CLASS_NAME) == 0)
     {
@@ -73,10 +72,6 @@ void Method::pushMetatable(lua_State* pLuaState, lua_CFunction pFunc)
 
     lua_pushliteral(pLuaState, "__gc");
     lua_pushcfunction(pLuaState, gc);
-    lua_rawset(pLuaState, -3);
-
-    lua_pushliteral(pLuaState, "__call");
-    lua_pushcfunction(pLuaState, pFunc);
     lua_rawset(pLuaState, -3);
 }
 

@@ -113,7 +113,10 @@ int Object::doIndexUncached(lua_State* pLuaState)
         }
 
         if (xMethod.is())
-            Method::pushMethod(pLuaState, xMethod, call);
+        {
+            Method::pushMethod(pLuaState, xMethod);
+            lua_pushcclosure(pLuaState, call, 1);
+        }
         else
             lua_pushnil(pLuaState);
     }
@@ -254,7 +257,7 @@ internal_error:
 
 int Object::call(lua_State* pLuaState, Method* pMethod)
 {
-    int nArgs = lua_gettop(pLuaState) - 2;
+    int nArgs = lua_gettop(pLuaState) - 1;
 
     {
         css::uno::Reference<css::reflection::XIdlMethod> xIdlMethod = pMethod->getIdlMethod();
@@ -295,7 +298,7 @@ int Object::call(lua_State* pLuaState, Method* pMethod)
                 if (rParamInfos[i].aMode == css::reflection::ParamMode_OUT)
                     continue;
 
-                aArgs[i] = getAnyAsType(pLuaState, nInArg + 3, rParamInfos[i].aType, m_rRuntime);
+                aArgs[i] = getAnyAsType(pLuaState, nInArg + 2, rParamInfos[i].aType, m_rRuntime);
 
                 ++nInArg;
             }
@@ -311,7 +314,7 @@ int Object::call(lua_State* pLuaState, Method* pMethod)
                 ++nReturnValues;
             }
 
-            nInArg = 3;
+            nInArg = 2;
 
             for (int i = 0; i < rParamInfos.getLength(); ++i)
             {
@@ -367,8 +370,8 @@ set_lua_error:
 
 int Object::call(lua_State* pLuaState)
 {
-    Method* pMethod = Method::checkMethod(pLuaState, 1);
-    Object* pObject = checkObject(pLuaState, 2);
+    Method* pMethod = Method::checkMethod(pLuaState, lua_upvalueindex(1));
+    Object* pObject = checkObject(pLuaState, 1);
 
     return pObject->call(pLuaState, pMethod);
 }

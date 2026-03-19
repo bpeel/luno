@@ -28,8 +28,7 @@ class Method
 {
 public:
     static void pushMethod(lua_State* pLuaState,
-                           const css::uno::Reference<css::reflection::XIdlMethod>& xMethod,
-                           lua_CFunction pFunc);
+                           const css::uno::Reference<css::reflection::XIdlMethod>& xMethod);
 
     static Method* checkMethod(lua_State* pLuaState, int nArg);
     css::uno::Reference<css::reflection::XIdlMethod> getIdlMethod() const { return m_xMethod; }
@@ -39,10 +38,9 @@ public:
     }
 
 private:
-    Method(const css::uno::Reference<css::reflection::XIdlMethod>& xMethod, lua_CFunction pFunc)
+    Method(const css::uno::Reference<css::reflection::XIdlMethod>& xMethod)
         : m_xMethod(xMethod)
         , m_aParamInfos(xMethod->getParameterInfos())
-        , m_pFunc(pFunc)
     {
     }
 
@@ -52,9 +50,8 @@ private:
     css::uno::Reference<css::reflection::XIdlMethod> m_xMethod;
     // Cache the parameter infos so they can be accessed without having to do an allocation.
     css::uno::Sequence<css::reflection::ParamInfo> m_aParamInfos;
-    lua_CFunction m_pFunc;
 
-    static void pushMetatable(lua_State* pLuaState, lua_CFunction pFunc);
+    static void pushMetatable(lua_State* pLuaState);
     static int gc(lua_State* pLuaState);
 };
 }
