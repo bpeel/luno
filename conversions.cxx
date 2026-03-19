@@ -25,9 +25,7 @@ namespace uk::co::busydoingnothing::luno
 {
 namespace
 {
-bool pushSequence(lua_State* pLuaState,
-                  const css::uno::Any& xAny,
-                  const Runtime& rRuntime)
+bool pushSequence(lua_State* pLuaState, const css::uno::Any& xAny, const Runtime& rRuntime)
 {
     css::uno::Reference<css::reflection::XIdlClass> xClass
         = rRuntime.m_xIdlReflection->getType(xAny);
@@ -78,9 +76,7 @@ css::uno::Any convertInteger(lua_Integer nValue)
 }
 }
 
-void pushAny(lua_State* pLuaState,
-             const css::uno::Any& xAny,
-             const Runtime& rRuntime)
+void pushAny(lua_State* pLuaState, const css::uno::Any& xAny, const Runtime& rRuntime)
 {
     switch (xAny.getValueTypeClass())
     {
@@ -89,12 +85,12 @@ void pushAny(lua_State* pLuaState,
             return;
 
         case css::uno::TypeClass_BOOLEAN:
-            {
-                bool b;
-                xAny >>= b;
-                lua_pushboolean(pLuaState, b);
-            }
+        {
+            bool b;
+            xAny >>= b;
+            lua_pushboolean(pLuaState, b);
             return;
+        }
 
         case css::uno::TypeClass_BYTE:
         case css::uno::TypeClass_SHORT:
@@ -103,46 +99,46 @@ void pushAny(lua_State* pLuaState,
         case css::uno::TypeClass_UNSIGNED_LONG:
         case css::uno::TypeClass_HYPER:
         case css::uno::TypeClass_UNSIGNED_HYPER:
+        {
+            sal_Int64 nValue;
+            if (xAny >>= nValue)
             {
-                sal_Int64 nValue;
-                if (xAny >>= nValue)
-                {
-                    lua_pushinteger(pLuaState, nValue);
-                    return;
-                }
+                lua_pushinteger(pLuaState, nValue);
+                return;
             }
-            break;
+        }
+        break;
 
         case css::uno::TypeClass_FLOAT:
         case css::uno::TypeClass_DOUBLE:
+        {
+            lua_Number nValue;
+            if (xAny >>= nValue)
             {
-                lua_Number nValue;
-                if (xAny >>= nValue)
-                {
-                    lua_pushnumber(pLuaState, nValue);
-                    return;
-                }
+                lua_pushnumber(pLuaState, nValue);
+                return;
             }
-            break;
+        }
+        break;
 
         case css::uno::TypeClass_STRING:
-            {
-                rtl::OUString sValue;
-                xAny >>= sValue;
-                rtl::OString sUtf8Value = OUStringToOString(sValue, RTL_TEXTENCODING_UTF8);
-                lua_pushlstring(pLuaState, sUtf8Value.getStr(), sUtf8Value.getLength());
-            }
+        {
+            rtl::OUString sValue;
+            xAny >>= sValue;
+            rtl::OString sUtf8Value = OUStringToOString(sValue, RTL_TEXTENCODING_UTF8);
+            lua_pushlstring(pLuaState, sUtf8Value.getStr(), sUtf8Value.getLength());
             return;
+        }
 
         case css::uno::TypeClass_INTERFACE:
-            {
-                css::uno::Reference<css::uno::XInterface> xInterface;
-                if ((xAny >>= xInterface) && xInterface.is())
-                    Object::pushObject(pLuaState, xInterface, rRuntime);
-                else
-                    lua_pushnil(pLuaState);
-            }
+        {
+            css::uno::Reference<css::uno::XInterface> xInterface;
+            if ((xAny >>= xInterface) && xInterface.is())
+                Object::pushObject(pLuaState, xInterface, rRuntime);
+            else
+                lua_pushnil(pLuaState);
             return;
+        }
 
         case css::uno::TypeClass_SEQUENCE:
             if (pushSequence(pLuaState, xAny, rRuntime))
@@ -155,16 +151,16 @@ void pushAny(lua_State* pLuaState,
             return;
 
         case css::uno::TypeClass_ENUM:
-            {
-                sal_Int32 nValue = *static_cast<sal_Int32 const*>(xAny.getValue());
+        {
+            sal_Int32 nValue = *static_cast<sal_Int32 const*>(xAny.getValue());
 
-                EnumValue::pushEnumValue(pLuaState, xAny.getValueType(), nValue, rRuntime);
-            }
+            EnumValue::pushEnumValue(pLuaState, xAny.getValueType(), nValue, rRuntime);
             return;
+        }
     }
 
     rtl::OUString sMessage = "Unsupported conversion from type class "
-        + rtl::OUString::number(xAny.getValueTypeClass());
+                             + rtl::OUString::number(xAny.getValueTypeClass());
     throw css::beans::IllegalTypeException(sMessage);
 }
 
@@ -193,27 +189,27 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
             return xAny;
 
         case LUA_TSTRING:
-            {
-                size_t nLen;
-                const char* pString = lua_tolstring(pLuaState, nIndex, &nLen);
-                xAny <<= rtl::OUString(pString, nLen, RTL_TEXTENCODING_UTF8);
-            }
+        {
+            size_t nLen;
+            const char* pString = lua_tolstring(pLuaState, nIndex, &nLen);
+            xAny <<= rtl::OUString(pString, nLen, RTL_TEXTENCODING_UTF8);
+        }
             return xAny;
 
         case LUA_TTABLE:
+        {
+            // We don’t want to use lua_len because we don’t want Lua to do a longjmp
+            lua_Unsigned nLen = lua_rawlen(pLuaState, nIndex);
+            css::uno::Sequence<css::uno::Any> aValues(nLen);
+            for (lua_Unsigned i = 0; i < nLen; ++i)
             {
-                // We don’t want to use lua_len because we don’t want Lua to do a longjmp
-                lua_Unsigned nLen = lua_rawlen(pLuaState, nIndex);
-                css::uno::Sequence<css::uno::Any> aValues(nLen);
-                for (lua_Unsigned i = 0; i < nLen; ++i)
-                {
-                    lua_rawgeti(pLuaState, nIndex, i + 1);
-                    aValues[i] = getAny(pLuaState, -1);
-                    lua_pop(pLuaState, 1);
-                }
-                xAny <<= aValues;
+                lua_rawgeti(pLuaState, nIndex, i + 1);
+                aValues[i] = getAny(pLuaState, -1);
+                lua_pop(pLuaState, 1);
             }
+            xAny <<= aValues;
             return xAny;
+        }
 
         case LUA_TUSERDATA:
             if (Object* pObject = Object::testObject(pLuaState, nIndex))
@@ -232,9 +228,9 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
             break;
     }
 
-    const char *sTypeName = luaL_typename(pLuaState, nIndex);
+    const char* sTypeName = luaL_typename(pLuaState, nIndex);
     rtl::OUString sMessage = rtl::OUString("Unsupported conversion from Lua type ")
-        + rtl::OUString(sTypeName, strlen(sTypeName), RTL_TEXTENCODING_UTF8);
+                             + rtl::OUString(sTypeName, strlen(sTypeName), RTL_TEXTENCODING_UTF8);
     throw css::beans::IllegalTypeException(sMessage);
 }
 

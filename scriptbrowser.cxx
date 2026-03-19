@@ -28,8 +28,8 @@ namespace uk::co::busydoingnothing::luno
 ScriptBrowser::ScriptBrowser(
     const css::uno::Reference<css::uno::XComponentContext>& xContext,
     const css::uno::Reference<css::script::provider::XScriptURIHelper>& xUriHelper)
-    : ScriptBrowser(xContext, xUriHelper, css::ucb::SimpleFileAccess::create(xContext),
-                    "Lua", xUriHelper->getRootStorageURI())
+    : ScriptBrowser(xContext, xUriHelper, css::ucb::SimpleFileAccess::create(xContext), "Lua",
+                    xUriHelper->getRootStorageURI())
 {
 }
 
@@ -37,8 +37,7 @@ ScriptBrowser::ScriptBrowser(
     const css::uno::Reference<css::uno::XComponentContext>& xContext,
     const css::uno::Reference<css::script::provider::XScriptURIHelper>& xUriHelper,
     const css::uno::Reference<css::ucb::XSimpleFileAccess3>& xFileAccess,
-    const rtl::OUString& sName,
-    const rtl::OUString& sBaseUri)
+    const rtl::OUString& sName, const rtl::OUString& sBaseUri)
     : m_xContext(xContext)
     , m_xUriHelper(xUriHelper)
     , m_xFileAccess(xFileAccess)
@@ -47,13 +46,10 @@ ScriptBrowser::ScriptBrowser(
 {
 }
 
-rtl::OUString SAL_CALL ScriptBrowser::getName()
-{
-    return m_sName;
-}
+rtl::OUString SAL_CALL ScriptBrowser::getName() { return m_sName; }
 
-css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> SAL_CALL
-ScriptBrowser::getChildNodes()
+css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>
+    SAL_CALL ScriptBrowser::getChildNodes()
 {
     if (!m_xFileAccess->isFolder(m_sBaseUri) && m_xFileAccess->exists(m_sBaseUri))
     {
@@ -82,9 +78,8 @@ ScriptBrowser::getChildNodes()
                 sal_Int32 nSlashPos = aChildren[i].lastIndexOf('/');
                 sName = aChildren[i].copy(nSlashPos == -1 ? 0 : nSlashPos + 1);
 
-                aNodes.emplace_back(
-                    new ScriptBrowser(m_xContext, m_xUriHelper, m_xFileAccess, sName,
-                                      aChildren[i]));
+                aNodes.emplace_back(new ScriptBrowser(m_xContext, m_xUriHelper, m_xFileAccess,
+                                                      sName, aChildren[i]));
             }
         }
 
@@ -106,10 +101,7 @@ ScriptBrowser::getChildNodes()
     }
 }
 
-sal_Bool SAL_CALL ScriptBrowser::hasChildNodes()
-{
-    return true;
-}
+sal_Bool SAL_CALL ScriptBrowser::hasChildNodes() { return true; }
 
 sal_Int16 SAL_CALL ScriptBrowser::getType()
 {

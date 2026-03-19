@@ -22,10 +22,10 @@ void Type::pushType(lua_State* pLuaState,
                     const css::uno::Reference<css::reflection::XIdlClass>& xIdlClass,
                     const Runtime& rRuntime)
 {
-    void *pUserData = lua_newuserdatauv(pLuaState, sizeof(Type), 0);
+    void* pUserData = lua_newuserdatauv(pLuaState, sizeof(Type), 0);
 
     // Use placement new to initialize the type in the memory that Lua allocated
-    new(pUserData) Type(xIdlClass, rRuntime);
+    new (pUserData) Type(xIdlClass, rRuntime);
 
     pushMetatable(pLuaState);
     lua_setmetatable(pLuaState, -2);
@@ -134,7 +134,7 @@ int Type::doNewFunc(lua_State* pLuaState)
     return 1;
 
     // The goto is to make sure the destructors are all called before letting Lua do a longjmp
- set_lua_error:
+set_lua_error:
     lua_error(pLuaState);
     return 0;
 }
@@ -149,8 +149,8 @@ int Type::doEq(lua_State* pLuaState)
 {
     Type* pOther = testType(pLuaState, 2);
 
-    lua_pushboolean(pLuaState, pOther != nullptr && pOther->m_xIdlClass.is()
-                    && m_xIdlClass.is() && m_xIdlClass->equals(pOther->m_xIdlClass));
+    lua_pushboolean(pLuaState, pOther != nullptr && pOther->m_xIdlClass.is() && m_xIdlClass.is()
+                                   && m_xIdlClass->equals(pOther->m_xIdlClass));
 
     return 1;
 }
@@ -179,7 +179,7 @@ int Type::doIsSubclassOf(lua_State* pLuaState)
     }
 
     // Recursively check all of the parents subclasses
-    std::vector<css::uno::Reference<css::reflection::XIdlClass>> aStack{m_xIdlClass};
+    std::vector<css::uno::Reference<css::reflection::XIdlClass>> aStack{ m_xIdlClass };
 
     while (!aStack.empty())
     {

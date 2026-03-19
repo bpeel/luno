@@ -26,10 +26,8 @@ namespace uk::co::busydoingnothing::luno
 class ScriptBrowser;
 
 class ScriptProvider
-    : public cppu::WeakImplHelper4<css::lang::XInitialization,
-                                   css::script::browse::XBrowseNode,
-                                   css::script::provider::XScriptProvider,
-                                   css::lang::XServiceInfo>
+    : public cppu::WeakImplHelper4<css::lang::XInitialization, css::script::browse::XBrowseNode,
+                                   css::script::provider::XScriptProvider, css::lang::XServiceInfo>
 {
 public:
     // XInitialization
@@ -42,14 +40,14 @@ public:
 
     // XBrowseNode
     rtl::OUString SAL_CALL getName() override;
-    css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> SAL_CALL
-    getChildNodes() override;
+    css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>
+        SAL_CALL getChildNodes() override;
     sal_Bool SAL_CALL hasChildNodes() override;
     sal_Int16 SAL_CALL getType() override;
 
     // XScriptProvider
-    css::uno::Reference<css::script::provider::XScript> SAL_CALL getScript(
-        const rtl::OUString& sScriptUri) override;
+    css::uno::Reference<css::script::provider::XScript>
+        SAL_CALL getScript(const rtl::OUString& sScriptUri) override;
 
     static rtl::OUString getImplementationNameStatic();
     static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();

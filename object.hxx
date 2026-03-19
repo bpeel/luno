@@ -38,8 +38,7 @@ public:
     css::uno::Reference<css::uno::XInterface> getInterface() { return m_xInterface; }
 
 private:
-    Object(const css::uno::Reference<css::uno::XInterface>& xInterface,
-           const Runtime& rRuntime)
+    Object(const css::uno::Reference<css::uno::XInterface>& xInterface, const Runtime& rRuntime)
         : m_rRuntime(rRuntime)
         , m_xInterface(xInterface)
     {

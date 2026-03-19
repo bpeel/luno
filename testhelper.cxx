@@ -40,15 +40,9 @@ sal_Int32 TestHelper::multipleReturn(sal_Int32 mainReturnValue, sal_Int32 second
     return mainReturnValue;
 }
 
-TestEnum TestHelper::getFourEnum()
-{
-    return TestEnum::TestEnum_FOUR;
-}
+TestEnum TestHelper::getFourEnum() { return TestEnum::TestEnum_FOUR; }
 
-sal_Int32 TestHelper::getEnumValue(TestEnum nEnum)
-{
-    return nEnum;
-}
+sal_Int32 TestHelper::getEnumValue(TestEnum nEnum) { return nEnum; }
 
 void TestHelper::throwException()
 {
@@ -56,10 +50,7 @@ void TestHelper::throwException()
                                               static_cast<XTestHelper*>(this), 0);
 }
 
-rtl::OUString SAL_CALL TestHelper::getImplementationName()
-{
-    return getImplementationNameStatic();
-}
+rtl::OUString SAL_CALL TestHelper::getImplementationName() { return getImplementationNameStatic(); }
 
 sal_Bool SAL_CALL TestHelper::supportsService(rtl::OUString const& serviceName)
 {

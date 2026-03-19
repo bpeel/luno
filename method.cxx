@@ -44,10 +44,10 @@ void Method::pushMethod(lua_State* pLuaState,
         // We don’t have a cached method so we need to create it
         lua_pop(pLuaState, 1);
 
-        void *pUserData = lua_newuserdatauv(pLuaState, sizeof(Method), 0);
+        void* pUserData = lua_newuserdatauv(pLuaState, sizeof(Method), 0);
 
         // Use placement new to initialize the method in the memory that Lua allocated
-        new(pUserData) Method(xMethod, pFunc);
+        new (pUserData) Method(xMethod, pFunc);
 
         pushMetatable(pLuaState, pFunc);
         lua_setmetatable(pLuaState, -2);

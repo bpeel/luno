@@ -20,9 +20,7 @@ class XIdlClass;
 
 namespace uk::co::busydoingnothing::luno
 {
-void pushAny(lua_State* pLuaState,
-             const css::uno::Any& xAny,
-             const Runtime& rRuntime);
+void pushAny(lua_State* pLuaState, const css::uno::Any& xAny, const Runtime& rRuntime);
 css::uno::Any getAny(lua_State* pLuaState, int nIndex);
 css::uno::Any getAnyAsType(lua_State* pLuaState, int nIndex,
                            const css::uno::Reference<css::reflection::XIdlClass>& xDestType,

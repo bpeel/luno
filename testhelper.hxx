@@ -20,8 +20,7 @@ class XComponentContext;
 
 namespace uk::co::busydoingnothing::luno::qa
 {
-class TestHelper
-    : public cppu::WeakImplHelper2<XTestHelper, css::lang::XServiceInfo>
+class TestHelper : public cppu::WeakImplHelper2<XTestHelper, css::lang::XServiceInfo>
 {
 public:
     // XServiceInfo

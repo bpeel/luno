@@ -20,40 +20,36 @@ using namespace uk::co::busydoingnothing::luno;
 
 namespace
 {
-const struct ::cppu::ImplementationEntry s_component_entries [] =
-{
-    { Luno::create, Luno::getImplementationNameStatic,
-      Luno::getSupportedServiceNamesStatic, cppu::createSingleComponentFactory,
-      0, 0 },
+const struct ::cppu::ImplementationEntry s_component_entries[] = {
+    { Luno::create, Luno::getImplementationNameStatic, Luno::getSupportedServiceNamesStatic,
+      cppu::createSingleComponentFactory, 0, 0 },
     { ScriptProvider::create, ScriptProvider::getImplementationNameStatic,
-      ScriptProvider::getSupportedServiceNamesStatic, cppu::createSingleComponentFactory,
-      0, 0 },
+      ScriptProvider::getSupportedServiceNamesStatic, cppu::createSingleComponentFactory, 0, 0 },
     { qa::TestHelper::create, qa::TestHelper::getImplementationNameStatic,
-      qa::TestHelper::getSupportedServiceNamesStatic, cppu::createSingleComponentFactory,
-      0, 0 },
+      qa::TestHelper::getSupportedServiceNamesStatic, cppu::createSingleComponentFactory, 0, 0 },
     { 0, 0, 0, 0, 0, 0 }
 };
 }
 
 extern "C"
 {
-SAL_DLLPUBLIC_EXPORT void* SAL_CALL component_getFactory(const char* implName, void* xMgr,
-                                                         void* xRegistry)
-{
-    return cppu::component_getFactoryHelper(implName, xMgr, xRegistry, s_component_entries);
-}
+    SAL_DLLPUBLIC_EXPORT void* SAL_CALL component_getFactory(const char* implName, void* xMgr,
+                                                             void* xRegistry)
+    {
+        return cppu::component_getFactoryHelper(implName, xMgr, xRegistry, s_component_entries);
+    }
 
-SAL_DLLPUBLIC_EXPORT void SAL_CALL
-component_getImplementationEnvironment(char const** ppEnvTypeName, uno_Environment**)
-{
-    *ppEnvTypeName = CPPU_CURRENT_LANGUAGE_BINDING_NAME;
-}
+    SAL_DLLPUBLIC_EXPORT void SAL_CALL
+    component_getImplementationEnvironment(char const** ppEnvTypeName, uno_Environment**)
+    {
+        *ppEnvTypeName = CPPU_CURRENT_LANGUAGE_BINDING_NAME;
+    }
 
-sal_Bool SAL_CALL component_writeInfo(css::lang::XMultiServiceFactory* xMgr,
-                                      css::registry::XRegistryKey* xRegistry)
-{
-    return cppu::component_writeInfoHelper(xMgr, xRegistry, s_component_entries);
-}
+    sal_Bool SAL_CALL component_writeInfo(css::lang::XMultiServiceFactory* xMgr,
+                                          css::registry::XRegistryKey* xRegistry)
+    {
+        return cppu::component_writeInfoHelper(xMgr, xRegistry, s_component_entries);
+    }
 } // extern C
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */

@@ -32,18 +32,14 @@ public:
                            lua_CFunction pFunc);
 
     static Method* checkMethod(lua_State* pLuaState, int nArg);
-    css::uno::Reference<css::reflection::XIdlMethod> getIdlMethod() const
-    {
-        return m_xMethod;
-    }
+    css::uno::Reference<css::reflection::XIdlMethod> getIdlMethod() const { return m_xMethod; }
     const css::uno::Sequence<css::reflection::ParamInfo>& getParameterInfos() const
     {
         return m_aParamInfos;
     }
 
 private:
-    Method(const css::uno::Reference<css::reflection::XIdlMethod>& xMethod,
-           lua_CFunction pFunc)
+    Method(const css::uno::Reference<css::reflection::XIdlMethod>& xMethod, lua_CFunction pFunc)
         : m_xMethod(xMethod)
         , m_aParamInfos(xMethod->getParameterInfos())
         , m_pFunc(pFunc)

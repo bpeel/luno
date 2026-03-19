@@ -38,7 +38,8 @@ namespace uk::co::busydoingnothing::luno
 {
 namespace
 {
-void createModule(lua_State *pLuaState, const rtl::OUString& sFullNameUtf16, const Runtime& rRuntime)
+void createModule(lua_State* pLuaState, const rtl::OUString& sFullNameUtf16,
+                  const Runtime& rRuntime)
 {
     rtl::OString sFullName = OUStringToOString(sFullNameUtf16, RTL_TEXTENCODING_UTF8);
     sal_Int32 nPartStart = 0;
@@ -92,7 +93,7 @@ void createModule(lua_State *pLuaState, const rtl::OUString& sFullNameUtf16, con
 
 // Stores the item at the top of the stack in the table for the module of the item. Does not pop the
 // item
-void storeInParentModule(lua_State *pLuaState, const rtl::OUString& sFullName,
+void storeInParentModule(lua_State* pLuaState, const rtl::OUString& sFullName,
                          const Runtime& rRuntime)
 {
     // Add the type to the module dictionary
@@ -102,16 +103,15 @@ void storeInParentModule(lua_State *pLuaState, const rtl::OUString& sFullName,
         return;
 
     createModule(pLuaState, rtl::OUString(sFullName.getStr(), nLastDot), rRuntime);
-    rtl::OString sLastPart(
-        sFullName.getStr() + nLastDot + 1, sFullName.getLength() - nLastDot - 1,
-        RTL_TEXTENCODING_UTF8);
+    rtl::OString sLastPart(sFullName.getStr() + nLastDot + 1, sFullName.getLength() - nLastDot - 1,
+                           RTL_TEXTENCODING_UTF8);
     lua_pushlstring(pLuaState, sLastPart.getStr(), sLastPart.getLength());
     lua_pushvalue(pLuaState, -3);
     lua_rawset(pLuaState, -3);
     lua_pop(pLuaState, 1);
 }
 
-bool createType(lua_State *pLuaState, const rtl::OUString& sFullName, const Runtime& rRuntime)
+bool createType(lua_State* pLuaState, const rtl::OUString& sFullName, const Runtime& rRuntime)
 {
     css::uno::Reference<css::reflection::XIdlClass> xIdlClass
         = rRuntime.m_xIdlReflection->forName(sFullName);
@@ -126,7 +126,7 @@ bool createType(lua_State *pLuaState, const rtl::OUString& sFullName, const Runt
     return true;
 }
 
-bool createConstant(lua_State *pLuaState, const rtl::OUString& sFullName,
+bool createConstant(lua_State* pLuaState, const rtl::OUString& sFullName,
                     const css::uno::Reference<css::reflection::XTypeDescription>& xType,
                     const Runtime& rRuntime)
 {
@@ -135,9 +135,8 @@ bool createConstant(lua_State *pLuaState, const rtl::OUString& sFullName,
 
     if (!xConstantType.is())
     {
-        lua_pushliteral(pLuaState,
-                        "internal error: contant type found without implementing "
-                        "XContantTypeDescription");
+        lua_pushliteral(pLuaState, "internal error: contant type found without implementing "
+                                   "XContantTypeDescription");
         return false;
     }
 
@@ -156,18 +155,17 @@ bool createConstant(lua_State *pLuaState, const rtl::OUString& sFullName,
     return true;
 }
 
-bool createEnum(lua_State *pLuaState, const rtl::OUString& sFullName,
+bool createEnum(lua_State* pLuaState, const rtl::OUString& sFullName,
                 const css::uno::Reference<css::reflection::XTypeDescription>& xType,
                 const Runtime& rRuntime)
 {
-    css::uno::Reference<css::reflection::XEnumTypeDescription> xEnumType(
-        xType, css::uno::UNO_QUERY);
+    css::uno::Reference<css::reflection::XEnumTypeDescription> xEnumType(xType,
+                                                                         css::uno::UNO_QUERY);
 
     if (!xEnumType.is())
     {
-        lua_pushliteral(pLuaState,
-                        "internal error: enum type found without implementing "
-                        "XEnumTypeDescription");
+        lua_pushliteral(pLuaState, "internal error: enum type found without implementing "
+                                   "XEnumTypeDescription");
         return false;
     }
 
@@ -181,10 +179,10 @@ bool createEnum(lua_State *pLuaState, const rtl::OUString& sFullName,
 int lookup(lua_State* pLuaState)
 {
     size_t nKeyLength;
-    const char *sKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
+    const char* sKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
     size_t nPrefixLength;
-    const char* sPrefix = luaL_checklstring(
-        pLuaState, lua_upvalueindex(PREFIX_UPVALUE), &nPrefixLength);
+    const char* sPrefix
+        = luaL_checklstring(pLuaState, lua_upvalueindex(PREFIX_UPVALUE), &nPrefixLength);
     const Runtime* pRuntime = reinterpret_cast<const Runtime*>(
         lua_touserdata(pLuaState, lua_upvalueindex(RUNTIME_UPVALUE)));
 
@@ -192,8 +190,8 @@ int lookup(lua_State* pLuaState)
         luaL_error(pLuaState, "global called with Luno runtime in invalid state");
 
     {
-        rtl::OUString sFullName = rtl::OUString(sPrefix, nPrefixLength, RTL_TEXTENCODING_UTF8) +
-            rtl::OUString(sKey, nKeyLength, RTL_TEXTENCODING_UTF8);
+        rtl::OUString sFullName = rtl::OUString(sPrefix, nPrefixLength, RTL_TEXTENCODING_UTF8)
+                                  + rtl::OUString(sKey, nKeyLength, RTL_TEXTENCODING_UTF8);
 
         css::uno::Any xTypeAny;
 
@@ -239,7 +237,7 @@ int lookup(lua_State* pLuaState)
     }
 
     // The goto is to make sure the destructors are all called before letting Lua do a longjmp
- set_lua_error:
+set_lua_error:
     lua_error(pLuaState);
     return 0;
 }
@@ -248,8 +246,7 @@ int lookup(lua_State* pLuaState)
 void pushLookupFunc(lua_State* pLuaState, const Runtime& rRuntime)
 {
     // Store a pointer to the runtime as light user data
-    lua_pushlightuserdata(pLuaState,
-                          const_cast<void*>(reinterpret_cast<const void*>(&rRuntime)));
+    lua_pushlightuserdata(pLuaState, const_cast<void*>(reinterpret_cast<const void*>(&rRuntime)));
     // Store two upvalues. The first one has already been pushed onto the stack by the caller to
     // this function.
     lua_pushcclosure(pLuaState, lookup, 2);

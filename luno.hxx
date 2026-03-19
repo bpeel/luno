@@ -22,8 +22,7 @@
 namespace uk::co::busydoingnothing::luno
 {
 class Luno
-    : public cppu::WeakImplHelper3<XRunner, css::lang::XServiceInfo,
-                                   css::script::provider::XScript>
+    : public cppu::WeakImplHelper3<XRunner, css::lang::XServiceInfo, css::script::provider::XScript>
 {
 public:
     // XServiceInfo
@@ -31,8 +30,8 @@ public:
     sal_Bool SAL_CALL supportsService(rtl::OUString const& serviceName) override;
     css::uno::Sequence<rtl::OUString> SAL_CALL getSupportedServiceNames() override;
     // XRunner
-    void SAL_CALL setCode(
-        const rtl::OUString& sName, const css::uno::Sequence<sal_Int8>& aCode) override;
+    void SAL_CALL setCode(const rtl::OUString& sName,
+                          const css::uno::Sequence<sal_Int8>& aCode) override;
     css::uno::Any SAL_CALL execute() override;
     // XScript
     css::uno::Any invoke(const css::uno::Sequence<css::uno::Any>& aParams,

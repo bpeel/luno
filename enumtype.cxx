@@ -18,10 +18,10 @@ void EnumType::pushEnumType(
     const css::uno::Reference<css::reflection::XEnumTypeDescription>& xTypeDescription,
     const Runtime& rRuntime)
 {
-    void *pUserData = lua_newuserdatauv(pLuaState, sizeof(EnumType), 0);
+    void* pUserData = lua_newuserdatauv(pLuaState, sizeof(EnumType), 0);
 
     // Use placement new to initialize the type in the memory that Lua allocated
-    new(pUserData) EnumType(xTypeDescription, rRuntime);
+    new (pUserData) EnumType(xTypeDescription, rRuntime);
 
     pushMetatable(pLuaState);
     lua_setmetatable(pLuaState, -2);

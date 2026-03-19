@@ -31,8 +31,7 @@ public:
     css::uno::Reference<css::reflection::XIdlClass> getIdlClass() { return m_xIdlClass; }
 
 private:
-    Type(const css::uno::Reference<css::reflection::XIdlClass>& xIdlClass,
-         const Runtime& rRuntime)
+    Type(const css::uno::Reference<css::reflection::XIdlClass>& xIdlClass, const Runtime& rRuntime)
         : m_rRuntime(rRuntime)
         , m_xIdlClass(xIdlClass)
     {

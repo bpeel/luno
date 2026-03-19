@@ -29,24 +29,20 @@ class XComponentContext;
 
 namespace uk::co::busydoingnothing::luno
 {
-class ScriptBrowser
-    : public cppu::WeakImplHelper1<css::script::browse::XBrowseNode>
+class ScriptBrowser : public cppu::WeakImplHelper1<css::script::browse::XBrowseNode>
 {
 public:
-    ScriptBrowser(
-        const css::uno::Reference<css::uno::XComponentContext>& xContext,
-        const css::uno::Reference<css::script::provider::XScriptURIHelper>& xUriHelper);
-    ScriptBrowser(
-        const css::uno::Reference<css::uno::XComponentContext>& xContext,
-        const css::uno::Reference<css::script::provider::XScriptURIHelper>& xUriHelper,
-        const css::uno::Reference<css::ucb::XSimpleFileAccess3>& xFileAccess,
-        const rtl::OUString& sName,
-        const rtl::OUString& sBaseUri);
+    ScriptBrowser(const css::uno::Reference<css::uno::XComponentContext>& xContext,
+                  const css::uno::Reference<css::script::provider::XScriptURIHelper>& xUriHelper);
+    ScriptBrowser(const css::uno::Reference<css::uno::XComponentContext>& xContext,
+                  const css::uno::Reference<css::script::provider::XScriptURIHelper>& xUriHelper,
+                  const css::uno::Reference<css::ucb::XSimpleFileAccess3>& xFileAccess,
+                  const rtl::OUString& sName, const rtl::OUString& sBaseUri);
 
     // XBrowseNode
     rtl::OUString SAL_CALL getName() override;
-    css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> SAL_CALL
-    getChildNodes() override;
+    css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>
+        SAL_CALL getChildNodes() override;
     sal_Bool SAL_CALL hasChildNodes() override;
     sal_Int16 SAL_CALL getType() override;
 

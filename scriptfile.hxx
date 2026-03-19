@@ -37,15 +37,15 @@ public:
 
     // XBrowseNode
     rtl::OUString SAL_CALL getName() override;
-    css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> SAL_CALL
-    getChildNodes() override;
+    css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>
+        SAL_CALL getChildNodes() override;
     sal_Bool SAL_CALL hasChildNodes() override;
     sal_Int16 SAL_CALL getType() override;
 
     // XPropertySet
     css::uno::Reference<css::beans::XPropertySetInfo> SAL_CALL getPropertySetInfo() override;
-    void SAL_CALL setPropertyValue(
-        const rtl::OUString& aPropertyName, const css::uno::Any& aValue) override;
+    void SAL_CALL setPropertyValue(const rtl::OUString& aPropertyName,
+                                   const css::uno::Any& aValue) override;
     css::uno::Any SAL_CALL getPropertyValue(const rtl::OUString& sPropertyName) override;
     void SAL_CALL addPropertyChangeListener(
         const rtl::OUString& aPropertyName,

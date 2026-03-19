@@ -24,8 +24,7 @@ namespace uk::co::busydoingnothing::luno
 class Struct
 {
 public:
-    static void pushStruct(lua_State* pLuaState,
-                           const css::uno::Any& xValue,
+    static void pushStruct(lua_State* pLuaState, const css::uno::Any& xValue,
                            const Runtime& rRuntime);
 
     static Struct* testStruct(lua_State* pLuaState, int nArg);

@@ -18,17 +18,15 @@
 
 namespace uk::co::busydoingnothing::luno
 {
-void Struct::pushStruct(lua_State* pLuaState,
-                        const css::uno::Any& xValue,
-                        const Runtime& rRuntime)
+void Struct::pushStruct(lua_State* pLuaState, const css::uno::Any& xValue, const Runtime& rRuntime)
 {
-    assert(xValue.getValueTypeClass() == css::uno::TypeClass_STRUCT ||
-           xValue.getValueTypeClass() == css::uno::TypeClass_EXCEPTION);
+    assert(xValue.getValueTypeClass() == css::uno::TypeClass_STRUCT
+           || xValue.getValueTypeClass() == css::uno::TypeClass_EXCEPTION);
 
-    void *pUserData = lua_newuserdatauv(pLuaState, sizeof(Struct), 0);
+    void* pUserData = lua_newuserdatauv(pLuaState, sizeof(Struct), 0);
 
     // Use placement new to initialize the struct in the memory that Lua allocated
-    new(pUserData) Struct(xValue, rRuntime);
+    new (pUserData) Struct(xValue, rRuntime);
 
     pushMetatable(pLuaState);
     lua_setmetatable(pLuaState, -2);
@@ -101,8 +99,8 @@ int Struct::doIndex(lua_State* pLuaState)
 
     {
         rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
-        css::uno::Reference<css::reflection::XIdlField2> xField(
-            m_xIdlClass->getField(sKey), css::uno::UNO_QUERY);
+        css::uno::Reference<css::reflection::XIdlField2> xField(m_xIdlClass->getField(sKey),
+                                                                css::uno::UNO_QUERY);
 
         if (xField.is())
         {
@@ -120,13 +118,12 @@ int Struct::doIndex(lua_State* pLuaState)
         {
             lua_pushnil(pLuaState);
         }
-
     }
 
     return 1;
 
     // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
- set_lua_error:
+set_lua_error:
     lua_error(pLuaState);
     return 0;
 }
@@ -151,8 +148,8 @@ int Struct::doNewIndex(lua_State* pLuaState)
 
     {
         rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
-        css::uno::Reference<css::reflection::XIdlField2> xField(
-            m_xIdlClass->getField(sKey), css::uno::UNO_QUERY);
+        css::uno::Reference<css::reflection::XIdlField2> xField(m_xIdlClass->getField(sKey),
+                                                                css::uno::UNO_QUERY);
 
         if (xField.is())
         {
@@ -171,19 +168,18 @@ int Struct::doNewIndex(lua_State* pLuaState)
             lua_pushliteral(pLuaState, "Tried to set unknown property \"");
             lua_pushvalue(pLuaState, 2);
             lua_pushliteral(pLuaState, "\" on instance of ");
-            rtl::OString sTypeName = rtl::OUStringToOString(
-                m_xIdlClass->getName(), RTL_TEXTENCODING_UTF8);
+            rtl::OString sTypeName
+                = rtl::OUStringToOString(m_xIdlClass->getName(), RTL_TEXTENCODING_UTF8);
             lua_pushlstring(pLuaState, sTypeName.getStr(), sTypeName.getLength());
             lua_concat(pLuaState, 4);
             goto set_lua_error;
         }
-
     }
 
     return 0;
 
     // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
- set_lua_error:
+set_lua_error:
     lua_error(pLuaState);
     return 0;
 }

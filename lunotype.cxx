@@ -16,7 +16,7 @@ namespace uk::co::busydoingnothing::luno
 {
 namespace
 {
-int lunotype(lua_State *pLuaState)
+int lunotype(lua_State* pLuaState)
 {
     Struct* pStruct = Struct::testStruct(pLuaState, 1);
 

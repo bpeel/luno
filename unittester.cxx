@@ -29,8 +29,8 @@ SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
         if (argv[i][0] == '-')
             continue;
 
-        css::uno::Reference<uk::co::busydoingnothing::luno::XRunner> xRunner =
-            uk::co::busydoingnothing::luno::Runner::create(xContext);
+        css::uno::Reference<uk::co::busydoingnothing::luno::XRunner> xRunner
+            = uk::co::busydoingnothing::luno::Runner::create(xContext);
 
         rtl::OUString sFilename(argv[i], strlen(argv[i]), RTL_TEXTENCODING_UTF8);
         std::string sSourceUtf8;

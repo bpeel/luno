@@ -55,8 +55,8 @@ struct Runtime
 
     bool isValid() const
     {
-        return m_xContext.is() && m_xServiceManager.is() && m_xIntrospection.is() &&
-            m_xIdlReflection.is() && m_xTypeManager.is() && m_xTypeConverter.is();
+        return m_xContext.is() && m_xServiceManager.is() && m_xIntrospection.is()
+               && m_xIdlReflection.is() && m_xTypeManager.is() && m_xTypeConverter.is();
     }
 };
 }

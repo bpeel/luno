@@ -41,34 +41,25 @@ ScriptFile::ScriptFile(
     m_sName = sUri.copy(nStart, nCount);
 }
 
-rtl::OUString SAL_CALL ScriptFile::getName()
-{
-    return m_sName;
-}
+rtl::OUString SAL_CALL ScriptFile::getName() { return m_sName; }
 
-css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> SAL_CALL
-ScriptFile::getChildNodes()
+css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>
+    SAL_CALL ScriptFile::getChildNodes()
 {
     return css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>();
 }
 
-sal_Bool SAL_CALL ScriptFile::hasChildNodes()
-{
-    return false;
-}
+sal_Bool SAL_CALL ScriptFile::hasChildNodes() { return false; }
 
-sal_Int16 SAL_CALL ScriptFile::getType()
-{
-    return css::script::browse::BrowseNodeTypes::SCRIPT;
-}
+sal_Int16 SAL_CALL ScriptFile::getType() { return css::script::browse::BrowseNodeTypes::SCRIPT; }
 
 css::uno::Reference<css::beans::XPropertySetInfo> SAL_CALL ScriptFile::getPropertySetInfo()
 {
     return this;
 }
 
-void SAL_CALL ScriptFile::setPropertyValue(
-    const rtl::OUString& aPropertyName, const css::uno::Any& aValue)
+void SAL_CALL ScriptFile::setPropertyValue(const rtl::OUString& aPropertyName,
+                                           const css::uno::Any& aValue)
 {
 }
 
@@ -119,8 +110,7 @@ css::beans::Property SAL_CALL ScriptFile::getPropertyByName(const rtl::OUString&
         return getUriProperty();
     else
     {
-        throw css::beans::UnknownPropertyException(
-            "Tried to retrieve unknown property " + sName);
+        throw css::beans::UnknownPropertyException("Tried to retrieve unknown property " + sName);
     }
 }
 

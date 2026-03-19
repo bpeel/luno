@@ -36,7 +36,7 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     m_aRuntime.m_xIntrospection = css::beans::theIntrospection::get(xContext);
     m_aRuntime.m_xIdlReflection = css::reflection::theCoreReflection::get(xContext);
     xContext->getValueByName("/singletons/com.sun.star.reflection.theTypeDescriptionManager")
-    >>= m_aRuntime.m_xTypeManager;
+        >>= m_aRuntime.m_xTypeManager;
     m_aRuntime.m_xTypeConverter = css::script::Converter::create(xContext);
 
     luaL_openlibs(m_pLuaState);
@@ -62,7 +62,7 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
 void Luno::throwLuaError()
 {
     size_t nMessageLength;
-    const char *pMessage = luaL_tolstring(m_pLuaState, -1, &nMessageLength);
+    const char* pMessage = luaL_tolstring(m_pLuaState, -1, &nMessageLength);
     rtl::OUString sMessage(pMessage, nMessageLength, RTL_TEXTENCODING_UTF8);
     // Pop the error object and the string
     lua_pop(m_pLuaState, 2);
@@ -74,9 +74,9 @@ void SAL_CALL Luno::setCode(const rtl::OUString& sName, const css::uno::Sequence
     if (!m_aRuntime.isValid())
         throw css::uno::RuntimeException("setCode called while Luno object is invalid state");
 
-    int nRet = luaL_loadbuffer(
-        m_pLuaState, reinterpret_cast<const char*>(aCode.getConstArray()), aCode.getLength(),
-        rtl::OUStringToOString(sName, RTL_TEXTENCODING_UTF8).getStr());
+    int nRet = luaL_loadbuffer(m_pLuaState, reinterpret_cast<const char*>(aCode.getConstArray()),
+                               aCode.getLength(),
+                               rtl::OUStringToOString(sName, RTL_TEXTENCODING_UTF8).getStr());
 
     if (nRet != LUA_OK)
         throwLuaError();
@@ -122,15 +122,9 @@ css::uno::Any Luno::invoke(const css::uno::Sequence<css::uno::Any>& aParams,
     }
 }
 
-Luno::~Luno()
-{
-    lua_close(m_pLuaState);
-}
+Luno::~Luno() { lua_close(m_pLuaState); }
 
-rtl::OUString SAL_CALL Luno::getImplementationName()
-{
-    return getImplementationNameStatic();
-}
+rtl::OUString SAL_CALL Luno::getImplementationName() { return getImplementationNameStatic(); }
 
 sal_Bool SAL_CALL Luno::supportsService(rtl::OUString const& serviceName)
 {

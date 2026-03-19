@@ -18,10 +18,10 @@ void EnumValue::pushEnumValue(lua_State* pLuaState, const css::uno::Type& xType,
 {
     assert(xType.getTypeClass() == css::uno::TypeClass_ENUM);
 
-    void *pUserData = lua_newuserdatauv(pLuaState, sizeof(EnumValue), 0);
+    void* pUserData = lua_newuserdatauv(pLuaState, sizeof(EnumValue), 0);
 
     // Use placement new to initialize the type in the memory that Lua allocated
-    new(pUserData) EnumValue(xType, nValue, rRuntime);
+    new (pUserData) EnumValue(xType, nValue, rRuntime);
 
     pushMetatable(pLuaState);
     lua_setmetatable(pLuaState, -2);
@@ -95,8 +95,8 @@ int EnumValue::doEq(lua_State* pLuaState)
 {
     EnumValue* pOther = testEnumValue(pLuaState, 2);
 
-    lua_pushboolean(pLuaState, pOther != nullptr && m_xType == pOther->m_xType &&
-                    m_nValue == pOther->m_nValue);
+    lua_pushboolean(pLuaState, pOther != nullptr && m_xType == pOther->m_xType
+                                   && m_nValue == pOther->m_nValue);
 
     return 1;
 }

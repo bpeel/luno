@@ -49,13 +49,10 @@ void ScriptProvider::setLocation(const rtl::OUString& sLocation)
         new ScriptBrowser(m_xContext, m_xUriHelper));
 }
 
-rtl::OUString SAL_CALL ScriptProvider::getName()
-{
-    return "Lua";
-}
+rtl::OUString SAL_CALL ScriptProvider::getName() { return "Lua"; }
 
-css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> SAL_CALL
-ScriptProvider::getChildNodes()
+css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>
+    SAL_CALL ScriptProvider::getChildNodes()
 {
     if (m_xRootBrowser.is())
         return m_xRootBrowser->getChildNodes();
@@ -73,8 +70,8 @@ sal_Int16 SAL_CALL ScriptProvider::getType()
     return m_xRootBrowser.is() ? m_xRootBrowser->getType() : 0;
 }
 
-css::uno::Reference<css::script::provider::XScript> SAL_CALL ScriptProvider::getScript(
-    const rtl::OUString& sScriptUri)
+css::uno::Reference<css::script::provider::XScript>
+    SAL_CALL ScriptProvider::getScript(const rtl::OUString& sScriptUri)
 {
     css::uno::Reference<css::ucb::XSimpleFileAccess3> xFileAccess
         = css::ucb::SimpleFileAccess::create(m_xContext);
@@ -107,14 +104,14 @@ css::uno::Reference<css::script::provider::XScript> SAL_CALL ScriptProvider::get
         css::uno::Reference<XRunner> xRunner = Runner::create(m_xContext);
         xRunner->setCode(sName, aSourceSequence);
 
-        return css::uno::Reference<css::script::provider::XScript>(
-            xRunner, css::uno::UNO_QUERY_THROW);
+        return css::uno::Reference<css::script::provider::XScript>(xRunner,
+                                                                   css::uno::UNO_QUERY_THROW);
     }
     catch (const css::uno::Exception& e)
     {
         throw css::script::provider::ScriptFrameworkErrorException(
-            e.Message, static_cast<css::uno::XWeak*>(this),
-            sName, "Lua", css::script::provider::ScriptFrameworkErrorType::UNKNOWN);
+            e.Message, static_cast<css::uno::XWeak*>(this), sName, "Lua",
+            css::script::provider::ScriptFrameworkErrorType::UNKNOWN);
     }
 }
 

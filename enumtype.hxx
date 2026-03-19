@@ -24,17 +24,16 @@ namespace uk::co::busydoingnothing::luno
 class EnumType
 {
 public:
-    static void pushEnumType(
-        lua_State* pLuaState,
-        const css::uno::Reference<css::reflection::XEnumTypeDescription>& xTypeDescription,
-        const Runtime& rRuntime);
+    static void
+    pushEnumType(lua_State* pLuaState,
+                 const css::uno::Reference<css::reflection::XEnumTypeDescription>& xTypeDescription,
+                 const Runtime& rRuntime);
 
     static EnumType* testEnumType(lua_State* pLuaState, int nArg);
 
 private:
-    EnumType(
-        const css::uno::Reference<css::reflection::XEnumTypeDescription>& xTypeDescription,
-        const Runtime& rRuntime)
+    EnumType(const css::uno::Reference<css::reflection::XEnumTypeDescription>& xTypeDescription,
+             const Runtime& rRuntime)
         : m_rRuntime(rRuntime)
         , m_xTypeDescription(xTypeDescription)
     {

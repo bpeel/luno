@@ -29,10 +29,10 @@ void Object::pushObject(lua_State* pLuaState,
                         const Runtime& rRuntime)
 {
     // One user value to store a cache of methods
-    void *pUserData = lua_newuserdatauv(pLuaState, sizeof(Object), 1);
+    void* pUserData = lua_newuserdatauv(pLuaState, sizeof(Object), 1);
 
     // Use placement new to initialize the object in the memory that Lua allocated
-    new(pUserData) Object(xInterface, rRuntime);
+    new (pUserData) Object(xInterface, rRuntime);
 
     pushMetatable(pLuaState);
     lua_setmetatable(pLuaState, -2);
@@ -121,7 +121,7 @@ int Object::doIndexUncached(lua_State* pLuaState)
     return 1;
 
     // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
- state_error:
+state_error:
     luaL_error(pLuaState, "__index called an object in an invalid state");
     return 0;
 }
@@ -186,7 +186,7 @@ namespace
 {
 bool copyStruct(lua_State* pLuaState, int nArg, const css::uno::Any& xAny)
 {
-    Struct *pStruct = Struct::testStruct(pLuaState, nArg);
+    Struct* pStruct = Struct::testStruct(pLuaState, nArg);
 
     if (pStruct == nullptr)
     {
@@ -246,13 +246,13 @@ bool copySequence(lua_State* pLuaState, int nArg, const css::uno::Any& xAny,
 
     return true;
 
- internal_error:
+internal_error:
     lua_pushliteral(pLuaState, "internal error while copying sequence inout parameter back");
     return false;
 }
 }
 
-int Object::call(lua_State* pLuaState, Method *pMethod)
+int Object::call(lua_State* pLuaState, Method* pMethod)
 {
     int nArgs = lua_gettop(pLuaState) - 2;
 
@@ -261,13 +261,13 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
         const css::uno::Sequence<css::reflection::ParamInfo>& rParamInfos
             = xIdlMethod->getParameterInfos();
 
-        int nInArgs = std::count_if(
-            rParamInfos.begin(), rParamInfos.end(),
-            [] (const css::reflection::ParamInfo& rParamInfo)
-            {
-                return rParamInfo.aMode == css::reflection::ParamMode_IN ||
-                    rParamInfo.aMode == css::reflection::ParamMode_INOUT;
-            });
+        int nInArgs
+            = std::count_if(rParamInfos.begin(), rParamInfos.end(),
+                            [](const css::reflection::ParamInfo& rParamInfo)
+                            {
+                                return rParamInfo.aMode == css::reflection::ParamMode_IN
+                                       || rParamInfo.aMode == css::reflection::ParamMode_INOUT;
+                            });
 
         if (nInArgs != nArgs)
         {
@@ -317,31 +317,31 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
             {
                 css::reflection::ParamMode eParamMode = rParamInfos[i].aMode;
 
-                if (eParamMode == css::reflection::ParamMode_INOUT &&
-                    rParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_STRUCT)
+                if (eParamMode == css::reflection::ParamMode_INOUT
+                    && rParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_STRUCT)
                 {
                     // Instead of returning the struct, copy the values directly back into struct
                     // held by Lua
                     if (!copyStruct(pLuaState, nInArg, aArgs[i]))
                         goto set_lua_error;
                 }
-                else if (eParamMode == css::reflection::ParamMode_INOUT &&
-                         rParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_SEQUENCE)
+                else if (eParamMode == css::reflection::ParamMode_INOUT
+                         && rParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_SEQUENCE)
                 {
                     // Instead of returning the sequence, copy the values directly back into the
                     // table held by Lua
                     if (!copySequence(pLuaState, nInArg, aArgs[i], m_rRuntime))
                         goto set_lua_error;
                 }
-                else if (eParamMode == css::reflection::ParamMode_OUT ||
-                         eParamMode == css::reflection::ParamMode_INOUT)
+                else if (eParamMode == css::reflection::ParamMode_OUT
+                         || eParamMode == css::reflection::ParamMode_INOUT)
                 {
                     pushAny(pLuaState, aArgs[i], m_rRuntime);
                     ++nReturnValues;
                 }
 
-                if (eParamMode == css::reflection::ParamMode_IN ||
-                    eParamMode == css::reflection::ParamMode_INOUT)
+                if (eParamMode == css::reflection::ParamMode_IN
+                    || eParamMode == css::reflection::ParamMode_INOUT)
                     ++nInArg;
             }
         }
@@ -360,15 +360,15 @@ int Object::call(lua_State* pLuaState, Method *pMethod)
     }
 
     // The goto is to make sure the destructors are all called before letting Lua do a longjmp
- set_lua_error:
+set_lua_error:
     lua_error(pLuaState);
     return 0;
 }
 
 int Object::call(lua_State* pLuaState)
 {
-    Method *pMethod = Method::checkMethod(pLuaState, 1);
-    Object *pObject = checkObject(pLuaState, 2);
+    Method* pMethod = Method::checkMethod(pLuaState, 1);
+    Object* pObject = checkObject(pLuaState, 2);
 
     return pObject->call(pLuaState, pMethod);
 }
