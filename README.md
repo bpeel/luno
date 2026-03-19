@@ -149,6 +149,14 @@ urlTransformer = com.sun.star.util.URLTransformer:create(XCONTEXT)
 dialogProvider = com.sun.star.awt.DialogProvider:createWithModel(XCONTEXT, model)
 ```
 
+### Singletons
+
+Service-based singletons can be retrieved with the “get” method on the type, eg:
+
+```lua
+desktop = com.sun.star.frame.theDesktop:get(XCONTEXT)
+```
+
 ## Example
 
 Here is some example code to insert text and shapes onto the end of the current Writer document:
