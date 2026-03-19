@@ -14,6 +14,11 @@
 
 namespace uk::co::busydoingnothing::luno::qa
 {
+void TestHelper::initialize(const css::uno::Sequence<css::uno::Any>& aArguments)
+{
+    m_aArgs = aArguments;
+}
+
 void TestHelper::modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruct,
                               const rtl::OUString& sSetStringValue, TestStruct& aSetStringStruct)
 {
@@ -50,6 +55,8 @@ void TestHelper::throwException()
                                               static_cast<XTestHelper*>(this), 0);
 }
 
+css::uno::Sequence<css::uno::Any> TestHelper::getArguments() { return m_aArgs; }
+
 rtl::OUString SAL_CALL TestHelper::getImplementationName() { return getImplementationNameStatic(); }
 
 sal_Bool SAL_CALL TestHelper::supportsService(rtl::OUString const& serviceName)
@@ -77,8 +84,9 @@ rtl::OUString TestHelper::getImplementationNameStatic()
 
 css::uno::Sequence<rtl::OUString> TestHelper::getSupportedServiceNamesStatic()
 {
-    css::uno::Sequence<rtl::OUString> names(1);
+    css::uno::Sequence<rtl::OUString> names(2);
     names[0] = rtl::OUString("uk.co.busydoingnothing.luno.qa.TestHelper");
+    names[1] = rtl::OUString("uk.co.busydoingnothing.luno.qa.TestConstructors");
     return names;
 }
 

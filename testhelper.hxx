@@ -9,8 +9,9 @@
 
 #pragma once
 
+#include <com/sun/star/lang/XInitialization.hpp>
 #include <com/sun/star/lang/XServiceInfo.hpp>
-#include <cppuhelper/implbase2.hxx>
+#include <cppuhelper/implbase3.hxx>
 #include <uk/co/busydoingnothing/luno/qa/XTestHelper.hpp>
 
 namespace com::sun::star::uno
@@ -20,9 +21,13 @@ class XComponentContext;
 
 namespace uk::co::busydoingnothing::luno::qa
 {
-class TestHelper : public cppu::WeakImplHelper2<XTestHelper, css::lang::XServiceInfo>
+class TestHelper
+    : public cppu::WeakImplHelper3<css::lang::XInitialization, XTestHelper, css::lang::XServiceInfo>
 {
 public:
+    // XInitialization
+    void initialize(const css::uno::Sequence<css::uno::Any>& aArguments) override;
+
     // XServiceInfo
     rtl::OUString SAL_CALL getImplementationName() override;
     sal_Bool SAL_CALL supportsService(rtl::OUString const& serviceName) override;
@@ -39,11 +44,15 @@ public:
     TestEnum getFourEnum() override;
     sal_Int32 getEnumValue(TestEnum nEnum) override;
     void throwException() override;
+    css::uno::Sequence<css::uno::Any> getArguments() override;
 
     static rtl::OUString getImplementationNameStatic();
     static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();
     static css::uno::Reference<css::uno::XInterface>
     create(const css::uno::Reference<css::uno::XComponentContext>& xContext);
+
+private:
+    css::uno::Sequence<css::uno::Any> m_aArgs;
 };
 }
 

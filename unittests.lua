@@ -5,8 +5,7 @@
 -- file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 local serviceManager = XCONTEXT:getServiceManager()
-local testHelper = serviceManager:createInstanceWithContext(
-    "uk.co.busydoingnothing.luno.qa.TestHelper", XCONTEXT)
+local testHelper = uk.co.busydoingnothing.luno.qa.TestHelper:create(XCONTEXT)
 
 -- Helper function to check whether a type has been cached directly as
 -- a global variable without having to use the __index mechanism
@@ -164,4 +163,122 @@ do
     -- the exception should be wrapped into a userdata with the right type
     assert(lunotype(exception) == com.sun.star.lang.IllegalArgumentException)
     assert(exception.Message == "Your argument is illegal")
+end
+
+-- Helper functions to compare tables (but only if they are like arrays)
+function isTableEqual(a, b)
+    if #a ~= #b then return false end
+
+    for i = 1, #a do
+        if a[i] ~= b[i] then return false end
+    end
+
+    return true
+end
+
+function prettyTable(t)
+    local strings = {}
+    for k, v in ipairs(t) do
+        strings[k] = tostring(v)
+    end
+
+    return "{" .. table.concat(strings, ",") .. "}"
+end
+
+function assertTableEqual(expected, actual)
+    if not isTableEqual(expected, actual) then
+        error("Table comparison failed\n  Expected: " ..
+            prettyTable(expected) .. "\n  Actual:   " .. prettyTable(actual))
+    end
+end
+
+-- Service constructors
+do
+    local TestHelper = uk.co.busydoingnothing.luno.qa.TestHelper
+    local TestConstructors = uk.co.busydoingnothing.luno.qa.TestConstructors
+
+    -- Default constructor should be called “create”
+    assertTableEqual({}, TestHelper:create(XCONTEXT):getArguments())
+
+    -- Multiple arguments
+    do
+        local obj = TestConstructors:multipleArguments(XCONTEXT, 42, " is half of ", 84.0)
+        assertTableEqual({42, " is half of ", 84.0}, obj:getArguments())
+    end
+
+    -- Interface argument
+    do
+        local obj = TestConstructors:interfaceArgument(XCONTEXT, XCONTEXT)
+        assertTableEqual({XCONTEXT}, obj:getArguments())
+    end
+
+    -- null interface argument
+    do
+        -- nil should be coerced into a null reference even though normally it’s supposed to
+        -- represent the void type
+        local obj = TestConstructors:interfaceArgument(XCONTEXT, nil)
+        assertTableEqual({nil}, obj:getArguments())
+    end
+
+    -- Rest arguments, empty
+    do
+        local obj = TestConstructors:restArgument(XCONTEXT)
+        assertTableEqual({}, obj:getArguments())
+    end
+
+    -- Rest arguments, some
+    do
+        local obj = TestConstructors:restArgument(XCONTEXT, 1, 2, "buckle my shoe")
+        assertTableEqual({1, 2, "buckle my shoe"}, obj:getArguments())
+    end
+
+    -- Missing context argument
+    do
+        local ret, e = pcall(function() TestHelper:create() end)
+        assert(not ret)
+        assert(e == "uk.co.busydoingnothing.luno.qa.TestHelper::create requires 1 argument")
+    end
+
+    -- Missing both arguments
+    do
+        local ret, e = pcall(function() TestConstructors:interfaceArgument() end)
+        assert(not ret)
+        assert(e == "uk.co.busydoingnothing.luno.qa.TestConstructors::interfaceArgument requires "
+               .. "2 arguments")
+    end
+
+    -- Too many arguments
+    do
+        local ret, e = pcall(function() TestConstructors:interfaceArgument(XCONTEXT, 1, 2) end)
+        assert(not ret)
+        assert(e == "uk.co.busydoingnothing.luno.qa.TestConstructors::interfaceArgument requires "
+               .. "2 arguments")
+    end
+
+    -- Missing context when there are rest arguments
+    do
+        local ret, e = pcall(function() TestConstructors:restArgument() end)
+        assert(not ret)
+        assert(e == "uk.co.busydoingnothing.luno.qa.TestConstructors::restArgument requires "
+               .. "at least 1 argument")
+    end
+
+    -- Wrong type for the context
+    do
+        local ret, e = pcall(function() TestHelper:create(true) end)
+        assert(not ret)
+        assert(e == "First argument to a service constructor must be an XComponentContext")
+    end
+
+    -- Passing the wrong type
+    do
+        local ret, e = pcall(function() TestConstructors:interfaceArgument(XCONTEXT, 12) end)
+        assert(not ret)
+        assert(lunotype(e):issubclassof(com.sun.star.script.CannotConvertException))
+    end
+
+    -- The service constructors should be cached so that the same object is returned every time they
+    -- are retrieved
+    assert(TestHelper.create == TestHelper.create)
+    assert(TestConstructors.interfaceArgument ~= TestHelper.restArgument)
 end

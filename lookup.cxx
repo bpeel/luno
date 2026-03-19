@@ -15,6 +15,7 @@
 #include <com/sun/star/reflection/XIdlReflection.hpp>
 #include <com/sun/star/reflection/XConstantTypeDescription.hpp>
 #include <com/sun/star/reflection/XEnumTypeDescription.hpp>
+#include <com/sun/star/reflection/XServiceTypeDescription2.hpp>
 #include <com/sun/star/reflection/XTypeDescription.hpp>
 
 #include "runtime.hxx"
@@ -22,6 +23,7 @@
 #include "enumtype.hxx"
 #include "conversions.hxx"
 #include "pushexception.hxx"
+#include "service.hxx"
 
 namespace com::sun::star::container
 {
@@ -176,6 +178,27 @@ bool createEnum(lua_State* pLuaState, const rtl::OUString& sFullName,
     return true;
 }
 
+bool createService(lua_State* pLuaState, const rtl::OUString& sFullName,
+                   const css::uno::Reference<css::reflection::XTypeDescription>& xType,
+                   const Runtime& rRuntime)
+{
+    css::uno::Reference<css::reflection::XServiceTypeDescription2> xServiceType(
+        xType, css::uno::UNO_QUERY);
+
+    if (!xServiceType.is())
+    {
+        lua_pushliteral(pLuaState, "internal error: serivce type found without implementing "
+                                   "XServiceTypeDescription2");
+        return false;
+    }
+
+    Service::pushService(pLuaState, xServiceType, rRuntime);
+
+    storeInParentModule(pLuaState, sFullName, rRuntime);
+
+    return true;
+}
+
 int lookup(lua_State* pLuaState)
 {
     size_t nKeyLength;
@@ -228,6 +251,11 @@ int lookup(lua_State* pLuaState)
 
             case css::uno::TypeClass_CONSTANT:
                 if (!createConstant(pLuaState, sFullName, xType, *pRuntime))
+                    goto set_lua_error;
+                return 1;
+
+            case css::uno::TypeClass_SERVICE:
+                if (!createService(pLuaState, sFullName, xType, *pRuntime))
                     goto set_lua_error;
                 return 1;
 

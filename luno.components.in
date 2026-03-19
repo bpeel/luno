@@ -18,6 +18,7 @@
     </implementation>
     <implementation name="uk.co.busydoingnothing.luno.qa.TestHelperImpl">
       <service name="uk.co.busydoingnothing.luno.qa.TestHelper"/>
+      <service name="uk.co.busydoingnothing.luno.qa.TestConstructors"/>
     </implementation>
   </component>
 </components>
