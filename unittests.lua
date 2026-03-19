@@ -282,3 +282,16 @@ do
     assert(TestHelper.create == TestHelper.create)
     assert(TestConstructors.interfaceArgument ~= TestHelper.restArgument)
 end
+
+-- Singletons
+do
+    local singleton = uk.co.busydoingnothing.luno.qa.theTestSingleton:get(XCONTEXT)
+    assert(singleton:getFourEnum() == uk.co.busydoingnothing.luno.qa.TestEnum.FOUR)
+
+    local ret, e = pcall(function() uk.co.busydoingnothing.luno.qa.theTestSingleton:get(3) end)
+    assert(not ret)
+    assert(e == "The first argument to a singleton getter must be an XComponentContext")
+
+    -- Getting the singleton a second time should return the same object
+    assert(singleton == uk.co.busydoingnothing.luno.qa.theTestSingleton:get(XCONTEXT))
+end

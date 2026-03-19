@@ -19,6 +19,7 @@
     <implementation name="uk.co.busydoingnothing.luno.qa.TestHelperImpl">
       <service name="uk.co.busydoingnothing.luno.qa.TestHelper"/>
       <service name="uk.co.busydoingnothing.luno.qa.TestConstructors"/>
+      <singleton name="uk.co.busydoingnothing.luno.qa.theTestSingleton"/>
     </implementation>
   </component>
 </components>
