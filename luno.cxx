@@ -59,11 +59,33 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     setUpLunoTypeFunction(m_pLuaState, m_aRuntime);
 }
 
+namespace
+{
+int tryToString(lua_State* pLuaState)
+{
+    luaL_tolstring(pLuaState, 1, NULL);
+    return 1;
+}
+}
+
 void Luno::throwLuaError()
 {
-    size_t nMessageLength;
-    const char* pMessage = luaL_tolstring(m_pLuaState, -1, &nMessageLength);
-    rtl::OUString sMessage(pMessage, nMessageLength, RTL_TEXTENCODING_UTF8);
+    // Call luaL_tolstring in protected mode in case the object has a __tostring metamethod which
+    // sets an error
+    lua_pushcfunction(m_pLuaState, tryToString);
+    lua_pushvalue(m_pLuaState, -2);
+
+    rtl::OUString sMessage;
+
+    if (lua_pcall(m_pLuaState, 1 /* nargs */, 1 /* nresults */, 0 /* msgh */) == LUA_OK)
+    {
+        size_t nMessageLength;
+        const char* pMessage = lua_tolstring(m_pLuaState, -1, &nMessageLength);
+        sMessage = rtl::OUString(pMessage, nMessageLength, RTL_TEXTENCODING_UTF8);
+    }
+    else
+        sMessage = "A Lua error was encountered that couldn't be converted to a string";
+
     // Pop the error object and the string
     lua_pop(m_pLuaState, 2);
     throw LuaException(sMessage);
