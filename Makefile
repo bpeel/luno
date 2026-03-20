@@ -129,7 +129,7 @@ $(OUT_COMP_SLO)/enumtype.$(OBJ_EXT) : enumtype.hxx enumvalue.hxx runtime.hxx
 $(OUT_COMP_SLO)/enumvalue.$(OBJ_EXT) : enumvalue.hxx runtime.hxx
 $(OUT_COMP_SLO)/exports.$(OBJ_EXT) : luno.hxx runtime.hxx scriptprovider.hxx testhelper.hxx
 $(OUT_COMP_SLO)/lookup.$(OBJ_EXT) : conversions.hxx enumtype.hxx enumvalue.hxx lookup.hxx pushexception.hxx runtime.hxx service.hxx singleton.hxx type.hxx
-$(OUT_COMP_SLO)/luno.$(OBJ_EXT) : conversions.hxx lookup.hxx luno.hxx lunotype.hxx object.hxx runtime.hxx
+$(OUT_COMP_SLO)/luno.$(OBJ_EXT) : conversions.hxx lookup.hxx luno.hxx lunotype.hxx object.hxx runtime.hxx struct.hxx
 $(OUT_COMP_SLO)/lunotype.$(OBJ_EXT) : lunotype.hxx runtime.hxx struct.hxx type.hxx
 $(OUT_COMP_SLO)/method.$(OBJ_EXT) : method.hxx
 $(OUT_COMP_SLO)/object.$(OBJ_EXT) : conversions.hxx method.hxx object.hxx pushexception.hxx runtime.hxx struct.hxx
@@ -137,9 +137,9 @@ $(OUT_COMP_SLO)/pushexception.$(OBJ_EXT) : conversions.hxx pushexception.hxx run
 $(OUT_COMP_SLO)/scriptbrowser.$(OBJ_EXT) : scriptbrowser.hxx scriptfile.hxx
 $(OUT_COMP_SLO)/scriptfile.$(OBJ_EXT) : scriptfile.hxx
 $(OUT_COMP_SLO)/scriptprovider.$(OBJ_EXT) : scriptbrowser.hxx scriptprovider.hxx
-$(OUT_COMP_SLO)/service.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx service.hxx
 $(OUT_COMP_SLO)/serviceconstructor.$(OBJ_EXT) : serviceconstructor.hxx
-$(OUT_COMP_SLO)/singleton.$(OBJ_EXT) : singleton.hxx
+$(OUT_COMP_SLO)/service.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx serviceconstructor.hxx service.hxx
+$(OUT_COMP_SLO)/singleton.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx singleton.hxx
 $(OUT_COMP_SLO)/struct.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx struct.hxx
 $(OUT_COMP_SLO)/testhelper.$(OBJ_EXT) : testhelper.hxx
 $(OUT_COMP_SLO)/type.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx struct.hxx type.hxx
