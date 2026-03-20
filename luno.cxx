@@ -24,6 +24,7 @@
 #include "lookup.hxx"
 #include "conversions.hxx"
 #include "lunotype.hxx"
+#include "struct.hxx"
 
 namespace uk::co::busydoingnothing::luno
 {
@@ -70,8 +71,30 @@ int tryToString(lua_State* pLuaState)
 
 void Luno::throwLuaError()
 {
-    // Call luaL_tolstring in protected mode in case the object has a __tostring metamethod which
-    // sets an error
+    // If the lua error object is already an UNO exception then throw it wrapped it an
+    // InvocationTargetException
+    if (Struct* pStruct = Struct::testStruct(m_pLuaState, -1))
+    {
+        css::uno::Any xStructValue = pStruct->getValue();
+
+        css::reflection::InvocationTargetException aInvocationTargetException;
+
+        if ((xStructValue >>= aInvocationTargetException))
+            throw aInvocationTargetException;
+
+        css::uno::Exception aException;
+
+        if ((xStructValue >>= aException))
+        {
+            // Move the common parts from Exception
+            static_cast<css::uno::Exception&>(aInvocationTargetException) = std::move(aException);
+            aInvocationTargetException.TargetException = std::move(xStructValue);
+            throw aInvocationTargetException;
+        }
+    }
+
+    // Otherwise convert the object to a string and wrap it in a LuaException. Call luaL_tolstring
+    // in protected mode in case the object has a __tostring metamethod which sets an error
     lua_pushcfunction(m_pLuaState, tryToString);
     lua_pushvalue(m_pLuaState, -2);
 
