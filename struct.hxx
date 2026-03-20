@@ -54,6 +54,8 @@ private:
     static int index(lua_State* pLuaState);
     int doNewIndex(lua_State* pLuaState);
     static int newIndex(lua_State* pLuaState);
+    int doToString(lua_State* pLuaState);
+    static int toString(lua_State* pLuaState);
 };
 }
 

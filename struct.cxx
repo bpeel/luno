@@ -51,6 +51,10 @@ void Struct::pushMetatable(lua_State* pLuaState)
     lua_pushliteral(pLuaState, "__newindex");
     lua_pushcfunction(pLuaState, newIndex);
     lua_rawset(pLuaState, -3);
+
+    lua_pushliteral(pLuaState, "__tostring");
+    lua_pushcfunction(pLuaState, toString);
+    lua_rawset(pLuaState, -3);
 }
 
 Struct* Struct::checkStruct(lua_State* pLuaState, int nArg)
@@ -189,6 +193,33 @@ int Struct::newIndex(lua_State* pLuaState)
     Struct* pStruct = checkStruct(pLuaState, 1);
 
     return pStruct->doNewIndex(pLuaState);
+}
+
+int Struct::doToString(lua_State* pLuaState)
+{
+    css::uno::Exception aException;
+
+    if (m_xValue >>= aException)
+    {
+        rtl::OString sMessage = rtl::OUStringToOString(aException.Message, RTL_TEXTENCODING_UTF8);
+        lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
+    }
+    else
+        lua_pushfstring(pLuaState, "%s: %p", CLASS_NAME, lua_topointer(pLuaState, 1));
+
+    return 1;
+
+    // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
+set_lua_error:
+    lua_error(pLuaState);
+    return 0;
+}
+
+int Struct::toString(lua_State* pLuaState)
+{
+    Struct* pStruct = checkStruct(pLuaState, 1);
+
+    return pStruct->doToString(pLuaState);
 }
 
 void Struct::setValue(const css::uno::Any& xValue)

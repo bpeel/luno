@@ -295,3 +295,9 @@ do
     -- Getting the singleton a second time should return the same object
     assert(singleton == uk.co.busydoingnothing.luno.qa.theTestSingleton:get(XCONTEXT))
 end
+
+-- tostring on structs and exceptions
+assert(string.match(tostring(uk.co.busydoingnothing.luno.qa.TestStruct:new()),
+                    "^Luno_Struct: 0x"))
+assert(tostring(com.sun.star.lang.IllegalArgumentException:new({Message = "More illegality!"}))
+       == "More illegality!")
