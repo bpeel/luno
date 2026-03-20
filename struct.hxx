@@ -28,7 +28,7 @@ public:
                            const Runtime& rRuntime);
 
     static Struct* testStruct(lua_State* pLuaState, int nArg);
-    css::uno::Any getValue() { return m_xValue; }
+    css::uno::Any getValue() const { return m_xValue; }
     // This should only be called with an Any containing the same struct type as the previous value
     void setValue(const css::uno::Any& xValue);
     css::uno::Reference<css::reflection::XIdlClass> getType();
