@@ -20,7 +20,7 @@ namespace css = com::sun::star;
 
 namespace uk::co::busydoingnothing::luno
 {
-class Runtime;
+struct Runtime;
 
 // Pushes an exception onto the stack as a Lua object, or if the conversion didn’t work pushes a
 // string describing the exception instead.
