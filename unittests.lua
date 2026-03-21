@@ -298,6 +298,6 @@ end
 
 -- tostring on structs and exceptions
 assert(string.match(tostring(uk.co.busydoingnothing.luno.qa.TestStruct:new()),
-                    "^Luno_Struct: 0x"))
+                    "^Luno_Struct: 0?x?%x+$"))
 assert(tostring(com.sun.star.lang.IllegalArgumentException:new({Message = "More illegality!"}))
        == "More illegality!")
