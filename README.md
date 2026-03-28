@@ -201,7 +201,7 @@ function addSquares(reverse)
         end
         local rect = model:createInstance("com.sun.star.drawing.RectangleShape");
         rect:setSize(Size:new({Width = size * 110, Height = size * 110}));
-        rect:setPropertyValue("TextRange", text:getEnd())
+        rect.TextRange = text:getEnd()
         drawPage:add(rect)
     end
 end
@@ -210,8 +210,8 @@ addSquares(false)
 
 local cursor = text:createTextCursorByRange(text:getEnd())
 cursor:setString("Luno")
-cursor:setPropertyValue("CharWeight", com.sun.star.awt.FontWeight.BOLD)
-cursor:setPropertyValue("CharHeight", 50)
+cursor.CharWeight = com.sun.star.awt.FontWeight.BOLD
+cursor.CharHeight = 50
 
 addSquares(true)
 ```
