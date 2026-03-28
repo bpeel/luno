@@ -163,7 +163,7 @@ void pushAny(lua_State* pLuaState, const css::uno::Any& xAny, const Runtime& rRu
     }
 
     rtl::OUString sMessage = "Unsupported conversion from type class "
-                             + rtl::OUString::number(xAny.getValueTypeClass());
+                             + rtl::OUString::number(sal_Int32(xAny.getValueTypeClass()));
     throw css::beans::IllegalTypeException(sMessage);
 }
 
