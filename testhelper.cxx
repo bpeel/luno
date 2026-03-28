@@ -12,6 +12,8 @@
 #include <uk/co/busydoingnothing/luno/qa/XTestHelper.hpp>
 #include <com/sun/star/lang/IllegalArgumentException.hpp>
 
+#include "testattributes.hxx"
+
 namespace uk::co::busydoingnothing::luno::qa
 {
 void TestHelper::initialize(const css::uno::Sequence<css::uno::Any>& aArguments)
@@ -53,6 +55,11 @@ void TestHelper::throwException()
 {
     throw css::lang::IllegalArgumentException(rtl::OUString("Your argument is illegal"),
                                               static_cast<XTestHelper*>(this), 0);
+}
+
+css::uno::Reference<XTestAttributes> SAL_CALL TestHelper::getAttributes()
+{
+    return new TestAttributes;
 }
 
 css::uno::Sequence<css::uno::Any> TestHelper::getArguments() { return m_aArgs; }

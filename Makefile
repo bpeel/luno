@@ -40,6 +40,7 @@ CXXFILES = \
            struct.cxx \
            lookup.cxx \
            type.cxx \
+           testattributes.cxx \
            testhelper.cxx \
            enumtype.cxx \
            enumvalue.cxx \
@@ -72,6 +73,7 @@ IDLFILES = \
            idl/uk/co/busydoingnothing/luno/qa/TestEnum.idl \
            idl/uk/co/busydoingnothing/luno/qa/TestHelper.idl \
            idl/uk/co/busydoingnothing/luno/qa/TestStruct.idl \
+           idl/uk/co/busydoingnothing/luno/qa/XTestAttributes.idl \
            idl/uk/co/busydoingnothing/luno/qa/XTestHelper.idl \
            idl/uk/co/busydoingnothing/luno/qa/theTestSingleton.idl
 
@@ -141,7 +143,8 @@ $(OUT_COMP_SLO)/serviceconstructor.$(OBJ_EXT) : serviceconstructor.hxx
 $(OUT_COMP_SLO)/service.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx serviceconstructor.hxx service.hxx
 $(OUT_COMP_SLO)/singleton.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx singleton.hxx
 $(OUT_COMP_SLO)/struct.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx struct.hxx
-$(OUT_COMP_SLO)/testhelper.$(OBJ_EXT) : testhelper.hxx
+$(OUT_COMP_SLO)/testattributes.$(OBJ_EXT) : testattributes.hxx
+$(OUT_COMP_SLO)/testhelper.$(OBJ_EXT) : testattributes.hxx testhelper.hxx
 $(OUT_COMP_SLO)/type.$(OBJ_EXT) : conversions.hxx pushexception.hxx runtime.hxx struct.hxx type.hxx
 
 ifeq "$(OS)" "WIN"

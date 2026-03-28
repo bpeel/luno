@@ -301,3 +301,41 @@ assert(string.match(tostring(uk.co.busydoingnothing.luno.qa.TestStruct:new()),
                     "^Luno_Struct: 0?x?%x+$"))
 assert(tostring(com.sun.star.lang.IllegalArgumentException:new({Message = "More illegality!"}))
        == "More illegality!")
+
+-- Attributes
+do
+    local attributes = testHelper:getAttributes()
+    assert(attributes.LongAttribute == 42)
+    attributes.LongAttribute = 1234
+    assert(attributes.LongAttribute == 1234)
+
+    attributes.FloatAttribute = 3
+    assert(attributes.FloatAttribute == 3.0)
+
+    attributes.InterfaceAttribute = nil
+    assert(attributes.InterfaceAttribute == nil)
+
+    attributes.InterfaceAttribute = testHelper
+    assert(attributes.InterfaceAttribute == testHelper)
+
+    -- Reading an unknown attribute just returns nil
+    assert(attributes.UnknownAttribute == nil)
+
+    -- Trying to set an unknown attribute throws an exception
+    local ret, e = pcall(function() attributes.UnknownAttribute = 3 end)
+    assert(not ret)
+    assert(lunotype(e):issubclassof(com.sun.star.beans.UnknownPropertyException))
+end
+
+-- Properties
+do
+    local attributes = testHelper:getAttributes()
+
+    attributes.LongProperty = 6789
+    assert(attributes.LongProperty == 6789)
+    assert(attributes:getPropertyValue("LongProperty") == 6789)
+
+    attributes:setPropertyValue("LongProperty", 1234)
+    assert(attributes.LongProperty == 1234)
+    assert(attributes:getPropertyValue("LongProperty") == 1234)
+end

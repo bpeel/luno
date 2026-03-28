@@ -13,6 +13,11 @@
 #include <com/sun/star/uno/Reference.hxx>
 #include "runtime.hxx"
 
+namespace com::sun::star::script
+{
+class XInvocation;
+}
+
 namespace com::sun::star::uno
 {
 class XInterface;
@@ -49,13 +54,18 @@ private:
     const Runtime& m_rRuntime;
     css::uno::Reference<css::uno::XInterface> m_xInterface;
     css::uno::Reference<css::beans::XIntrospectionAccess> m_xIntrospectionAccess;
+    css::uno::Reference<css::script::XInvocation> m_xInvocation;
 
     static void pushMetatable(lua_State* pLuaState);
     static Object* checkObject(lua_State* pLuaState, int nArg);
     static int gc(lua_State* pLuaState);
-    int doIndexUncached(lua_State* pLuaState);
+    void ensureInvocation(lua_State* pLuaState);
+    void getAttribute(lua_State* pLuaState, const char* pKey, size_t nKeyLength);
+    int doIndexUncached(lua_State* pLuaState, const char* pKey, size_t nKeyLength);
     int doIndex(lua_State* pLuaState);
     static int index(lua_State* pLuaState);
+    int doNewIndex(lua_State* pLuaState);
+    static int newIndex(lua_State* pLuaState);
     int doEq(lua_State* pLuaState);
     static int eq(lua_State* pLuaState);
     int call(lua_State* pLuaState, Method* pMethod);

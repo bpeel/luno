@@ -23,6 +23,7 @@ interface XTestHelper
     long getEnumValue([in] TestEnum theEnum);
     void throwException();
     sequence<any> getArguments();
+    XTestAttributes getAttributes();
 };
 
 }; }; }; }; };

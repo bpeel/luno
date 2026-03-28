@@ -10,11 +10,15 @@
 #include "object.hxx"
 
 #include <com/sun/star/beans/MethodConcept.hpp>
+#include <com/sun/star/beans/UnknownPropertyException.hpp>
 #include <com/sun/star/beans/XIntrospection.hpp>
 #include <com/sun/star/beans/XIntrospectionAccess.hpp>
 #include <com/sun/star/lang/NoSuchMethodException.hpp>
+#include <com/sun/star/lang/XSingleServiceFactory.hpp>
 #include <com/sun/star/reflection/InvocationTargetException.hpp>
 #include <com/sun/star/reflection/XIdlReflection.hpp>
+#include <com/sun/star/script/CannotConvertException.hpp>
+#include <com/sun/star/script/XInvocation.hpp>
 #include <com/sun/star/uno/Sequence.hxx>
 
 #include "method.hxx"
@@ -54,6 +58,10 @@ void Object::pushMetatable(lua_State* pLuaState)
     lua_pushcfunction(pLuaState, index);
     lua_rawset(pLuaState, -3);
 
+    lua_pushliteral(pLuaState, "__newindex");
+    lua_pushcfunction(pLuaState, newIndex);
+    lua_rawset(pLuaState, -3);
+
     lua_pushliteral(pLuaState, "__eq");
     lua_pushcfunction(pLuaState, eq);
     lua_rawset(pLuaState, -3);
@@ -79,11 +87,78 @@ int Object::gc(lua_State* pLuaState)
     return 0;
 }
 
-int Object::doIndexUncached(lua_State* pLuaState)
+void Object::ensureInvocation(lua_State* pLuaState)
 {
-    size_t nKeyLength;
-    const char* pKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
+    if (!m_xInvocation.is())
+    {
+        if (!m_rRuntime.isValid() || !m_xInterface.is())
+        {
+            lua_pushliteral(pLuaState, "__index called an object in an invalid state");
+            goto set_lua_error;
+        }
 
+        css::uno::Sequence<css::uno::Any> aArgs(1);
+        aArgs[0] = css::uno::Any(m_xInterface);
+
+        m_xInvocation.set(m_rRuntime.m_xInvocation->createInstanceWithArguments(aArgs),
+                          css::uno::UNO_QUERY);
+        if (!m_xInvocation.is())
+        {
+            lua_pushliteral(pLuaState, "Failed to create an XInvocation for an interface");
+            goto set_lua_error;
+        }
+    }
+
+    return;
+
+    // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
+set_lua_error:
+    lua_error(pLuaState);
+}
+
+void Object::getAttribute(lua_State* pLuaState, const char* pKey, size_t nKeyLength)
+{
+    ensureInvocation(pLuaState);
+
+    {
+        rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
+        css::uno::Any xAny;
+
+        try
+        {
+            xAny = m_xInvocation->getValue(sKey);
+        }
+        catch (const css::beans::UnknownPropertyException&)
+        {
+            lua_pushnil(pLuaState);
+            return;
+        }
+
+        try
+        {
+            pushAny(pLuaState, xAny, m_rRuntime);
+        }
+        catch (const css::reflection::InvocationTargetException& e)
+        {
+            pushExceptionFromAny(pLuaState, e.TargetException, m_rRuntime);
+            goto set_lua_error;
+        }
+        catch (const css::uno::Exception& e)
+        {
+            pushExceptionFromAny(pLuaState, css::uno::Any(e), m_rRuntime);
+            goto set_lua_error;
+        }
+    }
+
+    return;
+
+    // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
+set_lua_error:
+    lua_error(pLuaState);
+}
+
+int Object::doIndexUncached(lua_State* pLuaState, const char* pKey, size_t nKeyLength)
+{
     {
         if (!m_xIntrospectionAccess.is())
         {
@@ -116,12 +191,11 @@ int Object::doIndexUncached(lua_State* pLuaState)
         {
             Method::pushMethod(pLuaState, xMethod);
             lua_pushcclosure(pLuaState, call, 1);
+            return 1;
         }
         else
-            lua_pushnil(pLuaState);
+            return 0;
     }
-
-    return 1;
 
     // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
 state_error:
@@ -145,15 +219,19 @@ int Object::doIndex(lua_State* pLuaState)
     {
         // Lazily look up the method
         lua_pop(pLuaState, 1);
-        doIndexUncached(pLuaState);
 
-        if (!lua_isnil(pLuaState, -1))
+        size_t nKeyLength;
+        const char* pKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
+
+        if (doIndexUncached(pLuaState, pKey, nKeyLength))
         {
             // Add the method to the cache
             lua_pushvalue(pLuaState, 2);
             lua_pushvalue(pLuaState, -2);
             lua_rawset(pLuaState, -4);
         }
+        else
+            getAttribute(pLuaState, pKey, nKeyLength);
     }
 
     // Remove the cache table from the stack
@@ -167,6 +245,60 @@ int Object::index(lua_State* pLuaState)
     Object* pObject = checkObject(pLuaState, 1);
 
     return pObject->doIndex(pLuaState);
+}
+
+int Object::doNewIndex(lua_State* pLuaState)
+{
+    size_t nKeyLength;
+    const char* pKey = luaL_checklstring(pLuaState, 2, &nKeyLength);
+
+    ensureInvocation(pLuaState);
+
+    {
+        rtl::OUString sKey(pKey, nKeyLength, RTL_TEXTENCODING_UTF8);
+
+        css::uno::Any xAny;
+
+        try
+        {
+            xAny = getAny(pLuaState, 3);
+            m_xInvocation->setValue(sKey, xAny);
+        }
+        catch (const css::beans::UnknownPropertyException& e)
+        {
+            pushExceptionFromAny(pLuaState, css::uno::Any(e), m_rRuntime);
+            goto set_lua_error;
+        }
+        catch (const css::script::CannotConvertException& e)
+        {
+            pushExceptionFromAny(pLuaState, css::uno::Any(e), m_rRuntime);
+            goto set_lua_error;
+        }
+        catch (const css::reflection::InvocationTargetException& e)
+        {
+            pushExceptionFromAny(pLuaState, e.TargetException, m_rRuntime);
+            goto set_lua_error;
+        }
+        catch (const css::uno::Exception& e)
+        {
+            pushExceptionFromAny(pLuaState, css::uno::Any(e), m_rRuntime);
+            goto set_lua_error;
+        }
+    }
+
+    return 0;
+
+    // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
+set_lua_error:
+    lua_error(pLuaState);
+    return 0;
+}
+
+int Object::newIndex(lua_State* pLuaState)
+{
+    Object* pObject = checkObject(pLuaState, 1);
+
+    return pObject->doNewIndex(pLuaState);
 }
 
 int Object::doEq(lua_State* pLuaState)

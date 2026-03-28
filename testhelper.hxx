@@ -45,6 +45,7 @@ public:
     sal_Int32 getEnumValue(TestEnum nEnum) override;
     void throwException() override;
     css::uno::Sequence<css::uno::Any> getArguments() override;
+    css::uno::Reference<XTestAttributes> SAL_CALL getAttributes() override;
 
     static rtl::OUString getImplementationNameStatic();
     static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();
