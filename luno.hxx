@@ -34,9 +34,9 @@ public:
                           const css::uno::Sequence<sal_Int8>& aCode) override;
     css::uno::Any SAL_CALL execute() override;
     // XScript
-    css::uno::Any invoke(const css::uno::Sequence<css::uno::Any>& aParams,
-                         css::uno::Sequence<sal_Int16>& aOutParamIndex,
-                         css::uno::Sequence<css::uno::Any>& aOutParam) override;
+    css::uno::Any SAL_CALL invoke(const css::uno::Sequence<css::uno::Any>& aParams,
+                                  css::uno::Sequence<sal_Int16>& aOutParamIndex,
+                                  css::uno::Sequence<css::uno::Any>& aOutParam) override;
 
     static rtl::OUString getImplementationNameStatic();
     static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();

@@ -16,29 +16,32 @@
 
 namespace uk::co::busydoingnothing::luno::qa
 {
-void TestHelper::initialize(const css::uno::Sequence<css::uno::Any>& aArguments)
+void SAL_CALL TestHelper::initialize(const css::uno::Sequence<css::uno::Any>& aArguments)
 {
     m_aArgs = aArguments;
 }
 
-void TestHelper::modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruct,
-                              const rtl::OUString& sSetStringValue, TestStruct& aSetStringStruct)
+void SAL_CALL TestHelper::modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruct,
+                                       const rtl::OUString& sSetStringValue,
+                                       TestStruct& aSetStringStruct)
 {
     aSetLongStruct.LongValue = nSetLongValue;
     aSetStringStruct.StringValue = sSetStringValue;
 }
 
-void TestHelper::modifySequence(sal_Int32 nFirstValue, sal_Int32 nSecondValue,
-                                sal_Int32 nThirdValue, css::uno::Sequence<sal_Int32>& aValues)
+void SAL_CALL TestHelper::modifySequence(sal_Int32 nFirstValue, sal_Int32 nSecondValue,
+                                         sal_Int32 nThirdValue,
+                                         css::uno::Sequence<sal_Int32>& aValues)
 {
     aValues[0] = nFirstValue;
     aValues[1] = nSecondValue;
     aValues[2] = nThirdValue;
 }
 
-sal_Int32 TestHelper::multipleReturn(sal_Int32 mainReturnValue, sal_Int32 secondReturnValue,
-                                     sal_Int32& secondReturn, sal_Int32& fourthInputThirdOutput,
-                                     sal_Int32 thirdReturnValue, sal_Int32& fourthReturn)
+sal_Int32 SAL_CALL TestHelper::multipleReturn(sal_Int32 mainReturnValue,
+                                              sal_Int32 secondReturnValue, sal_Int32& secondReturn,
+                                              sal_Int32& fourthInputThirdOutput,
+                                              sal_Int32 thirdReturnValue, sal_Int32& fourthReturn)
 {
     secondReturn = secondReturnValue;
     fourthReturn = fourthInputThirdOutput;
@@ -47,11 +50,11 @@ sal_Int32 TestHelper::multipleReturn(sal_Int32 mainReturnValue, sal_Int32 second
     return mainReturnValue;
 }
 
-TestEnum TestHelper::getFourEnum() { return TestEnum::TestEnum_FOUR; }
+TestEnum SAL_CALL TestHelper::getFourEnum() { return TestEnum::TestEnum_FOUR; }
 
-sal_Int32 TestHelper::getEnumValue(TestEnum nEnum) { return nEnum; }
+sal_Int32 SAL_CALL TestHelper::getEnumValue(TestEnum nEnum) { return nEnum; }
 
-void TestHelper::throwException()
+void SAL_CALL TestHelper::throwException()
 {
     throw css::lang::IllegalArgumentException(rtl::OUString("Your argument is illegal"),
                                               static_cast<XTestHelper*>(this), 0);
@@ -62,7 +65,7 @@ css::uno::Reference<XTestAttributes> SAL_CALL TestHelper::getAttributes()
     return new TestAttributes;
 }
 
-css::uno::Sequence<css::uno::Any> TestHelper::getArguments() { return m_aArgs; }
+css::uno::Sequence<css::uno::Any> SAL_CALL TestHelper::getArguments() { return m_aArgs; }
 
 rtl::OUString SAL_CALL TestHelper::getImplementationName() { return getImplementationNameStatic(); }
 

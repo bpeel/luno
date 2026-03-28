@@ -156,9 +156,9 @@ css::uno::Any SAL_CALL Luno::execute()
     return xResult;
 }
 
-css::uno::Any Luno::invoke(const css::uno::Sequence<css::uno::Any>& aParams,
-                           css::uno::Sequence<sal_Int16>& aOutParamIndex,
-                           css::uno::Sequence<css::uno::Any>& aOutParam)
+css::uno::Any SAL_CALL Luno::invoke(const css::uno::Sequence<css::uno::Any>& aParams,
+                                    css::uno::Sequence<sal_Int16>& aOutParamIndex,
+                                    css::uno::Sequence<css::uno::Any>& aOutParam)
 {
     try
     {

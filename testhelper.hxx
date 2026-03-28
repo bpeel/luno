@@ -26,7 +26,7 @@ class TestHelper
 {
 public:
     // XInitialization
-    void initialize(const css::uno::Sequence<css::uno::Any>& aArguments) override;
+    void SAL_CALL initialize(const css::uno::Sequence<css::uno::Any>& aArguments) override;
 
     // XServiceInfo
     rtl::OUString SAL_CALL getImplementationName() override;
@@ -34,17 +34,19 @@ public:
     css::uno::Sequence<rtl::OUString> SAL_CALL getSupportedServiceNames() override;
 
     // XTestHelper
-    void modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruct,
-                      const rtl::OUString& sSetStringValue, TestStruct& aSetStringStruct) override;
-    void modifySequence(sal_Int32 nFirstValue, sal_Int32 nSecondValue, sal_Int32 nThirdValue,
-                        css::uno::Sequence<sal_Int32>& aValues) override;
-    sal_Int32 multipleReturn(sal_Int32 mainReturnValue, sal_Int32 secondReturnValue,
-                             sal_Int32& secondReturn, sal_Int32& fourthInputThirdOutput,
-                             sal_Int32 thirdReturnValue, sal_Int32& fourthReturn) override;
-    TestEnum getFourEnum() override;
-    sal_Int32 getEnumValue(TestEnum nEnum) override;
-    void throwException() override;
-    css::uno::Sequence<css::uno::Any> getArguments() override;
+    void SAL_CALL modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruct,
+                               const rtl::OUString& sSetStringValue,
+                               TestStruct& aSetStringStruct) override;
+    void SAL_CALL modifySequence(sal_Int32 nFirstValue, sal_Int32 nSecondValue,
+                                 sal_Int32 nThirdValue,
+                                 css::uno::Sequence<sal_Int32>& aValues) override;
+    sal_Int32 SAL_CALL multipleReturn(sal_Int32 mainReturnValue, sal_Int32 secondReturnValue,
+                                      sal_Int32& secondReturn, sal_Int32& fourthInputThirdOutput,
+                                      sal_Int32 thirdReturnValue, sal_Int32& fourthReturn) override;
+    TestEnum SAL_CALL getFourEnum() override;
+    sal_Int32 SAL_CALL getEnumValue(TestEnum nEnum) override;
+    void SAL_CALL throwException() override;
+    css::uno::Sequence<css::uno::Any> SAL_CALL getArguments() override;
     css::uno::Reference<XTestAttributes> SAL_CALL getAttributes() override;
 
     static rtl::OUString getImplementationNameStatic();
