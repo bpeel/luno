@@ -157,6 +157,9 @@ void pushAny(lua_State* pLuaState, const css::uno::Any& xAny, const Runtime& rRu
             EnumValue::pushEnumValue(pLuaState, xAny.getValueType(), nValue, rRuntime);
             return;
         }
+
+        default:
+            break;
     }
 
     rtl::OUString sMessage = "Unsupported conversion from type class "
