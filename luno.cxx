@@ -18,6 +18,7 @@
 #include <com/sun/star/uno/RuntimeException.hpp>
 #include <com/sun/star/uno/XComponentContext.hpp>
 #include <com/sun/star/lang/XMultiComponentFactory.hpp>
+#include <com/sun/star/lang/XSingleServiceFactory.hpp>
 #include <uk/co/busydoingnothing/luno/LuaException.hpp>
 
 #include "object.hxx"
@@ -36,6 +37,9 @@ Luno::Luno(const css::uno::Reference<css::uno::XComponentContext>& xContext)
     m_aRuntime.m_xServiceManager = xContext->getServiceManager();
     m_aRuntime.m_xIntrospection = css::beans::theIntrospection::get(xContext);
     m_aRuntime.m_xIdlReflection = css::reflection::theCoreReflection::get(xContext);
+    m_aRuntime.m_xInvocation.set(m_aRuntime.m_xServiceManager->createInstanceWithContext(
+                                     "com.sun.star.script.Invocation", xContext),
+                                 css::uno::UNO_QUERY);
     xContext->getValueByName("/singletons/com.sun.star.reflection.theTypeDescriptionManager")
         >>= m_aRuntime.m_xTypeManager;
     m_aRuntime.m_xTypeConverter = css::script::Converter::create(xContext);
