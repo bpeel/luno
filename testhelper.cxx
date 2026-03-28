@@ -95,8 +95,9 @@ rtl::OUString TestHelper::getImplementationNameStatic()
 css::uno::Sequence<rtl::OUString> TestHelper::getSupportedServiceNamesStatic()
 {
     css::uno::Sequence<rtl::OUString> names(2);
-    names[0] = rtl::OUString("uk.co.busydoingnothing.luno.qa.TestHelper");
-    names[1] = rtl::OUString("uk.co.busydoingnothing.luno.qa.TestConstructors");
+    rtl::OUString* pNames = names.getArray();
+    pNames[0] = rtl::OUString("uk.co.busydoingnothing.luno.qa.TestHelper");
+    pNames[1] = rtl::OUString("uk.co.busydoingnothing.luno.qa.TestConstructors");
     return names;
 }
 

@@ -123,10 +123,11 @@ rtl::OUString SAL_CALL ScriptProvider::getImplementationName()
 sal_Bool SAL_CALL ScriptProvider::supportsService(rtl::OUString const& serviceName)
 {
     css::uno::Sequence<rtl::OUString> names = getSupportedServiceNames();
+    rtl::OUString* pNames = names.getArray();
 
     for (sal_Int32 i = 0, count = names.getLength(); i < count; i++)
     {
-        if (names[i] == serviceName)
+        if (pNames[i] == serviceName)
             return true;
     }
 
@@ -146,8 +147,9 @@ rtl::OUString ScriptProvider::getImplementationNameStatic()
 css::uno::Sequence<rtl::OUString> ScriptProvider::getSupportedServiceNamesStatic()
 {
     css::uno::Sequence<rtl::OUString> names(2);
-    names[0] = rtl::OUString("com.sun.star.script.provider.ScriptProviderForLua");
-    names[1] = rtl::OUString("com.sun.star.script.provider.LanguageScriptProvider");
+    rtl::OUString* pNames = names.getArray();
+    pNames[0] = rtl::OUString("com.sun.star.script.provider.ScriptProviderForLua");
+    pNames[1] = rtl::OUString("com.sun.star.script.provider.LanguageScriptProvider");
     return names;
 }
 

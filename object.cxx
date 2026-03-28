@@ -98,7 +98,7 @@ void Object::ensureInvocation(lua_State* pLuaState)
         }
 
         css::uno::Sequence<css::uno::Any> aArgs(1);
-        aArgs[0] = css::uno::Any(m_xInterface);
+        aArgs.getArray()[0] = css::uno::Any(m_xInterface);
 
         m_xInvocation.set(m_rRuntime.m_xInvocation->createInstanceWithArguments(aArgs),
                           css::uno::UNO_QUERY);
@@ -416,6 +416,7 @@ int Object::call(lua_State* pLuaState, Method* pMethod)
         }
 
         css::uno::Sequence<css::uno::Any> aArgs(rParamInfos.getLength());
+        css::uno::Any* pArgs = aArgs.getArray();
         css::uno::Any xTarget(m_xInterface);
         css::uno::Any xResult;
         int nReturnValues = 0;
@@ -430,7 +431,7 @@ int Object::call(lua_State* pLuaState, Method* pMethod)
                 if (rParamInfos[i].aMode == css::reflection::ParamMode_OUT)
                     continue;
 
-                aArgs[i] = getAnyAsType(pLuaState, nInArg + 2, rParamInfos[i].aType, m_rRuntime);
+                pArgs[i] = getAnyAsType(pLuaState, nInArg + 2, rParamInfos[i].aType, m_rRuntime);
 
                 ++nInArg;
             }

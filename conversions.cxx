@@ -201,10 +201,11 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
             // We don’t want to use lua_len because we don’t want Lua to do a longjmp
             lua_Unsigned nLen = lua_rawlen(pLuaState, nIndex);
             css::uno::Sequence<css::uno::Any> aValues(nLen);
+            css::uno::Any* pValues = aValues.getArray();
             for (lua_Unsigned i = 0; i < nLen; ++i)
             {
                 lua_rawgeti(pLuaState, nIndex, i + 1);
-                aValues[i] = getAny(pLuaState, -1);
+                pValues[i] = getAny(pLuaState, -1);
                 lua_pop(pLuaState, 1);
             }
             xAny <<= aValues;

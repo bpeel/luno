@@ -32,7 +32,7 @@ private:
 css::uno::Sequence<css::beans::Property> SAL_CALL PropertySetInfo::getProperties()
 {
     css::uno::Sequence<css::beans::Property> aProps(1);
-    aProps[0] = getProperty();
+    aProps.getArray()[0] = getProperty();
     return aProps;
 }
 

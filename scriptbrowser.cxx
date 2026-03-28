@@ -56,7 +56,7 @@ css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>
         // Each file is treated as a container with a single macro inside it
         css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> aChild(1);
 
-        aChild[0].set(new ScriptFile(m_xContext, m_xUriHelper, m_sBaseUri));
+        aChild.getArray()[0].set(new ScriptFile(m_xContext, m_xUriHelper, m_sBaseUri));
 
         return aChild;
     }
@@ -85,9 +85,11 @@ css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>>
 
         css::uno::Sequence<css::uno::Reference<css::script::browse::XBrowseNode>> aNodesSequence(
             aNodes.size());
+        css::uno::Reference<css::script::browse::XBrowseNode>* pNodesSequence
+            = aNodesSequence.getArray();
 
         for (int i = 0, nCount = aNodes.size(); i < nCount; ++i)
-            aNodesSequence[i] = std::move(aNodes[i]);
+            pNodesSequence[i] = std::move(aNodes[i]);
 
         return aNodesSequence;
     }

@@ -100,7 +100,7 @@ void SAL_CALL ScriptFile::removeVetoableChangeListener(
 css::uno::Sequence<css::beans::Property> SAL_CALL ScriptFile::getProperties()
 {
     css::uno::Sequence<css::beans::Property> aProperties(1);
-    aProperties[0] = getUriProperty();
+    aProperties.getArray()[0] = getUriProperty();
     return aProperties;
 }
 

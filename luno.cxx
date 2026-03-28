@@ -201,7 +201,7 @@ rtl::OUString Luno::getImplementationNameStatic()
 css::uno::Sequence<rtl::OUString> Luno::getSupportedServiceNamesStatic()
 {
     css::uno::Sequence<rtl::OUString> names(1);
-    names[0] = rtl::OUString("uk.co.busydoingnothing.luno.Runner");
+    names.getArray()[0] = rtl::OUString("uk.co.busydoingnothing.luno.Runner");
     return names;
 }
 
