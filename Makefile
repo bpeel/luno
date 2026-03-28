@@ -10,6 +10,7 @@ COMP_NAME=luno
 COMP_IMPL_NAME=$(COMP_NAME).uno.$(SHAREDLIB_EXT)
 COMP_RDB_NAME = $(COMP_NAME).uno.rdb
 COMP_RDB = $(OUT_BIN)/$(COMP_RDB_NAME)
+QA_RDB = $(OUT_BIN)/$(COMP_NAME)-qa.uno.rdb
 OUT_COMP_INC=$(OUT_INC)/$(COMP_NAME)
 OUT_COMP_GEN=$(OUT_MISC)/$(COMP_NAME)
 OUT_COMP_SLO=$(OUT_SLO)/$(COMP_NAME)
@@ -67,15 +68,17 @@ UNIT_TESTER_SLOFILES = \
 IDLFILES = \
            idl/uk/co/busydoingnothing/luno/LuaException.idl \
            idl/uk/co/busydoingnothing/luno/Runner.idl \
-           idl/uk/co/busydoingnothing/luno/XRunner.idl \
-           idl/uk/co/busydoingnothing/luno/qa/TestConstants.idl \
-           idl/uk/co/busydoingnothing/luno/qa/TestConstructors.idl \
-           idl/uk/co/busydoingnothing/luno/qa/TestEnum.idl \
-           idl/uk/co/busydoingnothing/luno/qa/TestHelper.idl \
-           idl/uk/co/busydoingnothing/luno/qa/TestStruct.idl \
-           idl/uk/co/busydoingnothing/luno/qa/XTestAttributes.idl \
-           idl/uk/co/busydoingnothing/luno/qa/XTestHelper.idl \
-           idl/uk/co/busydoingnothing/luno/qa/theTestSingleton.idl
+           idl/uk/co/busydoingnothing/luno/XRunner.idl
+
+QA_IDLFILES = \
+           qaidl/uk/co/busydoingnothing/luno/qa/TestConstants.idl \
+           qaidl/uk/co/busydoingnothing/luno/qa/TestConstructors.idl \
+           qaidl/uk/co/busydoingnothing/luno/qa/TestEnum.idl \
+           qaidl/uk/co/busydoingnothing/luno/qa/TestHelper.idl \
+           qaidl/uk/co/busydoingnothing/luno/qa/TestStruct.idl \
+           qaidl/uk/co/busydoingnothing/luno/qa/XTestAttributes.idl \
+           qaidl/uk/co/busydoingnothing/luno/qa/XTestHelper.idl \
+           qaidl/uk/co/busydoingnothing/luno/qa/theTestSingleton.idl
 
 DATA_FILES = \
            pkg-description.txt \
@@ -111,15 +114,20 @@ $(LUA_LIB) : $(LUA_MAKEFILE)
 	make -C $(LUA_SOURCE_DIR) MYCFLAGS=-fPIC
 	make -C $(LUA_SOURCE_DIR) install
 
-$(OUT_BIN)/%.rdb : $(IDLFILES)
-	-$(MKDIR) $(subst /,$(PS),$(@D))
-	-$(DEL) $(subst \\,\,$(subst /,$(PS),$@))
-	$(UNOIDLWRITE) $(URE_TYPES) $(OFFICE_TYPES) idl $@
+define rdb_rule
+$(1) : $(2)
+	-$(MKDIR) $(subst /,$(PS),$$(@D))
+	-$(DEL) $(subst \\,\,$(subst /,$(PS),$$@))
+	$(UNOIDLWRITE) $(URE_TYPES) $(OFFICE_TYPES) $(3) $$@
+endef
 
-$(COMP_TYPEFLAG) : $(COMP_RDB) $(SDKTYPEFLAG)
+$(eval $(call rdb_rule,$(COMP_RDB),$(IDLFILES),idl))
+$(eval $(call rdb_rule,$(QA_RDB),$(QA_IDLFILES),qaidl))
+
+$(COMP_TYPEFLAG) : $(COMP_RDB) $(QA_RDB) $(SDKTYPEFLAG)
 	-$(MKDIR) $(subst /,$(PS),$(@D))
 	-$(DEL) $(subst \\,\,$(subst /,$(PS),$(COMP_TYPEFLAG)))
-	$(CPPUMAKER) -Gc -O$(OUT_COMP_INC) $(TYPESLIST) $(COMP_RDB) -X $(URE_TYPES) -X $(OFFICE_TYPES)
+	$(CPPUMAKER) -Gc -O$(OUT_COMP_INC) $(TYPESLIST) $(COMP_RDB) $(QA_RDB) -X $(URE_TYPES) -X $(OFFICE_TYPES)
 	echo flagged > $@
 
 $(OUT_COMP_SLO)/%.$(OBJ_EXT) : %.cxx $(COMP_TYPEFLAG) $(LUA_LIB)
@@ -235,5 +243,5 @@ $(UNIT_TESTER) : $(UNIT_TESTER_SLOFILES)
 .PHONY : check
 check : $(UNIT_TESTER) $(COMP_RDB) $(COMP_COMPONENTS) $(COMP_PACKAGE)
 	$(UNIT_TESTER) -env:URE_MORE_SERVICES=$(URLPREFIX)$(COMP_COMPONENTS) \
-	-env:URE_MORE_TYPES=$(URLPREFIX)$(COMP_RDB) \
+	-env:URE_MORE_TYPES=$(URLPREFIX)$(COMP_RDB)\ $(URLPREFIX)$(QA_RDB) \
 	unittests.lua
