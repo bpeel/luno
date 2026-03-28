@@ -184,7 +184,7 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
             if (lua_isinteger(pLuaState, nIndex))
                 return convertInteger(lua_tointeger(pLuaState, nIndex));
             else
-                xAny <<= double(lua_tonumber(pLuaState, nIndex));
+                xAny <<= lua_tonumber(pLuaState, nIndex);
             return xAny;
 
         case LUA_TBOOLEAN:
