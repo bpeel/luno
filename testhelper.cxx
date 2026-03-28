@@ -16,9 +16,21 @@
 
 namespace uk::co::busydoingnothing::luno::qa
 {
-void SAL_CALL TestHelper::initialize(const css::uno::Sequence<css::uno::Any>& aArguments)
+// XSingleComponentFactory
+css::uno::Reference<css::uno::XInterface> SAL_CALL
+TestHelper::createInstanceWithContext(const css::uno::Reference<css::uno::XComponentContext>&)
 {
-    m_aArgs = aArguments;
+    return static_cast<css::uno::XWeak*>(new TestHelper);
+}
+
+css::uno::Reference<css::uno::XInterface>
+    SAL_CALL TestHelper::createInstanceWithArgumentsAndContext(
+        const css::uno::Sequence<css::uno::Any>& aArgs,
+        const css::uno::Reference<css::uno::XComponentContext>&)
+{
+    TestHelper* pHelper = new TestHelper;
+    pHelper->m_aArgs = aArgs;
+    return static_cast<css::uno::XWeak*>(pHelper);
 }
 
 void SAL_CALL TestHelper::modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruct,
@@ -67,7 +79,10 @@ css::uno::Reference<XTestAttributes> SAL_CALL TestHelper::getAttributes()
 
 css::uno::Sequence<css::uno::Any> SAL_CALL TestHelper::getArguments() { return m_aArgs; }
 
-rtl::OUString SAL_CALL TestHelper::getImplementationName() { return getImplementationNameStatic(); }
+rtl::OUString SAL_CALL TestHelper::getImplementationName()
+{
+    return "uk.co.busydoingnothing.luno.qa.TestHelperImpl";
+}
 
 sal_Bool SAL_CALL TestHelper::supportsService(rtl::OUString const& serviceName)
 {
@@ -84,27 +99,11 @@ sal_Bool SAL_CALL TestHelper::supportsService(rtl::OUString const& serviceName)
 
 css::uno::Sequence<rtl::OUString> SAL_CALL TestHelper::getSupportedServiceNames()
 {
-    return getSupportedServiceNamesStatic();
-}
-
-rtl::OUString TestHelper::getImplementationNameStatic()
-{
-    return "uk.co.busydoingnothing.luno.qa.TestHelperImpl";
-}
-
-css::uno::Sequence<rtl::OUString> TestHelper::getSupportedServiceNamesStatic()
-{
     css::uno::Sequence<rtl::OUString> names(2);
     rtl::OUString* pNames = names.getArray();
     pNames[0] = rtl::OUString("uk.co.busydoingnothing.luno.qa.TestHelper");
     pNames[1] = rtl::OUString("uk.co.busydoingnothing.luno.qa.TestConstructors");
     return names;
-}
-
-css::uno::Reference<css::uno::XInterface>
-TestHelper::create(const css::uno::Reference<css::uno::XComponentContext>&)
-{
-    return static_cast<css::lang::XTypeProvider*>(new TestHelper);
 }
 }
 

@@ -40,8 +40,6 @@ CXXFILES = \
            struct.cxx \
            lookup.cxx \
            type.cxx \
-           testattributes.cxx \
-           testhelper.cxx \
            enumtype.cxx \
            enumvalue.cxx \
            pushexception.cxx \
@@ -59,6 +57,8 @@ SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
 UNIT_TESTER = $(OUT_BIN)/unittester
 
 UNIT_TESTER_CXXFILES = \
+           testattributes.cxx \
+           testhelper.cxx \
            unittester.cxx
 
 UNIT_TESTER_SLOFILES = \

@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <com/sun/star/container/XNameContainer.hpp>
+#include <com/sun/star/container/XSet.hpp>
 #include <cppuhelper/bootstrap.hxx>
 #include <uk/co/busydoingnothing/luno/LuaException.hpp>
 #include <uk/co/busydoingnothing/luno/Runner.hpp>
@@ -15,12 +17,39 @@
 #include <string>
 #include <iostream>
 
+#include "testhelper.hxx"
+
+namespace
+{
+void addTestHelperFactory(const css::uno::Reference<css::uno::XComponentContext>& xContext)
+{
+    css::uno::Reference<css::container::XSet> xSet(xContext->getServiceManager(),
+                                                   css::uno::UNO_QUERY_THROW);
+
+    css::uno::Reference<css::lang::XSingleComponentFactory> xTestHelperFactory
+        = new uk::co::busydoingnothing::luno::qa::TestHelper;
+
+    xSet->insert(css::uno::Any(xTestHelperFactory));
+
+    css::uno::Reference<css::container::XNameContainer> xNamedContainer(xContext,
+                                                                        css::uno::UNO_QUERY_THROW);
+
+    css::uno::Reference<uk::co::busydoingnothing::luno::qa::XTestHelper> xTestHelper
+        = new uk::co::busydoingnothing::luno::qa::TestHelper;
+
+    xNamedContainer->insertByName("/singletons/uk.co.busydoingnothing.luno.qa.theTestSingleton",
+                                  css::uno::Any(xTestHelper));
+}
+}
+
 SAL_IMPLEMENT_MAIN_WITH_ARGS(argc, argv)
 {
     css::uno::Reference<css::uno::XComponentContext> xContext(
         cppu::defaultBootstrap_InitialComponentContext());
     if (!xContext.is())
         throw cppu::BootstrapException(rtl::OUString("no local component context!"));
+
+    addTestHelperFactory(xContext);
 
     int ret = 0;
 

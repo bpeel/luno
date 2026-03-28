@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include <com/sun/star/lang/XInitialization.hpp>
 #include <com/sun/star/lang/XServiceInfo.hpp>
+#include <com/sun/star/lang/XSingleComponentFactory.hpp>
 #include <cppuhelper/implbase3.hxx>
 #include <uk/co/busydoingnothing/luno/qa/XTestHelper.hpp>
 
@@ -21,17 +21,21 @@ class XComponentContext;
 
 namespace uk::co::busydoingnothing::luno::qa
 {
-class TestHelper
-    : public cppu::WeakImplHelper3<css::lang::XInitialization, XTestHelper, css::lang::XServiceInfo>
+class TestHelper : public cppu::WeakImplHelper3<XTestHelper, css::lang::XServiceInfo,
+                                                css::lang::XSingleComponentFactory>
 {
 public:
-    // XInitialization
-    void SAL_CALL initialize(const css::uno::Sequence<css::uno::Any>& aArguments) override;
-
     // XServiceInfo
     rtl::OUString SAL_CALL getImplementationName() override;
     sal_Bool SAL_CALL supportsService(rtl::OUString const& serviceName) override;
     css::uno::Sequence<rtl::OUString> SAL_CALL getSupportedServiceNames() override;
+
+    // XSingleComponentFactory
+    css::uno::Reference<css::uno::XInterface> SAL_CALL createInstanceWithContext(
+        const css::uno::Reference<css::uno::XComponentContext>& xContext) override;
+    css::uno::Reference<css::uno::XInterface> SAL_CALL createInstanceWithArgumentsAndContext(
+        const css::uno::Sequence<css::uno::Any>& aArgs,
+        const css::uno::Reference<css::uno::XComponentContext>& xContext) override;
 
     // XTestHelper
     void SAL_CALL modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruct,
@@ -48,11 +52,6 @@ public:
     void SAL_CALL throwException() override;
     css::uno::Sequence<css::uno::Any> SAL_CALL getArguments() override;
     css::uno::Reference<XTestAttributes> SAL_CALL getAttributes() override;
-
-    static rtl::OUString getImplementationNameStatic();
-    static css::uno::Sequence<rtl::OUString> getSupportedServiceNamesStatic();
-    static css::uno::Reference<css::uno::XInterface>
-    create(const css::uno::Reference<css::uno::XComponentContext>& xContext);
 
 private:
     css::uno::Sequence<css::uno::Any> m_aArgs;
