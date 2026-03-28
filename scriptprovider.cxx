@@ -141,7 +141,7 @@ css::uno::Sequence<rtl::OUString> SAL_CALL ScriptProvider::getSupportedServiceNa
 
 rtl::OUString ScriptProvider::getImplementationNameStatic()
 {
-    return rtl::OUString("uk.co.busydoingnothing.luno.ScriptProvider");
+    return "uk.co.busydoingnothing.luno.ScriptProvider";
 }
 
 css::uno::Sequence<rtl::OUString> ScriptProvider::getSupportedServiceNamesStatic()

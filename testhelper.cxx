@@ -89,7 +89,7 @@ css::uno::Sequence<rtl::OUString> SAL_CALL TestHelper::getSupportedServiceNames(
 
 rtl::OUString TestHelper::getImplementationNameStatic()
 {
-    return rtl::OUString("uk.co.busydoingnothing.luno.qa.TestHelperImpl");
+    return "uk.co.busydoingnothing.luno.qa.TestHelperImpl";
 }
 
 css::uno::Sequence<rtl::OUString> TestHelper::getSupportedServiceNamesStatic()

@@ -193,10 +193,7 @@ css::uno::Sequence<rtl::OUString> SAL_CALL Luno::getSupportedServiceNames()
     return getSupportedServiceNamesStatic();
 }
 
-rtl::OUString Luno::getImplementationNameStatic()
-{
-    return rtl::OUString("uk.co.busydoingnothing.luno.Luno");
-}
+rtl::OUString Luno::getImplementationNameStatic() { return "uk.co.busydoingnothing.luno.Luno"; }
 
 css::uno::Sequence<rtl::OUString> Luno::getSupportedServiceNamesStatic()
 {
