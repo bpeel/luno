@@ -58,10 +58,7 @@ css::uno::Reference<css::beans::XPropertySetInfo> SAL_CALL ScriptFile::getProper
     return this;
 }
 
-void SAL_CALL ScriptFile::setPropertyValue(const rtl::OUString& aPropertyName,
-                                           const css::uno::Any& aValue)
-{
-}
+void SAL_CALL ScriptFile::setPropertyValue(const rtl::OUString&, const css::uno::Any&) {}
 
 css::uno::Any SAL_CALL ScriptFile::getPropertyValue(const rtl::OUString& sPropertyName)
 {
@@ -74,26 +71,22 @@ css::uno::Any SAL_CALL ScriptFile::getPropertyValue(const rtl::OUString& sProper
 }
 
 void SAL_CALL ScriptFile::addPropertyChangeListener(
-    const rtl::OUString& aPropertyName,
-    const css::uno::Reference<css::beans::XPropertyChangeListener>& xListener)
+    const rtl::OUString&, const css::uno::Reference<css::beans::XPropertyChangeListener>&)
 {
 }
 
 void SAL_CALL ScriptFile::removePropertyChangeListener(
-    const rtl::OUString& aPropertyName,
-    const css::uno::Reference<css::beans::XPropertyChangeListener>& aListener)
+    const rtl::OUString&, const css::uno::Reference<css::beans::XPropertyChangeListener>&)
 {
 }
 
 void SAL_CALL ScriptFile::addVetoableChangeListener(
-    const rtl::OUString& PropertyName,
-    const css::uno::Reference<css::beans::XVetoableChangeListener>& aListener)
+    const rtl::OUString&, const css::uno::Reference<css::beans::XVetoableChangeListener>&)
 {
 }
 
 void SAL_CALL ScriptFile::removeVetoableChangeListener(
-    const rtl::OUString& PropertyName,
-    const css::uno::Reference<css::beans::XVetoableChangeListener>& aListener)
+    const rtl::OUString&, const css::uno::Reference<css::beans::XVetoableChangeListener>&)
 {
 }
 

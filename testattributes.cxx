@@ -114,26 +114,22 @@ css::uno::Any SAL_CALL TestAttributes::getPropertyValue(const rtl::OUString& sPr
 }
 
 void SAL_CALL TestAttributes::addPropertyChangeListener(
-    const rtl::OUString& sPropertyName,
-    const css::uno::Reference<css::beans::XPropertyChangeListener>& xListener)
+    const rtl::OUString&, const css::uno::Reference<css::beans::XPropertyChangeListener>&)
 {
 }
 
 void SAL_CALL TestAttributes::removePropertyChangeListener(
-    const rtl::OUString& sPropertyName,
-    const css::uno::Reference<css::beans::XPropertyChangeListener>& aListener)
+    const rtl::OUString&, const css::uno::Reference<css::beans::XPropertyChangeListener>&)
 {
 }
 
 void SAL_CALL TestAttributes::addVetoableChangeListener(
-    const rtl::OUString& sPropertyName,
-    const css::uno::Reference<css::beans::XVetoableChangeListener>& aListener)
+    const rtl::OUString&, const css::uno::Reference<css::beans::XVetoableChangeListener>&)
 {
 }
 
 void SAL_CALL TestAttributes::removeVetoableChangeListener(
-    const rtl::OUString& sPropertyName,
-    const css::uno::Reference<css::beans::XVetoableChangeListener>& aListener)
+    const rtl::OUString&, const css::uno::Reference<css::beans::XVetoableChangeListener>&)
 {
 }
 }

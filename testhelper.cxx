@@ -102,7 +102,7 @@ css::uno::Sequence<rtl::OUString> TestHelper::getSupportedServiceNamesStatic()
 }
 
 css::uno::Reference<css::uno::XInterface>
-TestHelper::create(const css::uno::Reference<css::uno::XComponentContext>& xContext)
+TestHelper::create(const css::uno::Reference<css::uno::XComponentContext>&)
 {
     return static_cast<css::lang::XTypeProvider*>(new TestHelper);
 }
