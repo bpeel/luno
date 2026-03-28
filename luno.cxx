@@ -68,7 +68,7 @@ namespace
 {
 int tryToString(lua_State* pLuaState)
 {
-    luaL_tolstring(pLuaState, 1, NULL);
+    luaL_tolstring(pLuaState, 1, nullptr);
     return 1;
 }
 }
