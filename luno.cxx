@@ -83,12 +83,12 @@ void Luno::throwLuaError()
 
         css::reflection::InvocationTargetException aInvocationTargetException;
 
-        if ((xStructValue >>= aInvocationTargetException))
+        if (xStructValue >>= aInvocationTargetException)
             throw aInvocationTargetException;
 
         css::uno::Exception aException;
 
-        if ((xStructValue >>= aException))
+        if (xStructValue >>= aException)
         {
             // Move the common parts from Exception
             static_cast<css::uno::Exception&>(aInvocationTargetException) = std::move(aException);
