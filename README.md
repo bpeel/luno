@@ -67,6 +67,25 @@ assert(url.Protocol == "https://")
 
 Note that this is different from pyuno which would return the new URL as one of the return values.
 
+### Attributes and properties
+
+Interface attributes can be read and set directly as if they were properties on the object. Eg:
+
+```lua
+local props = model:getDocumentProperties()
+props.EditingDuration = 3
+assert(props.EditingDuration == 3)
+```
+
+This also works for objects that implement `XPropertySet`:
+
+```lua
+local url = model:createInstance("com.sun.star.text.textfield.URL")
+url.Representation = "A link"
+assert(url.Representation == "A link")
+assert(url:getPropertyValue("Representation") == "A link")
+```
+
 ### Sequences
 
 Sequences are converted to and from Lua tables. Note that the indices start from 1 instead of 0 as is the custom in Lua. Eg:
