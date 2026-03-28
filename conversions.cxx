@@ -233,7 +233,7 @@ css::uno::Any getAny(lua_State* pLuaState, int nIndex)
     }
 
     const char* sTypeName = luaL_typename(pLuaState, nIndex);
-    rtl::OUString sMessage = rtl::OUString("Unsupported conversion from Lua type ")
+    rtl::OUString sMessage = "Unsupported conversion from Lua type "
                              + rtl::OUString(sTypeName, strlen(sTypeName), RTL_TEXTENCODING_UTF8);
     throw css::beans::IllegalTypeException(sMessage);
 }
