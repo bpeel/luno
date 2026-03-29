@@ -266,6 +266,8 @@ $(1) : $(2)
 	sed -r -e 's@uk(::|/|\.| \{ module )co\1busydoingnothing@com\1sun\1star@g' \
 	-e 's/(This file is part of) Luno/\1 the LibreOffice project/' \
 	-e 's|^#include "([a-z0-9_-]+\.hxx)"|#include <luno/\1>|' \
+	-e 's/^(void createModule\(.*)const rtl::OUString&( sFullNameUtf16.*)/\1std::u16string_view\2/' \
+	-e 's/^( *createModule.*sFullName\.)copy\b/\1subView/' \
 	< $$< > $$@
 	echo "$$@" | grep -q '\.idl$$$$' || clang-format -i $$@
 endef
