@@ -60,7 +60,7 @@ void ServiceConstructor::pushMetatable(lua_State* pLuaState)
 
 ServiceConstructor* ServiceConstructor::checkServiceConstructor(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<ServiceConstructor*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<ServiceConstructor*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
 }
 
 int ServiceConstructor::gc(lua_State* pLuaState)

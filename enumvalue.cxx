@@ -49,12 +49,12 @@ void EnumValue::pushMetatable(lua_State* pLuaState)
 
 EnumValue* EnumValue::checkEnumValue(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<EnumValue*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<EnumValue*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
 }
 
 EnumValue* EnumValue::testEnumValue(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<EnumValue*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<EnumValue*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
 }
 
 int EnumValue::gc(lua_State* pLuaState)

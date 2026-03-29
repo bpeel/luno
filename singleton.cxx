@@ -57,12 +57,12 @@ void Singleton::pushMetatable(lua_State* pLuaState)
 
 Singleton* Singleton::checkSingleton(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<Singleton*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<Singleton*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
 }
 
 Singleton* Singleton::testSingleton(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<Singleton*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<Singleton*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
 }
 
 int Singleton::gc(lua_State* pLuaState)

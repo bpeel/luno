@@ -64,12 +64,12 @@ void Type::pushMetatable(lua_State* pLuaState)
 
 Type* Type::checkType(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<Type*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<Type*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
 }
 
 Type* Type::testType(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<Type*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<Type*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
 }
 
 int Type::gc(lua_State* pLuaState)

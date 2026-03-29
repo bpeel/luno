@@ -59,12 +59,12 @@ void Struct::pushMetatable(lua_State* pLuaState)
 
 Struct* Struct::checkStruct(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<Struct*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<Struct*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
 }
 
 Struct* Struct::testStruct(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<Struct*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<Struct*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
 }
 
 int Struct::gc(lua_State* pLuaState)

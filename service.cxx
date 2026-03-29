@@ -58,12 +58,12 @@ void Service::pushMetatable(lua_State* pLuaState)
 
 Service* Service::checkService(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<Service*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<Service*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
 }
 
 Service* Service::testService(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<Service*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<Service*>(luaL_testudata(pLuaState, nArg, CLASS_NAME));
 }
 
 int Service::gc(lua_State* pLuaState)

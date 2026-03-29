@@ -77,7 +77,7 @@ void Method::pushMetatable(lua_State* pLuaState)
 
 Method* Method::checkMethod(lua_State* pLuaState, int nArg)
 {
-    return reinterpret_cast<Method*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
+    return static_cast<Method*>(luaL_checkudata(pLuaState, nArg, CLASS_NAME));
 }
 
 int Method::gc(lua_State* pLuaState)

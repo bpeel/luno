@@ -229,7 +229,7 @@ int lookup(lua_State* pLuaState)
     size_t nPrefixLength;
     const char* sPrefix
         = luaL_checklstring(pLuaState, lua_upvalueindex(PREFIX_UPVALUE), &nPrefixLength);
-    const Runtime* pRuntime = reinterpret_cast<const Runtime*>(
+    const Runtime* pRuntime = static_cast<const Runtime*>(
         lua_touserdata(pLuaState, lua_upvalueindex(RUNTIME_UPVALUE)));
 
     if (!pRuntime->isValid())
@@ -302,7 +302,7 @@ set_lua_error:
 void pushLookupFunc(lua_State* pLuaState, const Runtime& rRuntime)
 {
     // Store a pointer to the runtime as light user data
-    lua_pushlightuserdata(pLuaState, const_cast<void*>(reinterpret_cast<const void*>(&rRuntime)));
+    lua_pushlightuserdata(pLuaState, const_cast<void*>(static_cast<const void*>(&rRuntime)));
     // Store two upvalues. The first one has already been pushed onto the stack by the caller to
     // this function.
     lua_pushcclosure(pLuaState, lookup, 2);
