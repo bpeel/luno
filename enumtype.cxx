@@ -83,8 +83,7 @@ int EnumType::doIndexUncached(lua_State* pLuaState)
         if (aEnumNames[i] == sKey)
         {
             css::uno::Type xType(css::uno::TypeClass_ENUM, m_xTypeDescription->getName());
-            EnumValue::pushEnumValue(pLuaState, xType, m_xTypeDescription->getEnumValues()[i],
-                                     m_rRuntime);
+            EnumValue::pushEnumValue(pLuaState, xType, m_xTypeDescription->getEnumValues()[i]);
             return 1;
         }
     }

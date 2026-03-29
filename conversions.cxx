@@ -154,7 +154,7 @@ void pushAny(lua_State* pLuaState, const css::uno::Any& xAny, const Runtime& rRu
         {
             sal_Int32 nValue = *static_cast<sal_Int32 const*>(xAny.getValue());
 
-            EnumValue::pushEnumValue(pLuaState, xAny.getValueType(), nValue, rRuntime);
+            EnumValue::pushEnumValue(pLuaState, xAny.getValueType(), nValue);
             return;
         }
 

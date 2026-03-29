@@ -19,8 +19,7 @@ namespace uk::co::busydoingnothing::luno
 class EnumValue
 {
 public:
-    static void pushEnumValue(lua_State* pLuaState, const css::uno::Type& xType, sal_Int32 nValue,
-                              const Runtime& rRuntime);
+    static void pushEnumValue(lua_State* pLuaState, const css::uno::Type& xType, sal_Int32 nValue);
 
     static EnumValue* testEnumValue(lua_State* pLuaState, int nArg);
 
@@ -29,16 +28,14 @@ public:
     sal_Int32 getValue() const { return m_nValue; }
 
 private:
-    EnumValue(const css::uno::Type& xType, sal_Int32 nValue, const Runtime& rRuntime)
-        : m_rRuntime(rRuntime)
-        , m_xType(xType)
+    EnumValue(const css::uno::Type& xType, sal_Int32 nValue)
+        : m_xType(xType)
         , m_nValue(nValue)
     {
     }
 
     static constexpr const char* CLASS_NAME = "Luno_EnumValue";
 
-    const Runtime& m_rRuntime;
     css::uno::Type m_xType;
     sal_Int32 m_nValue;
 

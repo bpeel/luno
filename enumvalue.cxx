@@ -13,15 +13,14 @@
 
 namespace uk::co::busydoingnothing::luno
 {
-void EnumValue::pushEnumValue(lua_State* pLuaState, const css::uno::Type& xType, sal_Int32 nValue,
-                              const Runtime& rRuntime)
+void EnumValue::pushEnumValue(lua_State* pLuaState, const css::uno::Type& xType, sal_Int32 nValue)
 {
     assert(xType.getTypeClass() == css::uno::TypeClass_ENUM);
 
     void* pUserData = lua_newuserdatauv(pLuaState, sizeof(EnumValue), 0);
 
     // Use placement new to initialize the type in the memory that Lua allocated
-    new (pUserData) EnumValue(xType, nValue, rRuntime);
+    new (pUserData) EnumValue(xType, nValue);
 
     pushMetatable(pLuaState);
     lua_setmetatable(pLuaState, -2);
