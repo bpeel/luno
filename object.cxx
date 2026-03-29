@@ -393,11 +393,11 @@ int Object::call(lua_State* pLuaState, Method* pMethod)
 
     {
         css::uno::Reference<css::reflection::XIdlMethod> xIdlMethod = pMethod->getIdlMethod();
-        const css::uno::Sequence<css::reflection::ParamInfo>& rParamInfos
+        const css::uno::Sequence<css::reflection::ParamInfo> aParamInfos
             = xIdlMethod->getParameterInfos();
 
         int nInArgs
-            = std::count_if(rParamInfos.begin(), rParamInfos.end(),
+            = std::count_if(aParamInfos.begin(), aParamInfos.end(),
                             [](const css::reflection::ParamInfo& rParamInfo)
                             {
                                 return rParamInfo.aMode == css::reflection::ParamMode_IN
@@ -415,7 +415,7 @@ int Object::call(lua_State* pLuaState, Method* pMethod)
             goto set_lua_error;
         }
 
-        css::uno::Sequence<css::uno::Any> aArgs(rParamInfos.getLength());
+        css::uno::Sequence<css::uno::Any> aArgs(aParamInfos.getLength());
         css::uno::Any* pArgs = aArgs.getArray();
         css::uno::Any xTarget(m_xInterface);
         css::uno::Any xResult;
@@ -425,13 +425,13 @@ int Object::call(lua_State* pLuaState, Method* pMethod)
         {
             int nInArg = 0;
 
-            for (int i = 0; i < rParamInfos.getLength(); ++i)
+            for (int i = 0; i < aParamInfos.getLength(); ++i)
             {
                 // Skip out-only params
-                if (rParamInfos[i].aMode == css::reflection::ParamMode_OUT)
+                if (aParamInfos[i].aMode == css::reflection::ParamMode_OUT)
                     continue;
 
-                pArgs[i] = getAnyAsType(pLuaState, nInArg + 2, rParamInfos[i].aType, m_rRuntime);
+                pArgs[i] = getAnyAsType(pLuaState, nInArg + 2, aParamInfos[i].aType, m_rRuntime);
 
                 ++nInArg;
             }
@@ -449,12 +449,12 @@ int Object::call(lua_State* pLuaState, Method* pMethod)
 
             nInArg = 2;
 
-            for (int i = 0; i < rParamInfos.getLength(); ++i)
+            for (int i = 0; i < aParamInfos.getLength(); ++i)
             {
-                css::reflection::ParamMode eParamMode = rParamInfos[i].aMode;
+                css::reflection::ParamMode eParamMode = aParamInfos[i].aMode;
 
                 if (eParamMode == css::reflection::ParamMode_INOUT
-                    && rParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_STRUCT)
+                    && aParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_STRUCT)
                 {
                     // Instead of returning the struct, copy the values directly back into struct
                     // held by Lua
@@ -462,7 +462,7 @@ int Object::call(lua_State* pLuaState, Method* pMethod)
                         goto set_lua_error;
                 }
                 else if (eParamMode == css::reflection::ParamMode_INOUT
-                         && rParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_SEQUENCE)
+                         && aParamInfos[i].aType->getTypeClass() == css::uno::TypeClass_SEQUENCE)
                 {
                     // Instead of returning the sequence, copy the values directly back into the
                     // table held by Lua
