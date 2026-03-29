@@ -106,7 +106,7 @@ void storeInParentModule(lua_State* pLuaState, const rtl::OUString& sFullName,
     if (nLastDot == -1)
         return;
 
-    createModule(pLuaState, rtl::OUString(sFullName.getStr(), nLastDot), rRuntime);
+    createModule(pLuaState, sFullName.copy(0, nLastDot), rRuntime);
     rtl::OString sLastPart(sFullName.getStr() + nLastDot + 1, sFullName.getLength() - nLastDot - 1,
                            RTL_TEXTENCODING_UTF8);
     lua_pushlstring(pLuaState, sLastPart.getStr(), sLastPart.getLength());
