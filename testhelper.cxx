@@ -65,7 +65,7 @@ sal_Int32 SAL_CALL TestHelper::multipleReturn(sal_Int32 mainReturnValue,
 
 TestEnum SAL_CALL TestHelper::getFourEnum() { return TestEnum::TestEnum_FOUR; }
 
-sal_Int32 SAL_CALL TestHelper::getEnumValue(TestEnum nEnum) { return nEnum; }
+sal_Int32 SAL_CALL TestHelper::getEnumValue(TestEnum nEnum) { return sal_Int32(nEnum); }
 
 void SAL_CALL TestHelper::throwException()
 {
