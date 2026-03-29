@@ -33,7 +33,7 @@ LUA_MAKEFILE=$(LUA_SOURCE_DIR)/Makefile
 LUA_INSTALL_DIR=$(LUA_SOURCE_PARENT)/lua-install
 LUA_LIB=$(LUA_INSTALL_DIR)/lib/liblua.a
 
-CXXFILES = \
+RUNNER_CXXFILES = \
            luno.cxx \
            object.cxx \
            method.cxx \
@@ -45,12 +45,22 @@ CXXFILES = \
            enumvalue.cxx \
            pushexception.cxx \
            lunotype.cxx \
-           scriptbrowser.cxx \
-           scriptfile.cxx \
-           scriptprovider.cxx \
            service.cxx \
            serviceconstructor.cxx \
-           singleton.cxx \
+           singleton.cxx
+
+RUNNER_HEADERS = \
+           $(subst .cxx,.hxx,$(RUNNER_CXXFILES)) \
+           runtime.hxx
+
+PROVIDER_CXXFILES = \
+           scriptbrowser.cxx \
+           scriptfile.cxx \
+           scriptprovider.cxx
+
+CXXFILES = \
+           $(RUNNER_CXXFILES) \
+           $(PROVIDER_CXXFILES) \
            exports.cxx
 
 SLOFILES = $(patsubst %.cxx,$(OUT_COMP_SLO)/%.$(OBJ_EXT),$(CXXFILES))
@@ -246,3 +256,29 @@ check : $(UNIT_TESTER) $(COMP_RDB) $(COMP_COMPONENTS) $(COMP_PACKAGE)
 	$(UNIT_TESTER) -env:URE_MORE_SERVICES=$(URLPREFIX)$(COMP_COMPONENTS) \
 	-env:URE_MORE_TYPES=$(URLPREFIX)$(COMP_RDB)\ $(URLPREFIX)$(QA_RDB) \
 	unittests.lua
+
+# This is to help convert the code into a patch for LibreOffice
+LO_SRC_DIR = ../libreoffice
+
+define convert_source_rule
+$(1) : $(2)
+	mkdir -p $$(@D)
+	sed -r -e 's@uk(::|/|\.| \{ module )co\1busydoingnothing@com\1sun\1star@g' \
+	-e 's/(This file is part of) Luno/\1 the LibreOffice project/' \
+	-e 's|^#include "([a-z0-9_-]+\.hxx)"|#include <luno/\1>|' \
+	< $$< > $$@
+	echo "$$@" | grep -q '\.idl$$$$' || clang-format -i $$@
+endef
+
+$(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/source/module/%.cxx,%.cxx))
+$(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/inc/luno/%.hxx,%.hxx))
+$(eval $(call convert_source_rule,$(LO_SRC_DIR)/offapi/com/sun/star/luno/%.idl, \
+                                  idl/uk/co/busydoingnothing/luno/%.idl))
+
+CONVERTED_CXX = $(patsubst %,$(LO_SRC_DIR)/luno/source/module/%,$(RUNNER_CXXFILES))
+CONVERTED_HEADERS = $(patsubst %,$(LO_SRC_DIR)/luno/inc/luno/%,$(RUNNER_HEADERS))
+CONVERTED_IDL = $(patsubst %,$(LO_SRC_DIR)/offapi/com/sun/star/luno/%,$(notdir $(IDLFILES)))
+
+copy-to-libreoffice : $(CONVERTED_CXX) $(CONVERTED_HEADERS) $(CONVERTED_IDL)
+
+.PHONY : copy-to-libreoffice
