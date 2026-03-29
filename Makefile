@@ -193,11 +193,12 @@ $(COMP_COMPONENTS) : luno.components.in
 	sed -e "s|@URI@|$(UNOPKG_PLATFORM)/$(COMP_IMPL_NAME)|g" < $< > $@
 
 # rule for component package file
-$(COMP_PACKAGE) : $(SHAREDLIB_OUT)/$(COMP_IMPL_NAME) $(DATA_FILES) $(COMP_UNOPKG_MANIFEST) $(COMP_COMPONENTS) $(COMP_UNOPKG_DESCRIPTION)
+$(COMP_PACKAGE) : $(SHAREDLIB_OUT)/$(COMP_IMPL_NAME) $(DATA_FILES) $(COMP_UNOPKG_MANIFEST) $(COMP_COMPONENTS) $(COMP_UNOPKG_DESCRIPTION) $(COMP_RDB)
 	-$(MKDIR) $(subst /,$(PS),$(@D)) && $(DEL) $(subst \\,\,$(subst /,$(PS),$@))
 	-$(MKDIR) $(subst /,$(PS),$(OUT_COMP_GEN)/$(UNOPKG_PLATFORM))
 	$(COPY) $(subst /,$(PS),$<) $(subst /,$(PS),$(OUT_COMP_GEN)/$(UNOPKG_PLATFORM))
 	$(CD) $(subst /,$(PS),$(OUT_COMP_GEN)) && $(SDK_ZIP) -u ../../bin/$(@F) $(COMP_NAME).components description.xml
+	$(CD) $(subst /,$(PS),$(OUT_BIN)) && $(SDK_ZIP) -u $(@F) $(COMP_RDB_NAME)
 	$(CD) $(subst /,$(PS),$(OUT_COMP_GEN)) && $(SDK_ZIP) -u ../../bin/$(@F) $(UNOPKG_PLATFORM)/$(<F)
 	$(SDK_ZIP) -u $@ $(DATA_FILES)
 	$(CD) $(subst /,$(PS),$(OUT_COMP_GEN)/$(subst .$(UNOOXT_EXT),,$(@F))) && $(SDK_ZIP) -u ../../../bin/$(@F) META-INF/manifest.xml
