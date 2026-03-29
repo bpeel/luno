@@ -30,10 +30,10 @@ void Method::pushMethod(lua_State* pLuaState,
         lua_rawset(pLuaState, LUA_REGISTRYINDEX);
     }
 
-    rtl::OUString sClassName = xMethod->getDeclaringClass()->getName();
-    rtl::OUString sMethodName = xMethod->getName();
-    rtl::OString sCombinedName
-        = rtl::OUStringToOString(sClassName + ":" + sMethodName, RTL_TEXTENCODING_UTF8);
+    rtl::OString sClassName
+        = rtl::OUStringToOString(xMethod->getDeclaringClass()->getName(), RTL_TEXTENCODING_UTF8);
+    rtl::OString sMethodName = rtl::OUStringToOString(xMethod->getName(), RTL_TEXTENCODING_UTF8);
+    rtl::OString sCombinedName = sClassName + ":" + sMethodName;
     lua_pushlstring(pLuaState, sCombinedName.getStr(), sCombinedName.getLength());
 
     lua_pushvalue(pLuaState, -1);

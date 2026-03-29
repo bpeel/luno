@@ -29,7 +29,7 @@ void pushExceptionFromAny(lua_State* pLuaState, const css::uno::Any& xAnyExcepti
         xAnyException >>= aException;
 
         rtl::OString sMessage
-            = rtl::OUStringToOString("UNO exception: " + aException.Message, RTL_TEXTENCODING_UTF8);
+            = "UNO exception: " + rtl::OUStringToOString(aException.Message, RTL_TEXTENCODING_UTF8);
         lua_pushlstring(pLuaState, sMessage.getStr(), sMessage.getLength());
     }
 }
