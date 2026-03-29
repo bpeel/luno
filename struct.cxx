@@ -208,11 +208,6 @@ int Struct::doToString(lua_State* pLuaState)
         lua_pushfstring(pLuaState, "%s: %p", CLASS_NAME, lua_topointer(pLuaState, 1));
 
     return 1;
-
-    // The goto is to ensure that we call all of the destructors before letting Lua do a longjmp
-set_lua_error:
-    lua_error(pLuaState);
-    return 0;
 }
 
 int Struct::toString(lua_State* pLuaState)
