@@ -25,6 +25,12 @@ class TestHelper : public cppu::WeakImplHelper3<XTestHelper, css::lang::XService
                                                 css::lang::XSingleComponentFactory>
 {
 public:
+    TestHelper() = default;
+    TestHelper(const css::uno::Sequence<css::uno::Any>& aArgs)
+        : m_aArgs(aArgs)
+    {
+    }
+
     // XServiceInfo
     rtl::OUString SAL_CALL getImplementationName() override;
     sal_Bool SAL_CALL supportsService(rtl::OUString const& serviceName) override;

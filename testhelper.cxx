@@ -28,9 +28,7 @@ css::uno::Reference<css::uno::XInterface>
         const css::uno::Sequence<css::uno::Any>& aArgs,
         const css::uno::Reference<css::uno::XComponentContext>&)
 {
-    TestHelper* pHelper = new TestHelper;
-    pHelper->m_aArgs = aArgs;
-    return static_cast<css::uno::XWeak*>(pHelper);
+    return static_cast<css::uno::XWeak*>(new TestHelper(aArgs));
 }
 
 void SAL_CALL TestHelper::modifyStruct(sal_Int32 nSetLongValue, TestStruct& aSetLongStruct,
