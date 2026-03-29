@@ -173,7 +173,7 @@ bool createEnum(lua_State* pLuaState, const rtl::OUString& sFullName,
         return false;
     }
 
-    EnumType::pushEnumType(pLuaState, xEnumType, rRuntime);
+    EnumType::pushEnumType(pLuaState, xEnumType);
 
     storeInParentModule(pLuaState, sFullName, rRuntime);
 
@@ -229,8 +229,8 @@ int lookup(lua_State* pLuaState)
     size_t nPrefixLength;
     const char* sPrefix
         = luaL_checklstring(pLuaState, lua_upvalueindex(PREFIX_UPVALUE), &nPrefixLength);
-    const Runtime* pRuntime = static_cast<const Runtime*>(
-        lua_touserdata(pLuaState, lua_upvalueindex(RUNTIME_UPVALUE)));
+    const Runtime* pRuntime
+        = static_cast<const Runtime*>(lua_touserdata(pLuaState, lua_upvalueindex(RUNTIME_UPVALUE)));
 
     if (!pRuntime->isValid())
         luaL_error(pLuaState, "global called with Luno runtime in invalid state");
