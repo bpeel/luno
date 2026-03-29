@@ -69,7 +69,7 @@ sal_Int32 SAL_CALL TestHelper::getEnumValue(TestEnum nEnum) { return sal_Int32(n
 
 void SAL_CALL TestHelper::throwException()
 {
-    throw css::lang::IllegalArgumentException(rtl::OUString("Your argument is illegal"),
+    throw css::lang::IllegalArgumentException("Your argument is illegal",
                                               static_cast<XTestHelper*>(this), 0);
 }
 
