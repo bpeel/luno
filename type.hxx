@@ -51,7 +51,7 @@ private:
     static int eq(lua_State* pLuaState);
     int doIsSubclassOf(lua_State* pLuaState);
     static int isSubclassOf(lua_State* pLuaState);
-    void applyStructTable(lua_State* pLuaState);
+    static void applyStructTable(lua_State* pLuaState);
 };
 }
 
