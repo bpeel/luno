@@ -45,9 +45,10 @@ void SAL_CALL TestHelper::modifySequence(sal_Int32 nFirstValue, sal_Int32 nSecon
                                          sal_Int32 nThirdValue,
                                          css::uno::Sequence<sal_Int32>& aValues)
 {
-    aValues[0] = nFirstValue;
-    aValues[1] = nSecondValue;
-    aValues[2] = nThirdValue;
+    sal_Int32* pValues = aValues.getArray();
+    pValues[0] = nFirstValue;
+    pValues[1] = nSecondValue;
+    pValues[2] = nThirdValue;
 }
 
 sal_Int32 SAL_CALL TestHelper::multipleReturn(sal_Int32 mainReturnValue,
