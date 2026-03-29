@@ -98,7 +98,7 @@ void Object::ensureInvocation(lua_State* pLuaState)
         }
 
         css::uno::Sequence<css::uno::Any> aArgs(1);
-        aArgs.getArray()[0] = css::uno::Any(m_xInterface);
+        aArgs.getArray()[0] <<= m_xInterface;
 
         m_xInvocation.set(m_rRuntime.m_xInvocation->createInstanceWithArguments(aArgs),
                           css::uno::UNO_QUERY);
