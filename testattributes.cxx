@@ -26,7 +26,7 @@ public:
     sal_Bool SAL_CALL hasPropertyByName(const rtl::OUString& aName) override;
 
 private:
-    css::beans::Property getProperty() const;
+    static css::beans::Property getProperty();
 };
 
 css::uno::Sequence<css::beans::Property> SAL_CALL PropertySetInfo::getProperties()
@@ -49,7 +49,7 @@ sal_Bool SAL_CALL PropertySetInfo::hasPropertyByName(const rtl::OUString& aName)
     return aName == "LongProperty";
 }
 
-css::beans::Property PropertySetInfo::getProperty() const
+css::beans::Property PropertySetInfo::getProperty()
 {
     css::beans::Property aProperty = {
         /* .Name = */ "LongProperty",
