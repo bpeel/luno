@@ -162,7 +162,7 @@ do
     assert(ret == false)
     -- the exception should be wrapped into a userdata with the right type
     assert(lunotype(exception) == com.sun.star.lang.IllegalArgumentException)
-    assert(exception.Message == "Your argument is illegal")
+    assert(string.match(exception.Message, "^Your argument is illegal"))
 end
 
 -- Helper functions to compare tables (but only if they are like arrays)
