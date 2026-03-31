@@ -284,7 +284,7 @@ define convert_source_rule_no_header
 $(call convert_source_rule_base,$(1),$(2))
 endef
 
-$(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/source/module/%.cxx,%.cxx))
+$(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/source/%.cxx,%.cxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/inc/luno/%.hxx,%.hxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/offapi/com/sun/star/luno/%.idl, \
                                   idl/uk/co/busydoingnothing/luno/%.idl))
@@ -300,7 +300,7 @@ $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/qa/source/%.cxx,%.cxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/qa/inc/luno/%.hxx,%.hxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/qa/extras/%.lua,%.lua))
 
-CONVERTED_CXX = $(patsubst %,$(LO_SRC_DIR)/luno/source/module/%,$(RUNNER_CXXFILES))
+CONVERTED_CXX = $(patsubst %,$(LO_SRC_DIR)/luno/source/%,$(RUNNER_CXXFILES))
 CONVERTED_HEADERS = $(patsubst %,$(LO_SRC_DIR)/luno/inc/luno/%,$(RUNNER_HEADERS))
 CONVERTED_IDL = $(patsubst %,$(LO_SRC_DIR)/offapi/com/sun/star/luno/%,$(notdir $(IDLFILES)))
 CONVERTED_PROVIDER_SOURCE = $(patsubst %,$(LO_SRC_DIR)/scripting/source/luaprov/%,\
