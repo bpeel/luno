@@ -58,6 +58,9 @@ PROVIDER_CXXFILES = \
            scriptfile.cxx \
            scriptprovider.cxx
 
+PROVIDER_HEADERS = \
+           $(subst .cxx,.hxx,$(PROVIDER_CXXFILES))
+
 CXXFILES = \
            $(RUNNER_CXXFILES) \
            $(PROVIDER_CXXFILES) \
@@ -260,22 +263,35 @@ check : $(UNIT_TESTER) $(COMP_RDB) $(COMP_COMPONENTS) $(COMP_PACKAGE)
 # This is to help convert the code into a patch for LibreOffice
 LO_SRC_DIR = ../libreoffice
 
-define convert_source_rule
+define convert_source_rule_base
 $(1) : $(2)
 	mkdir -p $$(@D)
 	sed -r -e 's@uk(::|/|\.| \{ module )co\1busydoingnothing@com\1sun\1star@g' \
 	-e 's/(This file is part of) Luno/\1 the LibreOffice project/' \
-	-e 's|^#include "([a-z0-9_-]+\.hxx)"|#include <luno/\1>|' \
+	$(3) \
 	-e 's/^(void createModule\(.*)const rtl::OUString&( sFullNameUtf16.*)/\1std::u16string_view\2/' \
 	-e 's/^( *createModule.*sFullName\.)copy\b/\1subView/' \
 	< $$< > $$@
 	echo "$$@" | grep -q '\.idl$$$$' || clang-format -i $$@
 endef
 
+define convert_source_rule
+$(call convert_source_rule_base,$(1),$(2),\
+       -e 's|^#include "([a-z0-9_-]+\.hxx)"|#include <luno/\1>|')
+endef
+
+define convert_source_rule_no_header
+$(call convert_source_rule_base,$(1),$(2))
+endef
+
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/source/module/%.cxx,%.cxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/inc/luno/%.hxx,%.hxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/offapi/com/sun/star/luno/%.idl, \
                                   idl/uk/co/busydoingnothing/luno/%.idl))
+$(eval $(call convert_source_rule_no_header, \
+              $(LO_SRC_DIR)/scripting/source/luaprov/%.cxx,%.cxx))
+$(eval $(call convert_source_rule_no_header, \
+              $(LO_SRC_DIR)/scripting/source/luaprov/%.hxx,%.hxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/qa/idl/com/sun/star/luno/qa/%.idl, \
                                   qaidl/uk/co/busydoingnothing/luno/qa/%.idl))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/qa/idl/com/sun/star/luno/qa/%.idl, \
@@ -287,6 +303,8 @@ $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/qa/extras/%.lua,%.lua))
 CONVERTED_CXX = $(patsubst %,$(LO_SRC_DIR)/luno/source/module/%,$(RUNNER_CXXFILES))
 CONVERTED_HEADERS = $(patsubst %,$(LO_SRC_DIR)/luno/inc/luno/%,$(RUNNER_HEADERS))
 CONVERTED_IDL = $(patsubst %,$(LO_SRC_DIR)/offapi/com/sun/star/luno/%,$(notdir $(IDLFILES)))
+CONVERTED_PROVIDER_SOURCE = $(patsubst %,$(LO_SRC_DIR)/scripting/source/luaprov/%,\
+                              $(PROVIDER_CXXFILES) $(PROVIDER_HEADERS))
 CONVERTED_QAIDL = $(patsubst %,$(LO_SRC_DIR)/luno/qa/idl/com/sun/star/luno/qa/%,\
                     $(notdir $(QA_IDLFILES)))
 CONVERTED_QA_CXX = $(patsubst %,$(LO_SRC_DIR)/luno/qa/source/%,testhelper.cxx testattributes.cxx)
@@ -295,6 +313,6 @@ CONVERTED_UNITTESTS = $(LO_SRC_DIR)/luno/qa/extras/unittests.lua
 
 copy-to-libreoffice : $(CONVERTED_CXX) $(CONVERTED_HEADERS) $(CONVERTED_IDL) \
                       $(CONVERTED_QAIDL) $(CONVERTED_QA_CXX) \
-                      $(CONVERTED_QA_HEADERS) $(CONVERTED_UNITTESTS)
+                      $(CONVERTED_QA_HEADERS) $(CONVERTED_UNITTESTS) $(CONVERTED_PROVIDER_SOURCE)
 
 .PHONY : copy-to-libreoffice
