@@ -271,6 +271,7 @@ $(1) : $(2)
 	$(3) \
 	-e 's/^(void createModule\(.*)const rtl::OUString&( sFullNameUtf16.*)/\1std::u16string_view\2/' \
 	-e 's/^( *createModule.*sFullName\.)copy\b/\1subView/' \
+	-e 's/\brtl:://g' \
 	< $$< > $$@
 	echo "$$@" | grep -q '\.idl$$$$' || clang-format -i $$@
 endef
