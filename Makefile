@@ -288,10 +288,6 @@ $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/source/%.cxx,%.cxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/inc/luno/%.hxx,%.hxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/offapi/com/sun/star/luno/%.idl, \
                                   idl/uk/co/busydoingnothing/luno/%.idl))
-$(eval $(call convert_source_rule_no_header, \
-              $(LO_SRC_DIR)/scripting/source/luaprov/%.cxx,%.cxx))
-$(eval $(call convert_source_rule_no_header, \
-              $(LO_SRC_DIR)/scripting/source/luaprov/%.hxx,%.hxx))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/qa/idl/com/sun/star/luno/qa/%.idl, \
                                   qaidl/uk/co/busydoingnothing/luno/qa/%.idl))
 $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/qa/idl/com/sun/star/luno/qa/%.idl, \
@@ -303,8 +299,6 @@ $(eval $(call convert_source_rule,$(LO_SRC_DIR)/luno/qa/extras/%.lua,%.lua))
 CONVERTED_CXX = $(patsubst %,$(LO_SRC_DIR)/luno/source/%,$(RUNNER_CXXFILES))
 CONVERTED_HEADERS = $(patsubst %,$(LO_SRC_DIR)/luno/inc/luno/%,$(RUNNER_HEADERS))
 CONVERTED_IDL = $(patsubst %,$(LO_SRC_DIR)/offapi/com/sun/star/luno/%,$(notdir $(IDLFILES)))
-CONVERTED_PROVIDER_SOURCE = $(patsubst %,$(LO_SRC_DIR)/scripting/source/luaprov/%,\
-                              $(PROVIDER_CXXFILES) $(PROVIDER_HEADERS))
 CONVERTED_QAIDL = $(patsubst %,$(LO_SRC_DIR)/luno/qa/idl/com/sun/star/luno/qa/%,\
                     $(notdir $(QA_IDLFILES)))
 CONVERTED_QA_CXX = $(patsubst %,$(LO_SRC_DIR)/luno/qa/source/%,testhelper.cxx testattributes.cxx)
@@ -313,6 +307,6 @@ CONVERTED_UNITTESTS = $(LO_SRC_DIR)/luno/qa/extras/unittests.lua
 
 copy-to-libreoffice : $(CONVERTED_CXX) $(CONVERTED_HEADERS) $(CONVERTED_IDL) \
                       $(CONVERTED_QAIDL) $(CONVERTED_QA_CXX) \
-                      $(CONVERTED_QA_HEADERS) $(CONVERTED_UNITTESTS) $(CONVERTED_PROVIDER_SOURCE)
+                      $(CONVERTED_QA_HEADERS) $(CONVERTED_UNITTESTS)
 
 .PHONY : copy-to-libreoffice
