@@ -41,12 +41,6 @@ extern "C"
     {
         *ppEnvTypeName = CPPU_CURRENT_LANGUAGE_BINDING_NAME;
     }
-
-    sal_Bool SAL_CALL component_writeInfo(css::lang::XMultiServiceFactory* xMgr,
-                                          css::registry::XRegistryKey* xRegistry)
-    {
-        return cppu::component_writeInfoHelper(xMgr, xRegistry, s_component_entries);
-    }
 } // extern C
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab cinoptions=b1,g0,N-s cinkeys+=0=break: */
